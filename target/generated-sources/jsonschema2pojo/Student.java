@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
     "student-number",
-    "avarage-mark"
+    "average-mark"
 })
 public class Student
     extends Person
@@ -23,8 +23,8 @@ public class Student
 
     @JsonProperty("student-number")
     private String studentNumber;
-    @JsonProperty("avarage-mark")
-    private Double avarageMark;
+    @JsonProperty("average-mark")
+    private Double averageMark;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -38,14 +38,14 @@ public class Student
         this.studentNumber = studentNumber;
     }
 
-    @JsonProperty("avarage-mark")
-    public Double getAvarageMark() {
-        return avarageMark;
+    @JsonProperty("average-mark")
+    public Double getAverageMark() {
+        return averageMark;
     }
 
-    @JsonProperty("avarage-mark")
-    public void setAvarageMark(Double avarageMark) {
-        this.avarageMark = avarageMark;
+    @JsonProperty("average-mark")
+    public void setAverageMark(Double averageMark) {
+        this.averageMark = averageMark;
     }
 
     @JsonAnyGetter
@@ -80,9 +80,9 @@ public class Student
         sb.append('=');
         sb.append(((this.studentNumber == null)?"<null>":this.studentNumber));
         sb.append(',');
-        sb.append("avarageMark");
+        sb.append("averageMark");
         sb.append('=');
-        sb.append(((this.avarageMark == null)?"<null>":this.avarageMark));
+        sb.append(((this.averageMark == null)?"<null>":this.averageMark));
         sb.append(',');
         sb.append("additionalProperties");
         sb.append('=');
@@ -99,9 +99,9 @@ public class Student
     @Override
     public int hashCode() {
         int result = 1;
+        result = ((result* 31)+((this.averageMark == null)? 0 :this.averageMark.hashCode()));
         result = ((result* 31)+((this.additionalProperties == null)? 0 :this.additionalProperties.hashCode()));
         result = ((result* 31)+((this.studentNumber == null)? 0 :this.studentNumber.hashCode()));
-        result = ((result* 31)+((this.avarageMark == null)? 0 :this.avarageMark.hashCode()));
         result = ((result* 31)+ super.hashCode());
         return result;
     }
@@ -115,7 +115,7 @@ public class Student
             return false;
         }
         Student rhs = ((Student) other);
-        return (((super.equals(rhs)&&((this.additionalProperties == rhs.additionalProperties)||((this.additionalProperties!= null)&&this.additionalProperties.equals(rhs.additionalProperties))))&&((this.studentNumber == rhs.studentNumber)||((this.studentNumber!= null)&&this.studentNumber.equals(rhs.studentNumber))))&&((this.avarageMark == rhs.avarageMark)||((this.avarageMark!= null)&&this.avarageMark.equals(rhs.avarageMark))));
+        return (((super.equals(rhs)&&((this.averageMark == rhs.averageMark)||((this.averageMark!= null)&&this.averageMark.equals(rhs.averageMark))))&&((this.additionalProperties == rhs.additionalProperties)||((this.additionalProperties!= null)&&this.additionalProperties.equals(rhs.additionalProperties))))&&((this.studentNumber == rhs.studentNumber)||((this.studentNumber!= null)&&this.studentNumber.equals(rhs.studentNumber))));
     }
 
 }
