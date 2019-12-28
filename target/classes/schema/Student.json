@@ -1,0 +1,15 @@
+{
+  "description": "A student class",
+  "type": "object",
+  "extends": {
+	"$ref": "Person.json"
+  },
+  "properties": {
+	"student-number": {
+	  "type": "string"
+	},
+	"average-mark": {
+	  "type": "number"
+	}
+  }
+}

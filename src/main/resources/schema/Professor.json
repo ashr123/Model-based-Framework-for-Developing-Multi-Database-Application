@@ -1,0 +1,12 @@
+{
+  "description": "A professor class",
+  "type": "object",
+  "extends": {
+	"$ref": "Person.json"
+  },
+  "properties": {
+	"student-number": {
+	  "type": "number"
+	}
+  }
+}
