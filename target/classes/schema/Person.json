@@ -2,18 +2,18 @@
   "description": "A person class",
   "type": "object",
   "properties": {
-    "name": {
-      "type": "string"
-    },
-    "phone-number": {
-      "type": "string"
-    },
-    "email-address": {
-      "type": "string"
-    },
-    "lives-at": {
-      "javaType": "Address",
-      "type": "object"
-    }
+	"name": {
+	  "type": "string"
+	},
+	"phone-number": {
+	  "type": "string"
+	},
+	"email-address": {
+	  "type": "string"
+	},
+	"lives-at": {
+	  "javaType": "Address",
+	  "type": "object"
+	}
   }
 }
