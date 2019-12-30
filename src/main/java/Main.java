@@ -10,18 +10,18 @@ public class Main
 {
 	public static void main(String[] args) throws IOException
 	{
-		JCodeModel codeModel = new JCodeModel();
+//		JCodeModel codeModel = new JCodeModel();
 
 //		URL source = Main.class.getResource("/schema/address.schema.json");
 
-		GenerationConfig config = new DefaultGenerationConfig()
-		{
-			@Override
-			public boolean isGenerateBuilders()
-			{ // set config option by overriding method
-				return true;
-			}
-		};
+//		GenerationConfig config = new DefaultGenerationConfig()
+//		{
+//			@Override
+//			public boolean isGenerateBuilders()
+//			{ // set config option by overriding method
+//				return true;
+//			}
+//		};
 
 
 //		SchemaMapper mappeAddress = new SchemaMapper(new RuleFactory(config, new Jackson2Annotator(config), new SchemaStore()),
