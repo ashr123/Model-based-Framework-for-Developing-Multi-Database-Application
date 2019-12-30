@@ -11,9 +11,12 @@
 	"email-address": {
 	  "type": "string"
 	},
-	"lives-at": {
+	"lives-at-javaType": {
 	  "javaType": "Address",
 	  "type": "object"
+	},
+	"lives-at-ref": {
+	  "$ref": "Address.json"
 	}
   }
 }

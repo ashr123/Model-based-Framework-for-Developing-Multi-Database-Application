@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
@@ -17,7 +18,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "name",
     "phone-number",
     "email-address",
-    "lives-at"
+    "lives-at-javaType",
+    "lives-at-ref"
 })
 public class Person {
 
@@ -27,8 +29,15 @@ public class Person {
     private String phoneNumber;
     @JsonProperty("email-address")
     private String emailAddress;
-    @JsonProperty("lives-at")
-    private Address livesAt;
+    @JsonProperty("lives-at-javaType")
+    private Address livesAtJavaType;
+    /**
+     * An address class
+     * 
+     */
+    @JsonProperty("lives-at-ref")
+    @JsonPropertyDescription("An address class")
+    private Address livesAtRef;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -62,14 +71,32 @@ public class Person {
         this.emailAddress = emailAddress;
     }
 
-    @JsonProperty("lives-at")
-    public Address getLivesAt() {
-        return livesAt;
+    @JsonProperty("lives-at-javaType")
+    public Address getLivesAtJavaType() {
+        return livesAtJavaType;
     }
 
-    @JsonProperty("lives-at")
-    public void setLivesAt(Address livesAt) {
-        this.livesAt = livesAt;
+    @JsonProperty("lives-at-javaType")
+    public void setLivesAtJavaType(Address livesAtJavaType) {
+        this.livesAtJavaType = livesAtJavaType;
+    }
+
+    /**
+     * An address class
+     * 
+     */
+    @JsonProperty("lives-at-ref")
+    public Address getLivesAtRef() {
+        return livesAtRef;
+    }
+
+    /**
+     * An address class
+     * 
+     */
+    @JsonProperty("lives-at-ref")
+    public void setLivesAtRef(Address livesAtRef) {
+        this.livesAtRef = livesAtRef;
     }
 
     @JsonAnyGetter
@@ -98,9 +125,13 @@ public class Person {
         sb.append('=');
         sb.append(((this.emailAddress == null)?"<null>":this.emailAddress));
         sb.append(',');
-        sb.append("livesAt");
+        sb.append("livesAtJavaType");
         sb.append('=');
-        sb.append(((this.livesAt == null)?"<null>":this.livesAt));
+        sb.append(((this.livesAtJavaType == null)?"<null>":this.livesAtJavaType));
+        sb.append(',');
+        sb.append("livesAtRef");
+        sb.append('=');
+        sb.append(((this.livesAtRef == null)?"<null>":this.livesAtRef));
         sb.append(',');
         sb.append("additionalProperties");
         sb.append('=');
@@ -117,11 +148,12 @@ public class Person {
     @Override
     public int hashCode() {
         int result = 1;
-        result = ((result* 31)+((this.name == null)? 0 :this.name.hashCode()));
+        result = ((result* 31)+((this.livesAtJavaType == null)? 0 :this.livesAtJavaType.hashCode()));
         result = ((result* 31)+((this.emailAddress == null)? 0 :this.emailAddress.hashCode()));
         result = ((result* 31)+((this.phoneNumber == null)? 0 :this.phoneNumber.hashCode()));
+        result = ((result* 31)+((this.name == null)? 0 :this.name.hashCode()));
         result = ((result* 31)+((this.additionalProperties == null)? 0 :this.additionalProperties.hashCode()));
-        result = ((result* 31)+((this.livesAt == null)? 0 :this.livesAt.hashCode()));
+        result = ((result* 31)+((this.livesAtRef == null)? 0 :this.livesAtRef.hashCode()));
         return result;
     }
 
@@ -134,7 +166,7 @@ public class Person {
             return false;
         }
         Person rhs = ((Person) other);
-        return ((((((this.name == rhs.name)||((this.name!= null)&&this.name.equals(rhs.name)))&&((this.emailAddress == rhs.emailAddress)||((this.emailAddress!= null)&&this.emailAddress.equals(rhs.emailAddress))))&&((this.phoneNumber == rhs.phoneNumber)||((this.phoneNumber!= null)&&this.phoneNumber.equals(rhs.phoneNumber))))&&((this.additionalProperties == rhs.additionalProperties)||((this.additionalProperties!= null)&&this.additionalProperties.equals(rhs.additionalProperties))))&&((this.livesAt == rhs.livesAt)||((this.livesAt!= null)&&this.livesAt.equals(rhs.livesAt))));
+        return (((((((this.livesAtJavaType == rhs.livesAtJavaType)||((this.livesAtJavaType!= null)&&this.livesAtJavaType.equals(rhs.livesAtJavaType)))&&((this.emailAddress == rhs.emailAddress)||((this.emailAddress!= null)&&this.emailAddress.equals(rhs.emailAddress))))&&((this.phoneNumber == rhs.phoneNumber)||((this.phoneNumber!= null)&&this.phoneNumber.equals(rhs.phoneNumber))))&&((this.name == rhs.name)||((this.name!= null)&&this.name.equals(rhs.name))))&&((this.additionalProperties == rhs.additionalProperties)||((this.additionalProperties!= null)&&this.additionalProperties.equals(rhs.additionalProperties))))&&((this.livesAtRef == rhs.livesAtRef)||((this.livesAtRef!= null)&&this.livesAtRef.equals(rhs.livesAtRef))));
     }
 
 }
