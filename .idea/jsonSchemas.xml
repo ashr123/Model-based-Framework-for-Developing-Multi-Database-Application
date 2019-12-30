@@ -15,6 +15,15 @@
                   <Item>
                     <option name="path" value="src/main/resources/schema/Person.json" />
                   </Item>
+                  <Item>
+                    <option name="path" value="src/main/resources/schema/Professor.json" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="src/main/resources/schema/Student.json" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="src/main/resources/schema/Address.json" />
+                  </Item>
                 </list>
               </option>
             </SchemaInfo>
