@@ -12,6 +12,8 @@ import com.mongodb.client.MongoCursor;
 
 import java.util.function.Consumer;
 
+import static com.mongodb.client.model.Filters.*;
+
 public class Main
 {
 	public static void main(String[] args)
@@ -52,6 +54,7 @@ public class Main
 		collection.insertOne(doc);
 
 		Document myDoc = collection.find().first();
+		collection.find(and(gt("i", 50), lte("i", 100)))
 		System.out.println(myDoc != null ? myDoc.toJson() : null);
 
 		//Preferred loop:
