@@ -1,5 +1,7 @@
+ConfigurationLine.class
+Professor.class
+Student.class
+ConfigObj.class
 Main.class
 Address.class
-Professor.class
 Person.class
-Student.class
