@@ -1,5 +1,6 @@
 package filters;
 
-public interface Filter<Titem> {
+public interface Filter<Titem>
+{
 
 }

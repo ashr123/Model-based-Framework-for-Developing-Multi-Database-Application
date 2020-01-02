@@ -1,4 +1,5 @@
 package filters;
 
-public class eq implements Filter {
+public class eq implements Filter
+{
 }

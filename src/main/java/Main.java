@@ -1,11 +1,6 @@
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
 import connectors.MongoDBConnector;
 import dataLayer.configReader.Conf;
 import dataLayer.configReader.Reader;
-import org.bson.Document;
 
 import java.io.IOException;
 

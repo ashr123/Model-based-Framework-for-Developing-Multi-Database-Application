@@ -11,15 +11,18 @@ public class DataStore
 	@JsonProperty("location")
 	private String location;
 
-	public DBType getType() {
+	public DBType getType()
+	{
 		return type;
 	}
 
-	public String getConnStr() {
+	public String getConnStr()
+	{
 		return connStr;
 	}
 
-	public String getLocation() {
+	public String getLocation()
+	{
 		return location;
 	}
 
