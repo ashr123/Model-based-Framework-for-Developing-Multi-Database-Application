@@ -4,6 +4,7 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import dataLayer.configReader.Conf;
 import dataLayer.configReader.DataStore;
 import netscape.javascript.JSObject;
 import org.bson.Document;
@@ -40,7 +41,8 @@ public class MongoDBConnector implements Connector {
 //        return mongoClient.getDatabase(dbName);
 //    }
 
-    public Map<String,Object> get(DataStore dataStore, String entity, String field, Object value) {
+    public static Map<String,Object> get(Conf configuration, String entity, String field, Object value) {
+        DataStore dataStore = configuration.getDataStoreFromEntityField(entity, field);
         try (MongoClient mongoClient = MongoClients.create("mongodb://" + dataStore.getConnStr())) {
             MongoDatabase mongoDatabase = mongoClient.getDatabase(dataStore.getLocation());
             MongoCollection<Document> mongoCollection = mongoDatabase.getCollection(entity);
