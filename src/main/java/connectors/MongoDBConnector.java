@@ -2,12 +2,9 @@ package connectors;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
 import dataLayer.configReader.Conf;
 import dataLayer.configReader.DataStore;
 import org.bson.Document;
-import org.bson.types.ObjectId;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -26,9 +23,9 @@ public class MongoDBConnector implements Connector
 		DataStore dataStore = configuration.getDataStoreFromEntityField(entity, field);
 		try (MongoClient mongoClient = MongoClients.create("mongodb://" + dataStore.getConnStr()))
 		{
-			MongoDatabase mongoDatabase = mongoClient.getDatabase(dataStore.getLocation());
-			MongoCollection<Document> mongoCollection = mongoDatabase.getCollection(entity);
-			Document myDoc = mongoCollection.find(eq(field, value)).first();
+			Document myDoc = mongoClient.getDatabase(dataStore.getLocation())
+					.getCollection(entity)
+					.find(eq(field, value)).first();
 			if (myDoc != null)
 			{
 				Set<Map.Entry<String, Object>> result = myDoc.entrySet();
