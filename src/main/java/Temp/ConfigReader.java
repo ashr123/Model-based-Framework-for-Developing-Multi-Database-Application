@@ -1,4 +1,4 @@
-package dataLayer.configReader;
+package Temp;
 
 public interface ConfigReader
 {

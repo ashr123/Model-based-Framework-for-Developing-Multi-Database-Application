@@ -1,4 +1,4 @@
-package dataLayer.configReader;
+package Temp;
 
 import com.fasterxml.jackson.annotation.*;
 import org.apache.commons.lang3.builder.EqualsBuilder;

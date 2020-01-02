@@ -1,8 +1,10 @@
-package connectors;
+package Temp;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
-import dataLayer.configReader.ConfigObj;
+import Temp.ConfigObj;
+import connectors.CollectionAdapter;
+import connectors.Connector;
 
 import java.util.HashMap;
 import java.util.Map;

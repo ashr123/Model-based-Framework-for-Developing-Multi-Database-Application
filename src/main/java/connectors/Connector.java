@@ -1,6 +1,6 @@
 package connectors;
 
-import dataLayer.configReader.ConfigObj;
+import Temp.ConfigObj;
 
 public interface Connector
 {

@@ -28,7 +28,7 @@ public class ConfigurationLine {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(ConfigurationLine.class.getName()).append('@').append(Integer.toHexString(System.identityHashCode(this))).append('[');
+        sb.append(Temp.ConfigurationLine.class.getName()).append('@').append(Integer.toHexString(System.identityHashCode(this))).append('[');
         sb.append("additionalProperties");
         sb.append('=');
         sb.append(((this.additionalProperties == null)?"<null>":this.additionalProperties));
@@ -53,10 +53,10 @@ public class ConfigurationLine {
         if (other == this) {
             return true;
         }
-        if ((other instanceof ConfigurationLine) == false) {
+        if ((other instanceof Temp.ConfigurationLine) == false) {
             return false;
         }
-        ConfigurationLine rhs = ((ConfigurationLine) other);
+        Temp.ConfigurationLine rhs = ((Temp.ConfigurationLine) other);
         return ((this.additionalProperties == rhs.additionalProperties)||((this.additionalProperties!= null)&&this.additionalProperties.equals(rhs.additionalProperties)));
     }
 
