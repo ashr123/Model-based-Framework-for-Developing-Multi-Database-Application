@@ -81,6 +81,7 @@ public class Main
 		////Unpreferred loop (the application can leak a cursor if the loop terminates early):
 //		for (Document cur : collection.find())
 //			System.out.println(cur.toJson());
-		System.out.println(Reader.toJson(Reader.read("/configData3.json")));
+		System.out.println("start:");
+		System.out.println(Reader.toJson(Reader.read("/example.json")));
 	}
 }

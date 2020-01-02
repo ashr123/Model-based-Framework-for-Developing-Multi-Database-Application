@@ -6,18 +6,18 @@
 	"name": {
 	  "type": "string"
 	},
+	"age": {
+	  "type": "string"
+	},
 	"phone-number": {
 	  "type": "string"
 	},
 	"email-address": {
 	  "type": "string"
 	},
-	"lives-at-javaType": {
+	"lives-at": {
 	  "javaType": "Address",
 	  "type": "object"
-	},
-	"lives-at-ref": {
-	  "$ref": "Address.json"
 	}
   }
 }
