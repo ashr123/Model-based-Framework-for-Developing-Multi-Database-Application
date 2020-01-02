@@ -7,6 +7,7 @@ import com.mongodb.client.MongoDatabase;
 import dataLayer.configReader.Conf;
 import dataLayer.configReader.DataStore;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -33,7 +34,7 @@ public class MongoDBConnector implements Connector
 				Set<Map.Entry<String, Object>> result = myDoc.entrySet();
 				Map<String, Object> output = new LinkedHashMap<>(result.size());
 				for (Map.Entry<String, Object> entry : result)
-					output.put(entry.getKey(), entry.getValue());
+					output.put(entry.getKey(), entry.getKey().equals("_id") ? entry.getValue().toString() : entry.getValue());
 				return output;
 			}
 			return null;
