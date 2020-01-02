@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class DataStore
 {
 	@JsonProperty("type")
-	private String type;
+	private DBType type;
 	@JsonProperty("connStr")
 	private String connStr;
 	@JsonProperty("location")

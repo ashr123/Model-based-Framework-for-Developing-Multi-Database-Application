@@ -5,6 +5,9 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoCollection;
 
+import connectors.CollectionAdapter;
+import connectors.Connector;
+import dataLayer.configReader.ConfigObj;
 import dataLayer.configReader.Reader;
 import netscape.javascript.JSObject;
 import org.bson.Document;
@@ -15,6 +18,7 @@ import java.util.Arrays;
 import com.mongodb.client.MongoCursor;
 
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.gt;
