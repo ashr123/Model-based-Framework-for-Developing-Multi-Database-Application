@@ -47,12 +47,15 @@ public class MongoDBConnector implements Connector {
             MongoDatabase mongoDatabase = mongoClient.getDatabase(dataStore.getLocation());
             MongoCollection<Document> mongoCollection = mongoDatabase.getCollection(entity);
             Document myDoc = mongoCollection.find(eq(field,value)).first();
-            Set<Map.Entry<String,Object>> result = myDoc.entrySet();
-            Map<String,Object> output = new LinkedHashMap<>(result.size());
-            for (Map.Entry<String, Object> entry : result){
-                output.put(entry.getKey(),entry.getValue());
+            if (myDoc!=null)
+            {
+                Set<Map.Entry<String, Object>> result = myDoc.entrySet();
+                Map<String, Object> output = new LinkedHashMap<>(result.size());
+                for (Map.Entry<String, Object> entry : result)
+                    output.put(entry.getKey(), entry.getValue());
+                return output;
             }
-            return output;
+            return null;
         }
     }
 }
