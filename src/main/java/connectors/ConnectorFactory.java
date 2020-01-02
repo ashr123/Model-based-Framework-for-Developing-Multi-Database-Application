@@ -1,35 +1,21 @@
 package connectors;
 
+import dataLayer.configReader.DBType;
+import dataLayer.configReader.DataStore;
+
 public class ConnectorFactory {
-    public Connector getConnector(Enum connectorType){
-        if(connectorType == null){
-            return null;
-        }
-        if(connectorType.equalsIgnoreCase("NEO4J")){
-            return new Circle();
-
-        } else if(connectorType.equalsIgnoreCase("MONGODB")){
-            return new Rectangle();
-
-        } else if(connectorType.equalsIgnoreCase("MYSQL")){
-            return new Square();
-
-        } else if(connectorType.equalsIgnoreCase("CASSANDRA")){
-            return new Square();
-
-        } else if(connectorType.equalsIgnoreCase("REDIS")){
-            return new Square();
-
-        }
-
+    public Connector getConnector(DBType connectorType, DataStore dataStore){
         switch (connectorType){
             case NEO4J:
+                return new Neo4JConnector(dataStore);
             case MONGODB:
-            case :
-            case :
-            case :
-            default:
-                return null;
+                return new MongoDBConnector(dataStore);
+            case MYSQL:
+                return new MySQLConnector(dataStore);
+            case CASSANDRA:
+                return new CassandraConnector(dataStore);
+            case REDIS:
+                return new RedisConnector(dataStore);
         }
 
         return null;

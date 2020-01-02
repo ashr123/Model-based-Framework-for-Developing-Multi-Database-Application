@@ -1,10 +1,8 @@
 package connectors;
 
 import Temp.ConfigObj;
+import dataLayer.configReader.DataStore;
 
 public interface Connector
 {
-	void connect(ConfigObj configObj);
-
-	CollectionAdapter getCollectionAdapterForDB(String DBName, String collectionName);
 }
