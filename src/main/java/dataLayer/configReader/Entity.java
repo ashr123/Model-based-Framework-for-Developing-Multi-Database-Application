@@ -15,15 +15,20 @@ public class Entity
 	final Map<String, String> fields = new LinkedHashMap<>();
 
 	@JsonAnyGetter
-	public Map<String, String> getFields()
+	private Map<String, String> getFields()
 	{
 		return fields;
 	}
 
 	@JsonAnySetter
-	public void addField(String key, String value)
+	private void addField(String key, String value)
 	{
 		fields.put(key, value);
+	}
+
+	public String getFieldDataStoreName(String field)
+	{
+		return fields.get(field);
 	}
 
 	@Override

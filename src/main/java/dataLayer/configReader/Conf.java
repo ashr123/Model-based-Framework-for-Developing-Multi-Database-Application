@@ -12,14 +12,19 @@ public class Conf
 	@JsonProperty("entities")
 	private Map<String, Entity> entities;
 
-	public Object getDataStore(String key)
+	public DataStore getDataStore(String key)
 	{
 		return dataStores.get(key);
 	}
 
-	public Object getEntity(String key)
+	public Entity getEntity(String key)
 	{
 		return entities.get(key);
+	}
+
+	public DataStore getDataStoreFromEntityField(String entity, String field)
+	{
+		return dataStores.get(entities.get(entity).getFieldDataStoreName(field));
 	}
 
 	public Conf checkValidity()
