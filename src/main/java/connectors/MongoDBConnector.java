@@ -18,12 +18,12 @@ public class MongoDBConnector implements Connector
 	{
 	}
 
-	public static Map<String, Object> get(Conf configuration, String entity, String field, Object value)
+	public Map<String, Object> get(String entity, String field, Object value)
 	{
-		DataStore dataStore = configuration.getDataStoreFromEntityField(entity, field);
+		final DataStore dataStore = Conf.getConfiguration().getDataStoreFromEntityField(entity, field);
 		try (MongoClient mongoClient = MongoClients.create("mongodb://" + dataStore.getConnStr()))
 		{
-			Document myDoc = mongoClient.getDatabase(dataStore.getLocation())
+			final Document myDoc = mongoClient.getDatabase(dataStore.getLocation())
 					.getCollection(entity)
 					.find(eq(field, value)).first();
 			if (myDoc != null)
