@@ -1,10 +1,10 @@
 package connectors;
 
-import dataLayer.configReader.DataStore;
+import dataLayer.configReader.Conf;
 
 public class CassandraConnector implements Connector
 {
-	public CassandraConnector(DataStore dataStore)
+	public CassandraConnector(Conf configuration)
 	{
 	}
 }

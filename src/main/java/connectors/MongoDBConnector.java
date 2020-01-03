@@ -14,7 +14,7 @@ import static com.mongodb.client.model.Filters.eq;
 
 public class MongoDBConnector implements Connector
 {
-	public MongoDBConnector(DataStore dataStore)
+	public MongoDBConnector(Conf configuration)
 	{
 	}
 

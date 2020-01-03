@@ -1,10 +1,10 @@
 package connectors;
 
-import dataLayer.configReader.DataStore;
+import dataLayer.configReader.Conf;
 
 public class MySQLConnector implements Connector
 {
-	public MySQLConnector(DataStore dataStore)
+	public MySQLConnector(Conf configuration)
 	{
 	}
 }

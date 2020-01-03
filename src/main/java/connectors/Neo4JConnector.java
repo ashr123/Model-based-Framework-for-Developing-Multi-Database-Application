@@ -1,10 +1,10 @@
 package connectors;
 
-import dataLayer.configReader.DataStore;
+import dataLayer.configReader.Conf;
 
 public class Neo4JConnector implements Connector
 {
-	public Neo4JConnector(DataStore dataStore)
+	public Neo4JConnector(Conf configuration)
 	{
 	}
 }

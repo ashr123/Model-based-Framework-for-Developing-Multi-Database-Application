@@ -1,24 +1,25 @@
 package connectors;
 
+import dataLayer.configReader.Conf;
 import dataLayer.configReader.DBType;
 import dataLayer.configReader.DataStore;
 
 public class ConnectorFactory
 {
-	public Connector getConnector(DBType connectorType, DataStore dataStore)
+	public static Connector getConnector(DBType connectorType, Conf configuration)
 	{
 		switch (connectorType)
 		{
 			case NEO4J:
-				return new Neo4JConnector(dataStore);
+				return new Neo4JConnector(configuration);
 			case MONGODB:
-				return new MongoDBConnector(dataStore);
+				return new MongoDBConnector(configuration);
 			case MYSQL:
-				return new MySQLConnector(dataStore);
+				return new MySQLConnector(configuration);
 			case CASSANDRA:
-				return new CassandraConnector(dataStore);
+				return new CassandraConnector(configuration);
 			case REDIS:
-				return new RedisConnector(dataStore);
+				return new RedisConnector(configuration);
 		}
 		return null;
 	}

@@ -1,10 +1,10 @@
 package connectors;
 
-import dataLayer.configReader.DataStore;
+import dataLayer.configReader.Conf;
 
 public class RedisConnector implements Connector
 {
-	public RedisConnector(DataStore dataStore)
+	public RedisConnector(Conf configuration)
 	{
 	}
 }
