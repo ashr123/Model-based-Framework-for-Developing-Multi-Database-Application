@@ -18,11 +18,11 @@ public class Main
 //					.append("emailAddress", "Alice@Bob.com"));
 //		}
 
-		Conf configuration = Reader.read("/example.json");
+		Conf configuration = Conf.getConfiguration();
 		String entity = "Person";
 		String field = "name";
 		String value = "Alice";
-		System.out.println(Reader.toJson(MongoDBConnector.get(configuration, entity, field, value)));
+		System.out.println(Reader.toJson(MongoDBConnector.get(entity, field, value)));
 
 	}
 }
