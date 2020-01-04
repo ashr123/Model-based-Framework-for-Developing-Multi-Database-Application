@@ -9,9 +9,13 @@ public class Reader
 {
 	private final static ObjectMapper objectMapper = new ObjectMapper();
 
-	public static Conf read(String file) throws IOException
+	private Reader()
 	{
-		return objectMapper.readValue(Reader.class.getResource(file), Conf.class).checkValidity();
+	}
+
+	static Conf read() throws IOException
+	{
+		return objectMapper.readValue(Reader.class.getResource("/configuration.json"), Conf.class).checkValidity();
 	}
 
 	public static String toJson(Object o) throws JsonProcessingException

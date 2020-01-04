@@ -16,6 +16,7 @@ public class Main
 	{
 		try (MongoClient mongoClient = MongoClients.create())
 		{
+			mongoClient.getDatabase("myDB").drop();
 			MongoDatabase mongoDatabase = mongoClient.getDatabase("myDB");
 			MongoCollection<Document> collection = mongoDatabase.getCollection("Person");
 			collection.insertOne(new Document("name", "Alice")
@@ -28,7 +29,7 @@ public class Main
 		String entity = "Person";
 		String field = "name";
 		String value = "Alice";
-		System.out.println(Reader.toJson(MongoDBConnector.get(entity, field, value)));
+		System.out.println(Reader.toJson(new MongoDBConnector(null).get(entity, field, value)));
 
 	}
 }

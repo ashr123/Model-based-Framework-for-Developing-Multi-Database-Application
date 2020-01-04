@@ -4,29 +4,31 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.Map;
 import java.util.Set;
 
+@SuppressWarnings({"ConstantConditions", "unused"})
 public class Conf
 {
 	@JsonIgnore
-	private static Conf configuration;
+	private final static Conf configuration;
 
 	static
 	{
 		try
 		{
-			configuration = Reader.read("/configuration.json");
-		} catch (IOException e)
+			configuration = Reader.read();
+		} catch (final IOException e)
 		{
-			e.printStackTrace();
+			throw new UncheckedIOException(e);
 		}
 	}
 
 	@JsonProperty("dataStores")
-	private Map<String, DataStore> dataStores;
+	private final Map<String, DataStore> dataStores = null;
 	@JsonProperty("entities")
-	private Map<String, Entity> entities;
+	private final Map<String, Entity> entities = null;
 
 	private Conf()
 	{

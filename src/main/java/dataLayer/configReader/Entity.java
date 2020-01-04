@@ -12,7 +12,7 @@ import java.util.Set;
 public class Entity
 {
 	@JsonIgnore
-	final Map<String, String> fields = new LinkedHashMap<>();
+	private final Map<String, String> fields = new LinkedHashMap<>();
 
 	@JsonAnyGetter
 	private Map<String, String> getFields()
