@@ -1,4 +1,5 @@
 package queryAdapters.crud;
 
-public class Or {
+public class Or
+{
 }

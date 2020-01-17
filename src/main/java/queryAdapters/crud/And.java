@@ -3,16 +3,24 @@ package queryAdapters.crud;
 import queryAdapters.dbAdapters.DatabaseAdapter;
 
 import java.util.List;
+import java.util.Map;
 
-public class And extends ComplexQuery {
+public class And extends ComplexQuery
+{
 
-    public And(SimpleQuery... simpleQueries) { super(simpleQueries); }
+	public And(SimpleQuery... simpleQueries)
+	{
+		super(simpleQueries);
+	}
 
-    public static And and(SimpleQuery... simpleQueries)
-    {
-        return new And(simpleQueries);
-    }
+	public static And and(SimpleQuery... simpleQueries)
+	{
+		return new And(simpleQueries);
+	}
 
-    @Override
-    public void accept(DatabaseAdapter databaseAdapter) { databaseAdapter.execute(this); }
+	@Override
+	public List<Map<String, Object>> accept(DatabaseAdapter databaseAdapter)
+	{
+		return databaseAdapter.execute(this);
+	}
 }

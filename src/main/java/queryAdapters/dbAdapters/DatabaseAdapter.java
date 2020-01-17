@@ -12,7 +12,7 @@ public interface DatabaseAdapter
 {
 	void revealQuery(VoidQuery voidQuery);
 
-	List<Map<String,Object>> revealQuery(Query query);
+	List<Map<String, Object>> revealQuery(Query query);
 
 	void executeCreate(CreateSingle createSingle);
 

@@ -7,8 +7,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *  Visitor.
+ * Visitor.
  */
-public interface Query {
-    List<Map<String,Object>> accept(DatabaseAdapter databaseAdapter);
+public interface Query
+{
+	List<Map<String, Object>> accept(DatabaseAdapter databaseAdapter);
 }

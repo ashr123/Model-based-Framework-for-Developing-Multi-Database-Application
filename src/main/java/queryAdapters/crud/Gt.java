@@ -18,7 +18,7 @@ public class Gt extends SimpleQuery
 	}
 
 	@Override
-	public List<Map<String,Object>> accept(DatabaseAdapter databaseAdapter)
+	public List<Map<String, Object>> accept(DatabaseAdapter databaseAdapter)
 	{
 		return databaseAdapter.execute(this);
 	}

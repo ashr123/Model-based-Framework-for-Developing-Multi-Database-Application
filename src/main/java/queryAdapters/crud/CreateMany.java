@@ -20,6 +20,16 @@ public class CreateMany implements VoidQuery
 		this.entities = entities;
 	}
 
+	public static CreateMany createMany(List<Entity> entities)
+	{
+		return new CreateMany(entities);
+	}
+
+	public static CreateMany createMany()
+	{
+		return new CreateMany();
+	}
+
 	public List<Entity> getEntities()
 	{
 		return entities;
@@ -29,16 +39,6 @@ public class CreateMany implements VoidQuery
 	{
 		entities.add(entity);
 		return this;
-	}
-
-	public static CreateMany createMany(List<Entity> entities)
-	{
-		return new CreateMany(entities);
-	}
-
-	public static CreateMany createMany()
-	{
-		return new CreateMany();
 	}
 
 	public void accept(DatabaseAdapter databaseAdapter)

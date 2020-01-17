@@ -12,14 +12,14 @@ public class CreateSingle implements VoidQuery
 		this.entity = entity;
 	}
 
-	public Entity getEntity()
-	{
-		return entity;
-	}
-
 	public static CreateSingle createSingle(Entity entity)
 	{
 		return new CreateSingle(entity);
+	}
+
+	public Entity getEntity()
+	{
+		return entity;
 	}
 
 	public void accept(DatabaseAdapter databaseAdapter)
