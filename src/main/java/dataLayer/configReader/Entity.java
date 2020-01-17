@@ -12,7 +12,20 @@ import java.util.Set;
 public class Entity
 {
 	@JsonIgnore
-	private final Map<String, String> fields = new LinkedHashMap<>();
+	private final String entityName;
+
+	@JsonIgnore
+	private final Map<String, String> fields;
+
+	public Entity() {
+		entityName = null;
+		fields = new LinkedHashMap<>();
+	}
+
+	public Entity(String entityName, Map<String, String> fields) {
+		this.entityName = entityName;
+		this.fields = fields;
+	}
 
 	@JsonAnyGetter
 	private Map<String, String> getFields()

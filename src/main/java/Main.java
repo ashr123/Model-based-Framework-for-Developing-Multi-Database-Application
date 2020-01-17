@@ -7,6 +7,9 @@ import connectors.MongoDBConnector;
 import dataLayer.configReader.Conf;
 import dataLayer.configReader.Reader;
 import org.bson.Document;
+import queryAdapters.crud.CreateQuery;
+import queryAdapters.dbAdapters.CassandraAdapter;
+import queryAdapters.dbAdapters.MongoDBAdapter;
 
 import java.io.IOException;
 
@@ -30,5 +33,7 @@ public class Main
 		String value = "Alice";
 		System.out.println(Reader.toJson(new MongoDBConnector(null).get(entity, field, value)));
 
+		MongoDBAdapter mongoDBAdapter = new MongoDBAdapter();
+		mongoDBAdapter.revealQuery(new CreateQuery());
 	}
 }
