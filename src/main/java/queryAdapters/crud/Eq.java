@@ -2,6 +2,9 @@ package queryAdapters.crud;
 
 import queryAdapters.dbAdapters.DatabaseAdapter;
 
+import java.util.List;
+import java.util.Map;
+
 public class Eq extends SimpleQuery
 {
 	public Eq(String entityName, String fieldName, Object value)
@@ -15,8 +18,8 @@ public class Eq extends SimpleQuery
 	}
 
 	@Override
-	public void accept(DatabaseAdapter databaseAdapter)
+	public List<Map<String,Object>> accept(DatabaseAdapter databaseAdapter)
 	{
-		databaseAdapter.execute(this);
+		return databaseAdapter.execute(this);
 	}
 }

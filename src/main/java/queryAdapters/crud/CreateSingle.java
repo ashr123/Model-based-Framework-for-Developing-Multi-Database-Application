@@ -3,7 +3,7 @@ package queryAdapters.crud;
 import dataLayer.configReader.Entity;
 import queryAdapters.dbAdapters.DatabaseAdapter;
 
-public class CreateSingle implements Query
+public class CreateSingle implements VoidQuery
 {
 	private final Entity entity;
 
@@ -24,6 +24,6 @@ public class CreateSingle implements Query
 
 	public void accept(DatabaseAdapter databaseAdapter)
 	{
-		databaseAdapter.execute(this);
+		databaseAdapter.executeCreate(this);
 	}
 }

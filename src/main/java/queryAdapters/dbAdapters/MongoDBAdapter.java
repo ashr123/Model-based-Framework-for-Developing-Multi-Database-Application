@@ -18,134 +18,113 @@ import static queryAdapters.crud.CreateSingle.createSingle;
 /**
  * Concrete element
  */
-public class MongoDBAdapter implements DatabaseAdapter
-{
-	private final static String PREFIX = "mongodb://";
+public class MongoDBAdapter implements DatabaseAdapter {
+    private final static String PREFIX = "mongodb://";
 
-	public void revealQuery(Query query)
-	{
-		query.accept(this);
-	}
+    public void revealQuery(VoidQuery voidQuery) {
+        voidQuery.accept(this);
+    }
 
-	private List<Map<String, Object>> getStringObjectMap(FindIterable<Document> myDoc)
-	{
-		if (myDoc != null)
-		{
-			final List<Map<String, Object>> output = new LinkedList<>();
-			for (Document document : myDoc)
-			{
-				final Set<Map.Entry<String, Object>> result = document.entrySet();
-				final Map<String, Object> map = new LinkedHashMap<>(result.size());
-				for (Map.Entry<String, Object> entry : result)
-					map.put(entry.getKey(), entry.getKey().equals("_id") ? entry.getValue().toString() : entry.getValue());
-				output.add(map);
-			}
-			return output;
-		}
-		return null;
-	}
+    public List<Map<String, Object>> revealQuery(Query query) {
+        return query.accept(this);
+    }
 
-	private FindIterable<Document> query(SimpleQuery simpleQuery, Bson filter)
-	{
-		final DataStore dataStore = Conf.getConfiguration().getDataStoreFromEntityField(simpleQuery.getEntityName(), simpleQuery.getFieldName());
-		try (MongoClient mongoClient = MongoClients.create(PREFIX + dataStore.getConnStr()))
-		{
-			return mongoClient.getDatabase(dataStore.getLocation())
-					.getCollection(simpleQuery.getEntityName())
-					.find(filter);
-		}
-	}
+    private List<Map<String, Object>> getStringObjectMap(FindIterable<Document> myDoc) {
+        if (myDoc != null) {
+            final List<Map<String, Object>> output = new LinkedList<>();
+            for (Document document : myDoc) {
+                final Set<Map.Entry<String, Object>> result = document.entrySet();
+                final Map<String, Object> map = new LinkedHashMap<>(result.size());
+                for (Map.Entry<String, Object> entry : result)
+                    map.put(entry.getKey(), entry.getKey().equals("_id") ? entry.getValue().toString() : entry.getValue());
+                output.add(map);
+            }
+            return output;
+        }
+        return null;
+    }
 
-	private Map<DataStore, Document> groupFieldsByDataStore(Entity entity)
-	{
-		final Map<DataStore, Document> locationDocumentMap = new LinkedHashMap<>();
-		entity.getFieldsValues()
-				.forEach((field, value) ->
-				{
-					final DataStore dataStoreFromEntityField = Conf.getConfiguration().getDataStoreFromEntityField(entity.getEntityName(), field);
-					if (dataStoreFromEntityField != null)
-						locationDocumentMap.computeIfAbsent(dataStoreFromEntityField, dataStore -> new Document())
-								.append(field, value);
-					else
-						throw new NullPointerException("Field " + field + "doesn't exists in entity " + entity.getEntityName());
-				});
-		return locationDocumentMap;
-	}
+    private FindIterable<Document> query(SimpleQuery simpleQuery, Bson filter) {
+        final DataStore dataStore = Conf.getConfiguration().getDataStoreFromEntityField(simpleQuery.getEntityName(), simpleQuery.getFieldName());
+        try (MongoClient mongoClient = MongoClients.create(PREFIX + dataStore.getConnStr())) {
+            return mongoClient.getDatabase(dataStore.getLocation())
+                    .getCollection(simpleQuery.getEntityName())
+                    .find(filter);
+        }
+    }
 
-	public void execute(CreateSingle createSingle)
-	{
-		groupFieldsByDataStore(createSingle.getEntity())
-				.forEach((dataStore, document) ->
-				{
-					try (MongoClient mongoClient = MongoClients.create(PREFIX + dataStore.getConnStr()))
-					{
-						mongoClient.getDatabase(dataStore.getLocation())
-								.getCollection(createSingle.getEntity().getEntityName())
-								.insertOne(document);
-					}
-				});
-	}
+    private Map<DataStore, Document> groupFieldsByDataStore(Entity entity) {
+        final Map<DataStore, Document> locationDocumentMap = new LinkedHashMap<>();
+        entity.getFieldsValues()
+                .forEach((field, value) ->
+                {
+                    final DataStore dataStoreFromEntityField = Conf.getConfiguration().getDataStoreFromEntityField(entity.getEntityName(), field);
+                    if (dataStoreFromEntityField != null)
+                        locationDocumentMap.computeIfAbsent(dataStoreFromEntityField, dataStore -> new Document())
+                                .append(field, value);
+                    else
+                        throw new NullPointerException("Field " + field + "doesn't exists in entity " + entity.getEntityName());
+                });
+        return locationDocumentMap;
+    }
 
-	@Override
-	public void execute(CreateMany createMany)
-	{
-		createMany.getEntities().forEach(entity -> execute(createSingle(entity)));
-	}
+    public void executeCreate(CreateSingle createSingle) {
+        groupFieldsByDataStore(createSingle.getEntity())
+                .forEach((dataStore, document) ->
+                {
+                    try (MongoClient mongoClient = MongoClients.create(PREFIX + dataStore.getConnStr())) {
+                        mongoClient.getDatabase(dataStore.getLocation())
+                                .getCollection(createSingle.getEntity().getEntityName())
+                                .insertOne(document);
+                    }
+                });
+    }
 
-	@Override
-	public List<Map<String, Object>> execute(Eq eq)
-	{
-		return getStringObjectMap(query(eq, eq(eq.getFieldName(), eq.getValue())));
-	}
+    @Override
+    public void executeCreate(CreateMany createMany) {
+        createMany.getEntities().forEach(entity -> executeCreate(createSingle(entity)));
+    }
 
-	@Override
-	public List<Map<String, Object>> execute(Ne ne)
-	{
-		return getStringObjectMap(query(ne, ne(ne.getFieldName(), ne.getValue())));
+    @Override
+    public List<Map<String, Object>> execute(Eq eq) {
+        return getStringObjectMap(query(eq, eq(eq.getFieldName(), eq.getValue())));
+    }
 
-	}
+    @Override
+    public List<Map<String, Object>> execute(Ne ne) {
+        return getStringObjectMap(query(ne, ne(ne.getFieldName(), ne.getValue())));
 
-	@Override
-	public List<Map<String, Object>> execute(Gt gt)
-	{
-		return getStringObjectMap(query(gt, gt(gt.getFieldName(), gt.getValue())));
-	}
+    }
 
-	@Override
-	public List<Map<String, Object>> execute(Lt lt)
-	{
-		return getStringObjectMap(query(lt, lt(lt.getFieldName(), lt.getValue())));
-	}
+    @Override
+    public List<Map<String, Object>> execute(Gt gt) {
+        return getStringObjectMap(query(gt, gt(gt.getFieldName(), gt.getValue())));
+    }
 
-	@Override
-	public List<Map<String, Object>> execute(Gte gte)
-	{
-		return getStringObjectMap(query(gte, gte(gte.getFieldName(), gte.getValue())));
-	}
+    @Override
+    public List<Map<String, Object>> execute(Lt lt) {
+        return getStringObjectMap(query(lt, lt(lt.getFieldName(), lt.getValue())));
+    }
 
-	@Override
-	public List<Map<String, Object>> execute(Lte lte)
-	{
-		return getStringObjectMap(query(lte, lte(lte.getFieldName(), lte.getValue())));
-	}
+    @Override
+    public List<Map<String, Object>> execute(Gte gte) {
+        return getStringObjectMap(query(gte, gte(gte.getFieldName(), gte.getValue())));
+    }
 
-	public void execute(CreateQuery createQuery)
-	{
-		System.out.println("Mongo Create Query execute");
-	}
+    @Override
+    public List<Map<String, Object>> execute(Lte lte) {
+        return getStringObjectMap(query(lte, lte(lte.getFieldName(), lte.getValue())));
+    }
 
-	public void execute(ReadQuery readQuery)
-	{
-		System.out.println("Mongo Update Query execute");
-	}
+    @Override
+    public List<Map<String, Object>> execute(And and) {
+        Arrays.stream(and.getComplexQuery())
+                .map(simpleQuery -> simpleQuery.accept(MongoDBAdapter.this))
+                .reduce((acc, map) -> {
+                    acc.retainAll(map);
+                    return acc;
+                });
+        return null;
+    }
 
-	public void execute(UpdateQuery updateQuery)
-	{
-		System.out.println("Mongo Update Query execute");
-	}
-
-	public void execute(DeleteQuery deleteQuery)
-	{
-		System.out.println("Mongo Delete Query execute");
-	}
 }

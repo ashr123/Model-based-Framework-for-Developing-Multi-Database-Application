@@ -12,11 +12,6 @@ public abstract class SimpleQuery implements Query
 		this.value = value;
 	}
 
-	public static Eq eq(String entityName, String fieldName, Object value)
-	{
-		return new Eq(entityName, fieldName, value);
-	}
-
 	public String getEntityName()
 	{
 		return entityName;

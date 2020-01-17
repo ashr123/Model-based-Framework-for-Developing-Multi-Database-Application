@@ -10,19 +10,13 @@ import java.util.Map;
  */
 public interface DatabaseAdapter
 {
-	void revealQuery(Query query);
+	void revealQuery(VoidQuery voidQuery);
 
-	void execute(CreateQuery createQuery);
+	List<Map<String,Object>> revealQuery(Query query);
 
-	void execute(ReadQuery readQuery);
+	void executeCreate(CreateSingle createSingle);
 
-	void execute(UpdateQuery updateQuery);
-
-	void execute(DeleteQuery deleteQuery);
-
-	void execute(CreateSingle createSingle);
-
-	void execute(CreateMany createMany);
+	void executeCreate(CreateMany createMany);
 
 	List<Map<String, Object>> execute(Eq eq);
 
@@ -35,4 +29,6 @@ public interface DatabaseAdapter
 	List<Map<String, Object>> execute(Gte gte);
 
 	List<Map<String, Object>> execute(Lte lte);
+
+	List<Map<String, Object>> execute(And and);
 }

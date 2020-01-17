@@ -6,7 +6,7 @@ import queryAdapters.dbAdapters.DatabaseAdapter;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CreateMany implements Query
+public class CreateMany implements VoidQuery
 {
 	private final List<Entity> entities;
 
@@ -43,6 +43,6 @@ public class CreateMany implements Query
 
 	public void accept(DatabaseAdapter databaseAdapter)
 	{
-		databaseAdapter.execute(this);
+		databaseAdapter.executeCreate(this);
 	}
 }
