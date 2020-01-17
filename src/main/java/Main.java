@@ -17,15 +17,14 @@ public class Main
 		try (MongoClient mongoClient = MongoClients.create())
 		{
 			mongoClient.getDatabase("myDB").drop();
-			MongoDatabase mongoDatabase = mongoClient.getDatabase("myDB");
-			MongoCollection<Document> collection = mongoDatabase.getCollection("Person");
-			collection.insertOne(new Document("name", "Alice")
+			mongoClient.getDatabase("myDB")
+					.getCollection("Person")
+					.insertOne(new Document("name", "Alice")
 					.append("age", 18)
 					.append("phoneNumber", "0504563434")
 					.append("emailAddress", "Alice@Bob.com"));
 		}
 
-		Conf configuration = Conf.getConfiguration();
 		String entity = "Person";
 		String field = "name";
 		String value = "Alice";
