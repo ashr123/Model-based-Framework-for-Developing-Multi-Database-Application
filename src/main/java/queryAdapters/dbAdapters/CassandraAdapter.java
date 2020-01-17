@@ -27,4 +27,10 @@ public class CassandraAdapter implements DatabaseAdapter {
     public void execute(DeleteQuery deleteQuery) {
         System.out.println("Cassandra Delete Query execute");
     }
+
+    @Override
+    public void execute(CreateSingle createSingle)
+    {
+
+    }
 }

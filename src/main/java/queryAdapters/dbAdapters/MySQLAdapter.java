@@ -25,4 +25,10 @@ public class MySQLAdapter implements DatabaseAdapter {
     public void execute(DeleteQuery deleteQuery) {
         System.out.println("MySQL Delete Query execute");
     }
+
+    @Override
+    public void execute(CreateSingle createSingle)
+    {
+
+    }
 }

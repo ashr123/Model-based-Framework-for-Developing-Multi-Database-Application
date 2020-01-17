@@ -4,13 +4,18 @@
 	  "type": "mongodb",
 	  "connStr": "localhost",
 	  "location": "myDB"
+	},
+	"mongo2": {
+	  "type": "mongodb",
+	  "connStr": "localhost",
+	  "location": "myDB"
 	}
   },
   "entities": {
 	"Person": {
 	  "name": "mongo1",
-	  "age": "mongo1",
-	  "phoneNumber": "mongo1",
+	  "age": "mongo2",
+	  "phoneNumber": "mongo2",
 	  "emailAddress": "mongo1",
 	  "livesAt": "mongo1"
 	}

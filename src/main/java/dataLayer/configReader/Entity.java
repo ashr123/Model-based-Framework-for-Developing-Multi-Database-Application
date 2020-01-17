@@ -15,46 +15,68 @@ public class Entity
 	private final String entityName;
 
 	@JsonIgnore
-	private final Map<String, String> fields;
+	private final Map<String, String> fieldsLocations;
 
-	public Entity() {
+	@JsonIgnore
+	private final Map<String, Object> fieldsValues;
+
+	private Entity() {
 		entityName = null;
-		fields = new LinkedHashMap<>();
+		fieldsValues = null;
+		fieldsLocations = new LinkedHashMap<>();
 	}
 
-	public Entity(String entityName, Map<String, String> fields) {
+	public Entity(String entityName, Map<String, Object> fieldsValues) {
+		fieldsLocations = null;
 		this.entityName = entityName;
-		this.fields = fields;
+		this.fieldsValues = fieldsValues;
+	}
+
+	public Entity append(String field, Object value)
+	{
+		assert fieldsValues != null;
+		fieldsValues.put(field, value);
+		return this;
+	}
+
+	public String getEntityName()
+	{
+		return entityName;
+	}
+
+	public Map<String, Object> getFieldsValues()
+	{
+		return fieldsValues;
 	}
 
 	@JsonAnyGetter
-	private Map<String, String> getFields()
+	private Map<String, String> getFieldsLocations()
 	{
-		return fields;
+		return fieldsLocations;
 	}
 
 	@JsonAnySetter
-	private void addField(String key, String value)
+	private void addFieldLocation(String key, String value)
 	{
-		fields.put(key, value);
+		fieldsLocations.put(key, value);
 	}
 
 	public String getFieldDataStoreName(String field)
 	{
-		return fields.get(field);
+		return fieldsLocations.get(field);
 	}
 
 	@Override
 	public String toString()
 	{
 		return "Entity{" +
-				"fields=" + fields +
+				"fieldsLocations=" + fieldsLocations +
 				'}';
 	}
 
 	public void validate(Set<String> keySet)
 	{
-		if (!keySet.containsAll(fields.values()))
-			throw new InputMismatchException("Not all fields locations exists as DataStores!!");
+		if (!keySet.containsAll(fieldsLocations.values()))
+			throw new InputMismatchException("Not all fieldsLocations locations exists as DataStores!!");
 	}
 }

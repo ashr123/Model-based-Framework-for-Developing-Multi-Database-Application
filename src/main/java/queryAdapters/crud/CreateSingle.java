@@ -1,14 +1,29 @@
 package queryAdapters.crud;
 
+import dataLayer.configReader.Entity;
 import queryAdapters.dbAdapters.DatabaseAdapter;
 
-public class CreateSingle implements Query {
+public class CreateSingle implements Query
+{
+	private final Entity entity;
 
-    public static CreateSingle createSingle(String entityName, String) {
-        return new CreateSingle();
-    }
+	private CreateSingle(Entity entity)
+	{
+		this.entity = entity;
+	}
 
-    public void accept(DatabaseAdapter databaseAdapter) {
-        databaseAdapter.execute(this);
-    }
+	public Entity getEntity()
+	{
+		return entity;
+	}
+
+	public static CreateSingle createSingle(Entity entity)
+	{
+		return new CreateSingle(entity);
+	}
+
+	public void accept(DatabaseAdapter databaseAdapter)
+	{
+		databaseAdapter.execute(this);
+	}
 }

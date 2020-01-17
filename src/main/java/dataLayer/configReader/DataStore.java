@@ -2,6 +2,8 @@ package dataLayer.configReader;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Objects;
+
 public class DataStore
 {
 	@JsonProperty("type")
@@ -24,6 +26,26 @@ public class DataStore
 	public String getLocation()
 	{
 		return location;
+	}
+
+	@SuppressWarnings("ConstantConditions")
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		DataStore dataStore = (DataStore) o;
+		return type == dataStore.type &&
+				connStr.equals(dataStore.connStr) &&
+				location.equals(dataStore.location);
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return Objects.hash(type, connStr, location);
 	}
 
 	@Override

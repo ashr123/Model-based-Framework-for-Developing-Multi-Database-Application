@@ -25,7 +25,8 @@ public class MongoDBConnector implements Connector
 		{
 			final Document myDoc = mongoClient.getDatabase(dataStore.getLocation())
 					.getCollection(entity)
-					.find(eq(field, value)).first();
+					.find(eq(field, value))
+					.first();
 			if (myDoc != null)
 			{
 				Set<Map.Entry<String, Object>> result = myDoc.entrySet();

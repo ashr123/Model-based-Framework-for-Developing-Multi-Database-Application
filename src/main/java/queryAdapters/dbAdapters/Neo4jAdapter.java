@@ -25,4 +25,10 @@ public class Neo4jAdapter implements DatabaseAdapter {
     public void execute(DeleteQuery deleteQuery) {
         System.out.println("Neo4j Delete Query execute");
     }
+
+    @Override
+    public void execute(CreateSingle createSingle)
+    {
+
+    }
 }

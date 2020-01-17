@@ -1,10 +1,7 @@
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-import connectors.ConnectorFactory;
+import com.mongodb.client.model.UpdateOptions;
 import connectors.MongoDBConnector;
-import dataLayer.configReader.Conf;
 import dataLayer.configReader.Reader;
 import org.bson.Document;
 import queryAdapters.crud.CreateQuery;
@@ -12,6 +9,8 @@ import queryAdapters.dbAdapters.CassandraAdapter;
 import queryAdapters.dbAdapters.MongoDBAdapter;
 
 import java.io.IOException;
+
+import static com.mongodb.client.model.Filters.eq;
 
 public class Main
 {
@@ -23,9 +22,9 @@ public class Main
 			mongoClient.getDatabase("myDB")
 					.getCollection("Person")
 					.insertOne(new Document("name", "Alice")
-					.append("age", 18)
-					.append("phoneNumber", "0504563434")
-					.append("emailAddress", "Alice@Bob.com"));
+							.append("age", 18)
+							.append("phoneNumber", "0504563434")
+							.append("emailAddress", "Alice@Bob.com"));
 		}
 
 		String entity = "Person";

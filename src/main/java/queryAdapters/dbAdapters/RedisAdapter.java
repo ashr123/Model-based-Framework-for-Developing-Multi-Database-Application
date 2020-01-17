@@ -25,4 +25,10 @@ public class RedisAdapter implements DatabaseAdapter {
     public void execute(DeleteQuery deleteQuery) {
         System.out.println("Redis Delete Query execute");
     }
+
+    @Override
+    public void execute(CreateSingle createSingle)
+    {
+
+    }
 }
