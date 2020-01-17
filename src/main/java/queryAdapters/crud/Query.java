@@ -1,6 +1,7 @@
 package queryAdapters.crud;
 
-import queryAdapters.dbAdapters.*;
+
+import queryAdapters.dbAdapters.DatabaseAdapter;
 
 /**
  *  Visitor.

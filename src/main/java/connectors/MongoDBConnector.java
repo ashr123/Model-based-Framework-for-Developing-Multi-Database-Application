@@ -20,23 +20,23 @@ public class MongoDBConnector implements Connector
 
 	public Map<String, Object> get(String entity, String field, Object value)
 	{
-		final DataStore dataStore = Conf.getConfiguration().getDataStoreFromEntityField(entity, field);
-		try (MongoClient mongoClient = MongoClients.create("mongodb://" + dataStore.getConnStr()))
-		{
-			final Document myDoc = mongoClient.getDatabase(dataStore.getLocation())
-					.getCollection(entity)
-					.find(eq(field, value))
-					.first();
-			if (myDoc != null)
-			{
-				Set<Map.Entry<String, Object>> result = myDoc.entrySet();
-				Map<String, Object> output = new LinkedHashMap<>(result.size());
-				for (Map.Entry<String, Object> entry : result)
-					output.put(entry.getKey(), entry.getKey().equals("_id") ? entry.getValue().toString() : entry.getValue());
-				return output;
-			}
+//		final DataStore dataStore = Conf.getConfiguration().getDataStoreFromEntityField(entity, field);
+//		try (MongoClient mongoClient = MongoClients.create("mongodb://" + dataStore.getConnStr()))
+//		{
+//			final Document myDoc = mongoClient.getDatabase(dataStore.getLocation())
+//					.getCollection(entity)
+//					.find(eq(field, value))
+//					.first();
+//			if (myDoc != null)
+//			{
+//				Set<Map.Entry<String, Object>> result = myDoc.entrySet();
+//				Map<String, Object> output = new LinkedHashMap<>(result.size());
+//				for (Map.Entry<String, Object> entry : result)
+//					output.put(entry.getKey(), entry.getKey().equals("_id") ? entry.getValue().toString() : entry.getValue());
+//				return output;
+//			}
 			return null;
-		}
+//		}
 	}
 
 //    /**

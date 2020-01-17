@@ -1,6 +1,6 @@
 package filters;
 
-public class gt<Titem> implements Filter<Titem>
+public class gt<Titem> implements Filter
 {
 	final String field;
 	final Titem value;

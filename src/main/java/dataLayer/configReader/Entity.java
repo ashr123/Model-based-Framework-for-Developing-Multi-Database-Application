@@ -32,11 +32,27 @@ public class Entity
 		this.fieldsValues = fieldsValues;
 	}
 
+	private Entity(String entityName) {
+		fieldsLocations = null;
+		this.entityName = entityName;
+		this.fieldsValues = new LinkedHashMap<>();
+	}
+
 	public Entity append(String field, Object value)
 	{
 		assert fieldsValues != null;
 		fieldsValues.put(field, value);
 		return this;
+	}
+
+	private static Entity entity(String entityName, Map<String, Object> fieldsValues)
+	{
+		return new Entity(entityName, fieldsValues);
+	}
+
+	public static Entity entity(String entityName)
+	{
+		return new Entity(entityName);
 	}
 
 	public String getEntityName()
