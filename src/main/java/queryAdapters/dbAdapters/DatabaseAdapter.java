@@ -1,13 +1,14 @@
 package queryAdapters.dbAdapters;
 
-import queryAdapters.crud.CreateQuery;
-import queryAdapters.crud.Query;
-import queryAdapters.crud.ReadQuery;
-import queryAdapters.crud.UpdateQuery;
+import queryAdapters.crud.*;
 
 /**
  * Element
  */
 public interface DatabaseAdapter {
-    void accept(Query query);
+    void revealQuery(Query query);
+    void execute(CreateQuery createQuery);
+    void execute(ReadQuery readQuery);
+    void execute(UpdateQuery updateQuery);
+    void execute(DeleteQuery deleteQuery);
 }
