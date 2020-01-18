@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import static dataLayer.queryAdapters.DBRead.read;
+import static dataLayer.queryAdapters.Read.read;
 import static dataLayer.queryAdapters.crud.Eq.eq;
 import static dataLayer.queryAdapters.crud.Gte.gte;
 import static dataLayer.queryAdapters.crud.Lte.lte;

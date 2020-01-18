@@ -1,11 +1,7 @@
 package dataLayer.queryAdapters;
 
-import dataLayer.queryAdapters.crud.VoidQuery;
 import dataLayer.queryAdapters.dbAdapters.MongoDBAdapter;
 
-
-public class DBCreate {
+public class Update {
     private static final MongoDBAdapter MONGO_DB_ADAPTER = new MongoDBAdapter();
-
-    public static void create(VoidQuery voidQuery) { MONGO_DB_ADAPTER.revealQuery(voidQuery); }
 }

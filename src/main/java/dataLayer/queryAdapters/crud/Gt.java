@@ -1,6 +1,7 @@
 package dataLayer.queryAdapters.crud;
 
 import dataLayer.queryAdapters.dbAdapters.DatabaseAdapter;
+import org.bson.conversions.Bson;
 
 import java.util.List;
 import java.util.Map;
@@ -21,5 +22,16 @@ public class Gt extends SimpleQuery
 	public List<Map<String, Object>> accept(DatabaseAdapter databaseAdapter)
 	{
 		return databaseAdapter.execute(this);
+	}
+
+	@Override
+	public String toString()
+	{
+		return "Gt{" + super.toString() + '}';
+	}
+
+	public Bson generateFromMongoDB()
+	{
+		return com.mongodb.client.model.Filters.gt(getFieldName(), getValue());
 	}
 }

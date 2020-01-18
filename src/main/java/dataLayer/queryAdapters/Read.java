@@ -6,7 +6,7 @@ import dataLayer.queryAdapters.dbAdapters.MongoDBAdapter;
 import java.util.List;
 import java.util.Map;
 
-public class DBRead
+public class Read
 {
 	private static final MongoDBAdapter MONGO_DB_ADAPTER = new MongoDBAdapter();
 

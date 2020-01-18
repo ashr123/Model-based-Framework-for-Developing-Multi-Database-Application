@@ -1,6 +1,7 @@
 package dataLayer.queryAdapters.crud;
 
 import dataLayer.queryAdapters.dbAdapters.DatabaseAdapter;
+import org.bson.conversions.Bson;
 
 import java.util.List;
 import java.util.Map;
@@ -30,5 +31,10 @@ public class All extends SimpleQuery
 				"entityName='" + getEntityName() + '\'' +
 				", value=" + getValue()
 				+ '}';
+	}
+
+	public Bson generateFromMongoDB()
+	{
+		throw new UnsupportedOperationException("Not implemented yet.");
 	}
 }
