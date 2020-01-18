@@ -15,6 +15,9 @@ import java.util.List;
 import java.util.Map;
 
 import static dataLayer.queryAdapters.DBRead.read;
+import static dataLayer.queryAdapters.crud.Eq.eq;
+import static dataLayer.queryAdapters.crud.Gte.gte;
+import static dataLayer.queryAdapters.crud.Lte.lte;
 import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -86,7 +89,7 @@ class MongoDBAdapterTest
 	@Test
 	void testExecuteEq()
 	{
-		List<Map<String, Object>> result = read(Eq.eq("Person", "name", "Roy"));
+		List<Map<String, Object>> result = read(eq("Person", "name", "Roy"));
 		boolean hasRoy = result.get(0).get("name").equals("Roy") &&
 				result.get(0).get("age").equals(27) &&
 				result.get(0).get("phoneNumber").equals("0546815181") &&
@@ -181,7 +184,7 @@ class MongoDBAdapterTest
 	@Test
 	void testExecuteGte()
 	{
-		List<Map<String, Object>> result = read(Gte.gte("Person", "age", 18));
+		List<Map<String, Object>> result = read(gte("Person", "age", 18));
 		boolean hasRoy = result.get(0).get("name").equals("Roy") &&
 				result.get(0).get("age").equals(27) &&
 				result.get(0).get("phoneNumber").equals("0546815181") &&
@@ -199,7 +202,7 @@ class MongoDBAdapterTest
 		assertTrue(hasKarin, "Karin's age is >= 18.");
 
 
-		result = read(Gte.gte("Person", "age", 26));
+		result = read(gte("Person", "age", 26));
 		hasRoy = result.get(0).get("name").equals("Roy") &&
 				result.get(0).get("age").equals(27) &&
 				result.get(0).get("phoneNumber").equals("0546815181") &&
@@ -211,14 +214,14 @@ class MongoDBAdapterTest
 				result.get(1).get("emailAddress").equals("davidz@post.bgu.ac.il");
 		assertTrue(hasKarin, "Karin's age is >= 26.");
 
-		result = read(Gte.gte("Person", "age", 30));
+		result = read(gte("Person", "age", 30));
 		assertTrue(result.isEmpty(), "Result should be empty all of the people ages are < 30.");
 	}
 
 	@Test
 	void testExecuteLte()
 	{
-		List<Map<String, Object>> result = read(Lte.lte("Person", "age", 30));
+		List<Map<String, Object>> result = read(lte("Person", "age", 30));
 		boolean hasRoy = result.get(0).get("name").equals("Roy") &&
 				result.get(0).get("age").equals(27) &&
 				result.get(0).get("phoneNumber").equals("0546815181") &&
@@ -235,7 +238,7 @@ class MongoDBAdapterTest
 				result.get(2).get("emailAddress").equals("davidz@post.bgu.ac.il");
 		assertTrue(hasKarin, "Karin's age is <= 30.");
 
-		result = read(Lte.lte("Person", "age", 26));
+		result = read(lte("Person", "age", 26));
 		hasYossi = result.get(0).get("name").equals("Yossi") &&
 				result.get(0).get("age").equals(22) &&
 				result.get(0).get("phoneNumber").equals("0587158627") &&
@@ -247,7 +250,7 @@ class MongoDBAdapterTest
 				result.get(1).get("emailAddress").equals("davidz@post.bgu.ac.il");
 		assertTrue(hasKarin, "Karin's age is <= 26.");
 
-		result = read(Lte.lte("Person", "age", 18));
+		result = read(lte("Person", "age", 18));
 		assertTrue(result.isEmpty(), "Result should be empty all of the people ages are > 18.");
 	}
 
