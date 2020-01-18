@@ -11,6 +11,7 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.mongodb.client.model.Filters.*;
 import static dataLayer.queryAdapters.crud.CreateSingle.createSingle;
@@ -143,7 +144,7 @@ public class MongoDBAdapter implements DatabaseAdapter
 	public List<Map<String, Object>> execute(And and)
 	{
 		return Arrays.stream(and.getComplexQuery())
-				.map(query -> query.accept(MongoDBAdapter.this))
+				.map(MongoDBAdapter.this::revealQuery)
 				.reduce((acc, map) ->
 				{
 					acc.retainAll(map);
@@ -152,4 +153,13 @@ public class MongoDBAdapter implements DatabaseAdapter
 				.orElse(new LinkedList<>());
 	}
 
+	@Override
+	public List<Map<String, Object>> execute(Or or)
+	{
+		return Arrays.stream(or.getComplexQuery())
+				.map(MongoDBAdapter.this::revealQuery)
+				.flatMap(Collection::stream)
+				.distinct()
+				.collect(Collectors.toList());
+	}
 }

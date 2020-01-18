@@ -19,7 +19,6 @@ import static java.util.Arrays.asList;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class MongoDBAdapterTest
 {
-
 	final MongoDBAdapter mongoDBAdapter = new MongoDBAdapter();
 
 	@BeforeAll

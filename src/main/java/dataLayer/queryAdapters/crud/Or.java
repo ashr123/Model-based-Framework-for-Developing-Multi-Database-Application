@@ -1,5 +1,25 @@
 package dataLayer.queryAdapters.crud;
 
-public class Or
+import dataLayer.queryAdapters.dbAdapters.DatabaseAdapter;
+
+import java.util.List;
+import java.util.Map;
+
+public class Or extends ComplexQuery
 {
+	public Or(Query... queries)
+	{
+		super(queries);
+	}
+
+	public static Or or(Query... queries)
+	{
+		return new Or(queries);
+	}
+
+	@Override
+	public List<Map<String, Object>> accept(DatabaseAdapter databaseAdapter)
+	{
+		return databaseAdapter.execute(this);
+	}
 }

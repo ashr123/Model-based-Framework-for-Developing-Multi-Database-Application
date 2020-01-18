@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class Eq extends SimpleQuery
 {
-	public Eq(String entityName, String fieldName, Object value)
+	private Eq(String entityName, String fieldName, Object value)
 	{
 		super(entityName, fieldName, value);
 	}

@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class Lt extends SimpleQuery
 {
-	public Lt(String entityName, String fieldName, Object value)
+	private Lt(String entityName, String fieldName, Object value)
 	{
 		super(entityName, fieldName, value);
 	}

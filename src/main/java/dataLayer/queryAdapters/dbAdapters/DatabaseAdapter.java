@@ -31,4 +31,6 @@ public interface DatabaseAdapter
 	List<Map<String, Object>> execute(Lte lte);
 
 	List<Map<String, Object>> execute(And and);
+
+	List<Map<String, Object>> execute(Or or);
 }

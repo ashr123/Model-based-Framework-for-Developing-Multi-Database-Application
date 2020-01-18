@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class Gte extends SimpleQuery
 {
-	public Gte(String entityName, String fieldName, Object value)
+	private Gte(String entityName, String fieldName, Object value)
 	{
 		super(entityName, fieldName, value);
 	}

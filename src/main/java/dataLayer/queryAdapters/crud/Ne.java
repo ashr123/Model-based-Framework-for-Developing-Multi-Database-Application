@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class Ne extends SimpleQuery
 {
-	public Ne(String entityName, String fieldName, Object value)
+	private Ne(String entityName, String fieldName, Object value)
 	{
 		super(entityName, fieldName, value);
 	}
