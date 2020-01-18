@@ -8,16 +8,16 @@
 	"mongo2": {
 	  "type": "mongodb",
 	  "connStr": "localhost",
-	  "location": "myDB"
+	  "location": "TestDB"
 	}
   },
   "entities": {
 	"Person": {
-	  "name": "mongo1",
+	  "name": "mongo2",
 	  "age": "mongo2",
 	  "phoneNumber": "mongo2",
-	  "emailAddress": "mongo1",
-	  "livesAt": "mongo1"
+	  "emailAddress": "mongo2",
+	  "livesAt": "mongo2"
 	}
   }
 }
