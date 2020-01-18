@@ -26,7 +26,7 @@ class MongoDBAdapterTest {
     final MongoDBAdapter mongoDBAdapter = new MongoDBAdapter();
 
     private List<Map<String, Object>> removeId(List<Map<String, Object>> input) {
-        input.forEach(x -> x.remove("_id"));
+        input.forEach(map -> map.remove("_id"));
         return input;
     }
 

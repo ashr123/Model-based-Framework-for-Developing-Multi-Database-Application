@@ -10,13 +10,7 @@ import dataLayer.queryAdapters.crud.*;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.mongodb.client.model.Filters.*;
@@ -167,5 +161,12 @@ public class MongoDBAdapter implements DatabaseAdapter
 				.flatMap(Collection::stream)
 				.distinct()
 				.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<Map<String, Object>> execute(All all)
+	{
+		throw new UnsupportedOperationException("Not yet implemented");
+//		return query(All, lte(lte.getFieldName(), lte.getValue()));
 	}
 }
