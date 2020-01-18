@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import static dataLayer.queryAdapters.DBRead.read;
 import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -253,16 +254,14 @@ class MongoDBAdapterTest
 	@Test
 	void testExecuteAnd()
 	{
-		List<Map<String, Object>> result = mongoDBAdapter.revealQuery(
-				And.and(
-						Lte.lte("Person", "age", 26),
-						Gte.gte("Person", "age", 18),
-						Eq.eq("Person", "name", "Yossi")));
 		assertEquals(List.of(Map.of("name", "Yossi",
 				"age", 22,
 				"phoneNumber", "0587158627",
-				"emailAddress", "yossilan@post.bgu.ac.il")), removeId(result));
-		System.out.println(result.get(0));
+				"emailAddress", "yossilan@post.bgu.ac.il")),
+				removeId(read(And.and(
+						Lte.lte("Person", "age", 26),
+						Gte.gte("Person", "age", 18),
+						Eq.eq("Person", "name", "Yossi")))));
 	}
 
 	@Test
