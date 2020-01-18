@@ -1,12 +1,4 @@
-import queryAdapters.dbAdapters.MongoDBAdapter;
-import scala.collection.mutable.HashSet$;
-
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
-import static dataLayer.configReader.Entity.entity;
-import static queryAdapters.crud.CreateMany.createMany;
 
 public class Main
 {
@@ -23,11 +15,13 @@ public class Main
 //							.append("emailAddress", "Alice@Bob.com"));
 //		}
 
-		System.out.println(Arrays.stream(new int[]{1, 2, 3}).reduce((acc, b) ->
-		{
-			System.out.println("acc: " + acc + ", b: " + b);
-			return acc + b;
-		}).getAsInt());
+		System.out.println(Arrays.stream(new int[]{1, 2, 3})
+				.reduce((acc, b) ->
+				{
+					System.out.println("acc: " + acc + ", b: " + b);
+					return acc + b;
+				})
+				.getAsInt());
 //		new MongoDBAdapter()
 //				.revealQuery(createMany()
 //						.add(entity("Person")

@@ -1,4 +1,4 @@
-package queryAdapters.dbAdapters;
+package dataLayer.queryAdapters.dbAdapters;
 
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
@@ -8,12 +8,12 @@ import dataLayer.configReader.DataStore;
 import dataLayer.configReader.Entity;
 import org.bson.Document;
 import org.bson.conversions.Bson;
-import queryAdapters.crud.*;
+import dataLayer.queryAdapters.crud.*;
 
 import java.util.*;
 
 import static com.mongodb.client.model.Filters.*;
-import static queryAdapters.crud.CreateSingle.createSingle;
+import static dataLayer.queryAdapters.crud.CreateSingle.createSingle;
 
 /**
  * Concrete element
@@ -94,7 +94,8 @@ public class MongoDBAdapter implements DatabaseAdapter
 	@Override
 	public void executeCreate(CreateMany createMany)
 	{
-		createMany.getEntities().forEach(entity -> executeCreate(createSingle(entity)));
+		createMany.getEntities()
+				.forEach(entity -> executeCreate(createSingle(entity)));
 	}
 
 	@Override
@@ -107,7 +108,6 @@ public class MongoDBAdapter implements DatabaseAdapter
 	public List<Map<String, Object>> execute(Ne ne)
 	{
 		return getStringObjectMap(query(ne, ne(ne.getFieldName(), ne.getValue())));
-
 	}
 
 	@Override
@@ -138,7 +138,7 @@ public class MongoDBAdapter implements DatabaseAdapter
 	public List<Map<String, Object>> execute(And and)
 	{
 		return Arrays.stream(and.getComplexQuery())
-				.map(simpleQuery -> simpleQuery.accept(MongoDBAdapter.this))
+				.map(query -> query.accept(MongoDBAdapter.this))
 				.reduce((acc, map) ->
 				{
 					acc.retainAll(map);

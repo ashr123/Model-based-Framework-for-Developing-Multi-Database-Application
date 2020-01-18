@@ -1,13 +1,13 @@
-//package queryAdapters.dbAdapters;
+//package dataLayer.queryAdapters.dbAdapters;
 //
-//import queryAdapters.crud.*;
+//import dataLayer.queryAdapters.crud.*;
 //
 //import java.util.Map;
 //
 ///**
 // * Concrete element
 // */
-//public class CassandraAdapter implements DatabaseAdapter {
+//public class RedisAdapter implements DatabaseAdapter {
 //    //TODO: Implement later.
 //    public String getConnectionStringByField(String entityName, String fieldName) {
 //        return "";
@@ -16,16 +16,16 @@
 //        query.accept(this);
 //    }
 //    public void execute(CreateQuery createQuery) {
-//        System.out.println("Cassandra Create Query execute");
+//        System.out.println("Redis Create Query execute");
 //    }
 //    public void execute(ReadQuery readQuery) {
-//        System.out.println("Cassandra Read Query execute");
+//        System.out.println("Redis Read Query execute");
 //    }
 //    public void execute(UpdateQuery updateQuery) {
-//        System.out.println("Cassandra Update Query execute");
+//        System.out.println("Redis Update Query execute");
 //    }
 //    public void execute(DeleteQuery deleteQuery) {
-//        System.out.println("Cassandra Delete Query execute");
+//        System.out.println("Redis Delete Query execute");
 //    }
 //
 //    @Override

@@ -1,6 +1,6 @@
-package queryAdapters.crud;
+package dataLayer.queryAdapters.crud;
 
-import queryAdapters.dbAdapters.DatabaseAdapter;
+import dataLayer.queryAdapters.dbAdapters.DatabaseAdapter;
 
 import java.util.List;
 import java.util.Map;
@@ -8,14 +8,14 @@ import java.util.Map;
 public class And extends ComplexQuery
 {
 
-	public And(SimpleQuery... simpleQueries)
+	public And(Query... queries)
 	{
-		super(simpleQueries);
+		super(queries);
 	}
 
-	public static And and(SimpleQuery... simpleQueries)
+	public static And and(Query... queries)
 	{
-		return new And(simpleQueries);
+		return new And(queries);
 	}
 
 	@Override

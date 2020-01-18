@@ -1,7 +1,7 @@
-package queryAdapters.crud;
+package dataLayer.queryAdapters.crud;
 
 import dataLayer.configReader.Entity;
-import queryAdapters.dbAdapters.DatabaseAdapter;
+import dataLayer.queryAdapters.dbAdapters.DatabaseAdapter;
 
 import java.util.LinkedList;
 import java.util.List;
