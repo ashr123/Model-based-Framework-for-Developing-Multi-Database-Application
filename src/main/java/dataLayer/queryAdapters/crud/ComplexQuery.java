@@ -1,16 +1,26 @@
 package dataLayer.queryAdapters.crud;
 
+import java.util.Arrays;
+
 public abstract class ComplexQuery implements Query
 {
-	private final Query[] simpleQueries;
+	private final Query[] queries;
 
 	ComplexQuery(Query... queries)
 	{
-		this.simpleQueries = queries;
+		this.queries = queries;
 	}
 
 	public Query[] getComplexQuery()
 	{
-		return simpleQueries;
+		return queries;
+	}
+
+	@Override
+	public String toString()
+	{
+		return "ComplexQuery{" +
+				"queries=" + Arrays.toString(queries) +
+				'}';
 	}
 }

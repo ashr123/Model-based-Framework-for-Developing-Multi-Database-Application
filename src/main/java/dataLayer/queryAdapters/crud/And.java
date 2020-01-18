@@ -23,4 +23,10 @@ public class And extends ComplexQuery
 	{
 		return databaseAdapter.execute(this);
 	}
+
+	@Override
+	public String toString()
+	{
+		return "And{} " + super.toString();
+	}
 }
