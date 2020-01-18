@@ -1,4 +1,5 @@
 package queryAdaptersTemp.readQueryAdapters;
 
-public interface ReadQueryAdapter {
+public interface ReadQueryAdapter
+{
 }

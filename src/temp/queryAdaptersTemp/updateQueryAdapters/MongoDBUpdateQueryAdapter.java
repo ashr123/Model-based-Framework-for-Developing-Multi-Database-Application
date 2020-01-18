@@ -1,4 +1,5 @@
 package queryAdaptersTemp.updateQueryAdapters;
 
-public class MongoDBUpdateQueryAdapter {
+public class MongoDBUpdateQueryAdapter
+{
 }

@@ -1,4 +1,5 @@
 package queryAdaptersTemp.readQueryAdapters;
 
-public class Neo4jReadQueryAdapter {
+public class Neo4jReadQueryAdapter
+{
 }

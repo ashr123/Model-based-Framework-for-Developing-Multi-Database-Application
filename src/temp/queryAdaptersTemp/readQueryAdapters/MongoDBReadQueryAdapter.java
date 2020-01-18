@@ -1,4 +1,5 @@
 package queryAdaptersTemp.readQueryAdapters;
 
-public class MongoDBReadQueryAdapter {
+public class MongoDBReadQueryAdapter
+{
 }

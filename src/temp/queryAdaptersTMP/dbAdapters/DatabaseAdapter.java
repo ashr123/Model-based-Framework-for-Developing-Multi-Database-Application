@@ -5,6 +5,7 @@ import queryAdaptersTMP.crud.Query;
 /**
  * Element
  */
-public interface DatabaseAdapter {
-    void accept(Query query);
+public interface DatabaseAdapter
+{
+	void accept(Query query);
 }

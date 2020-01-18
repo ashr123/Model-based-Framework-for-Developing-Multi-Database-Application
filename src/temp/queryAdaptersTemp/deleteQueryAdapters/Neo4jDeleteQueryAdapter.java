@@ -1,4 +1,5 @@
 package queryAdaptersTemp.deleteQueryAdapters;
 
-public class Neo4jDeleteQueryAdapter {
+public class Neo4jDeleteQueryAdapter
+{
 }

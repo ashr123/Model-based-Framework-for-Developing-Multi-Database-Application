@@ -1,4 +1,5 @@
 package queryAdaptersTemp.updateQueryAdapters;
 
-public class Neo4jUpdateQueryAdapter {
+public class Neo4jUpdateQueryAdapter
+{
 }

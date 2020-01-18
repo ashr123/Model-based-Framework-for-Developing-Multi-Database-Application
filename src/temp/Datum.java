@@ -1,6 +1,5 @@
 package Temp;
 
-import com.fasterxml.jackson.annotation.*;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -13,7 +12,8 @@ import java.util.Map;
 		"class",
 		"prop"
 })
-public class Datum {
+public class Datum
+{
 
 	@JsonProperty("class")
 	private String _class;
@@ -24,68 +24,79 @@ public class Datum {
 
 	/**
 	 * No args constructor for use in serialization
-	 *
 	 */
-	public Datum() {
+	public Datum()
+	{
 	}
 
 	/**
-	 *
 	 * @param prop
 	 * @param _class
 	 */
-	public Datum(String _class, String prop) {
+	public Datum(String _class, String prop)
+	{
 		super();
 		this._class = _class;
 		this.prop = prop;
 	}
 
 	@JsonProperty("class")
-	public String getClass_() {
+	public String getClass_()
+	{
 		return _class;
 	}
 
 	@JsonProperty("class")
-	public void setClass_(String _class) {
+	public void setClass_(String _class)
+	{
 		this._class = _class;
 	}
 
 	@JsonProperty("prop")
-	public String getProp() {
+	public String getProp()
+	{
 		return prop;
 	}
 
 	@JsonProperty("prop")
-	public void setProp(String prop) {
+	public void setProp(String prop)
+	{
 		this.prop = prop;
 	}
 
 	@JsonAnyGetter
-	public Map<String, Object> getAdditionalProperties() {
+	public Map<String, Object> getAdditionalProperties()
+	{
 		return this.additionalProperties;
 	}
 
 	@JsonAnySetter
-	public void setAdditionalProperty(String name, Object value) {
+	public void setAdditionalProperty(String name, Object value)
+	{
 		this.additionalProperties.put(name, value);
 	}
 
 	@Override
-	public String toString() {
+	public String toString()
+	{
 		return new ToStringBuilder(this).append("_class", _class).append("prop", prop).append("additionalProperties", additionalProperties).toString();
 	}
 
 	@Override
-	public int hashCode() {
+	public int hashCode()
+	{
 		return new HashCodeBuilder().append(_class).append(additionalProperties).append(prop).toHashCode();
 	}
 
 	@Override
-	public boolean equals(Object other) {
-		if (other == this) {
+	public boolean equals(Object other)
+	{
+		if (other == this)
+		{
 			return true;
 		}
-		if (!(other instanceof Datum)) {
+		if (!(other instanceof Datum))
+		{
 			return false;
 		}
 		Datum rhs = ((Datum) other);

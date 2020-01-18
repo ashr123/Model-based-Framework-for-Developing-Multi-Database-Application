@@ -1,4 +1,5 @@
 package queryAdaptersTemp.deleteQueryAdapters;
 
-public class MySQLDeleteQueryAdapter {
+public class MySQLDeleteQueryAdapter
+{
 }

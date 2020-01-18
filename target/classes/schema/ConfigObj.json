@@ -5,7 +5,7 @@
   "properties": {
 	"line": {
 	  "type": "array",
-	  "items" : {
+	  "items": {
 		"type": "object",
 		"javaType": "ConfigurationLine"
 	  }

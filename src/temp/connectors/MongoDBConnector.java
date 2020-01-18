@@ -1,16 +1,9 @@
 package connectors;
 
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
 import dataLayer.configReader.Conf;
 import dataLayer.configReader.DataStore;
-import org.bson.Document;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
-
-import static com.mongodb.client.model.Filters.eq;
 
 public class MongoDBConnector implements Connector
 {
@@ -35,7 +28,7 @@ public class MongoDBConnector implements Connector
 //					output.put(entry.getKey(), entry.getKey().equals("_id") ? entry.getValue().toString() : entry.getValue());
 //				return output;
 //			}
-			return null;
+		return null;
 //		}
 	}
 

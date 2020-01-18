@@ -1,4 +1,5 @@
 package queryAdaptersTemp.createQueryAdapters;
 
-public class RedisCreateQueryAdapter {
+public class RedisCreateQueryAdapter
+{
 }

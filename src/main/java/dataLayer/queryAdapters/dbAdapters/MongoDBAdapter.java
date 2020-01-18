@@ -6,9 +6,9 @@ import com.mongodb.client.MongoClients;
 import dataLayer.configReader.Conf;
 import dataLayer.configReader.DataStore;
 import dataLayer.configReader.Entity;
+import dataLayer.queryAdapters.crud.*;
 import org.bson.Document;
 import org.bson.conversions.Bson;
-import dataLayer.queryAdapters.crud.*;
 
 import java.util.*;
 
@@ -24,6 +24,7 @@ public class MongoDBAdapter implements DatabaseAdapter
 
 	/**
 	 * An important function that Roy misnamed.
+	 *
 	 * @param voidQuery
 	 */
 	public void revealQuery(VoidQuery voidQuery)
@@ -54,14 +55,14 @@ public class MongoDBAdapter implements DatabaseAdapter
 		return null;
 	}
 
-	private FindIterable<Document> query(SimpleQuery simpleQuery, Bson filter)
+	private List<Map<String, Object>> query(SimpleQuery simpleQuery, Bson filter)
 	{
 		final DataStore dataStore = Conf.getConfiguration().getDataStoreFromEntityField(simpleQuery.getEntityName(), simpleQuery.getFieldName());
 		try (MongoClient mongoClient = MongoClients.create(PREFIX + dataStore.getConnStr()))
 		{
-			return mongoClient.getDatabase(dataStore.getLocation())
+			return getStringObjectMap(mongoClient.getDatabase(dataStore.getLocation())
 					.getCollection(simpleQuery.getEntityName())
-					.find(filter);
+					.find(filter));
 		}
 	}
 
@@ -105,37 +106,37 @@ public class MongoDBAdapter implements DatabaseAdapter
 	@Override
 	public List<Map<String, Object>> execute(Eq eq)
 	{
-		return getStringObjectMap(query(eq, eq(eq.getFieldName(), eq.getValue())));
+		return query(eq, eq(eq.getFieldName(), eq.getValue()));
 	}
 
 	@Override
 	public List<Map<String, Object>> execute(Ne ne)
 	{
-		return getStringObjectMap(query(ne, ne(ne.getFieldName(), ne.getValue())));
+		return query(ne, ne(ne.getFieldName(), ne.getValue()));
 	}
 
 	@Override
 	public List<Map<String, Object>> execute(Gt gt)
 	{
-		return getStringObjectMap(query(gt, gt(gt.getFieldName(), gt.getValue())));
+		return query(gt, gt(gt.getFieldName(), gt.getValue()));
 	}
 
 	@Override
 	public List<Map<String, Object>> execute(Lt lt)
 	{
-		return getStringObjectMap(query(lt, lt(lt.getFieldName(), lt.getValue())));
+		return query(lt, lt(lt.getFieldName(), lt.getValue()));
 	}
 
 	@Override
 	public List<Map<String, Object>> execute(Gte gte)
 	{
-		return getStringObjectMap(query(gte, gte(gte.getFieldName(), gte.getValue())));
+		return query(gte, gte(gte.getFieldName(), gte.getValue()));
 	}
 
 	@Override
 	public List<Map<String, Object>> execute(Lte lte)
 	{
-		return getStringObjectMap(query(lte, lte(lte.getFieldName(), lte.getValue())));
+		return query(lte, lte(lte.getFieldName(), lte.getValue()));
 	}
 
 	@Override

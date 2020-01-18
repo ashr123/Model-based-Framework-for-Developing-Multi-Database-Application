@@ -1,4 +1,5 @@
 package queryAdaptersTemp.createQueryAdapters;
 
-public class CassandraCreateQueryAdapter {
+public class CassandraCreateQueryAdapter
+{
 }

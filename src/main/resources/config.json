@@ -3,14 +3,14 @@
   "description": "A student class",
   "type": "object",
   "extends": {
-    "$ref": "Person.json"
+	"$ref": "Person.json"
   },
   "properties": {
-    "student-number": {
-      "type": "string"
-    },
-    "average-mark": {
-      "type": "number"
-    }
+	"student-number": {
+	  "type": "string"
+	},
+	"average-mark": {
+	  "type": "number"
+	}
   }
 }

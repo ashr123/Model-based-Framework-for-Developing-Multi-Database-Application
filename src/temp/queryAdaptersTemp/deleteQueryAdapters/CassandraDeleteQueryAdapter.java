@@ -1,4 +1,5 @@
 package queryAdaptersTemp.deleteQueryAdapters;
 
-public class CassandraDeleteQueryAdapter {
+public class CassandraDeleteQueryAdapter
+{
 }

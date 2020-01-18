@@ -1,4 +1,5 @@
 package queryAdaptersTemp.createQueryAdapters;
 
-public class Neo4jCreateQueryAdapter {
+public class Neo4jCreateQueryAdapter
+{
 }

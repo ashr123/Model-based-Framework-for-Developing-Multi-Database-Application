@@ -20,29 +20,25 @@ public class Entity
 	@JsonIgnore
 	private final Map<String, Object> fieldsValues;
 
-	private Entity() {
+	private Entity()
+	{
 		entityName = null;
 		fieldsValues = null;
 		fieldsLocations = new LinkedHashMap<>();
 	}
 
-	public Entity(String entityName, Map<String, Object> fieldsValues) {
+	public Entity(String entityName, Map<String, Object> fieldsValues)
+	{
 		fieldsLocations = null;
 		this.entityName = entityName;
 		this.fieldsValues = fieldsValues;
 	}
 
-	private Entity(String entityName) {
+	private Entity(String entityName)
+	{
 		fieldsLocations = null;
 		this.entityName = entityName;
 		this.fieldsValues = new LinkedHashMap<>();
-	}
-
-	public Entity append(String field, Object value)
-	{
-		assert fieldsValues != null;
-		fieldsValues.put(field, value);
-		return this;
 	}
 
 	private static Entity entity(String entityName, Map<String, Object> fieldsValues)
@@ -53,6 +49,13 @@ public class Entity
 	public static Entity entity(String entityName)
 	{
 		return new Entity(entityName);
+	}
+
+	public Entity append(String field, Object value)
+	{
+		assert fieldsValues != null;
+		fieldsValues.put(field, value);
+		return this;
 	}
 
 	public String getEntityName()

@@ -1,4 +1,5 @@
 package queryAdaptersTemp.readQueryAdapters;
 
-public class CassandraReadQueryAdapter {
+public class CassandraReadQueryAdapter
+{
 }

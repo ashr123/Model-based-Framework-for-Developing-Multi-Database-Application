@@ -1,4 +1,5 @@
 package queryAdaptersTemp.deleteQueryAdapters;
 
-public class RedisDeleteQueryAdapter {
+public class RedisDeleteQueryAdapter
+{
 }

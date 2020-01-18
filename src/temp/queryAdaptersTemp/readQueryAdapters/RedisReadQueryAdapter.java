@@ -1,4 +1,5 @@
 package queryAdaptersTemp.readQueryAdapters;
 
-public class RedisReadQueryAdapter {
+public class RedisReadQueryAdapter
+{
 }

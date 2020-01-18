@@ -1,4 +1,5 @@
 package queryAdaptersTemp.createQueryAdapters;
 
-public class MongoDBCreateQueryAdapter {
+public class MongoDBCreateQueryAdapter
+{
 }

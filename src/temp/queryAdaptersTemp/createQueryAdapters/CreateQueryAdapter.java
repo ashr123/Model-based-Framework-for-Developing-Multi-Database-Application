@@ -1,4 +1,5 @@
 package queryAdaptersTemp.createQueryAdapters;
 
-public interface CreateQueryAdapter {
+public interface CreateQueryAdapter
+{
 }

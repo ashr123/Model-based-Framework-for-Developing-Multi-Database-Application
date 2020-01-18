@@ -1,4 +1,5 @@
 package queryAdaptersTemp.deleteQueryAdapters;
 
-public interface DeleteQueryAdapter {
+public interface DeleteQueryAdapter
+{
 }

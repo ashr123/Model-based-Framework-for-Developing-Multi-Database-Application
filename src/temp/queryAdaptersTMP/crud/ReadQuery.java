@@ -3,21 +3,31 @@ package queryAdaptersTMP.crud;
 import queryAdaptersTMP.dbAdapters.*;
 
 /**
- *  Concrete visitor.
+ * Concrete visitor.
  */
-public class ReadQuery implements Query {
-    public void visit(Neo4jAdapter neo4jAdapter) {
+public class ReadQuery implements Query
+{
+	public void visit(Neo4jAdapter neo4jAdapter)
+	{
 
-    }
-    public void visit(MongoDBAdapter mongoDBAdapter) {
+	}
 
-    }
-    public void visit(MySQLAdapter mySQLAdapter) {
+	public void visit(MongoDBAdapter mongoDBAdapter)
+	{
 
-    }
-    public void visit(CassandraAdapter cassandraAdapter) {
+	}
 
-    }
-    public void visit(RedisAdapter redisAdapter) {
-    }
+	public void visit(MySQLAdapter mySQLAdapter)
+	{
+
+	}
+
+	public void visit(CassandraAdapter cassandraAdapter)
+	{
+
+	}
+
+	public void visit(RedisAdapter redisAdapter)
+	{
+	}
 }

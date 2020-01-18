@@ -1,4 +1,5 @@
 package queryAdaptersTemp.updateQueryAdapters;
 
-public interface UpdateQueryAdapter {
+public interface UpdateQueryAdapter
+{
 }

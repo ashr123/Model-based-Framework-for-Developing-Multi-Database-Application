@@ -1,4 +1,5 @@
 package queryAdaptersTemp.updateQueryAdapters;
 
-public class MySQLUpdateQueryAdapter {
+public class MySQLUpdateQueryAdapter
+{
 }

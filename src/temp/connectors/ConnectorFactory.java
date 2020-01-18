@@ -2,7 +2,6 @@ package connectors;
 
 import dataLayer.configReader.Conf;
 import dataLayer.configReader.DBType;
-import dataLayer.configReader.DataStore;
 
 public class ConnectorFactory
 {
