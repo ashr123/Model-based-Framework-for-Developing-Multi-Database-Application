@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
+import java.net.URL;
 import java.util.Map;
 import java.util.Set;
 
@@ -12,18 +12,7 @@ import java.util.Set;
 public class Conf
 {
 	@JsonIgnore
-	private final static Conf configuration;
-
-	static
-	{
-		try
-		{
-			configuration = Reader.read();
-		} catch (final IOException e)
-		{
-			throw new UncheckedIOException(e);
-		}
-	}
+	private static Conf configuration;
 
 	@JsonProperty("dataStores")
 	private final Map<String, DataStore> dataStores = null;
@@ -36,7 +25,14 @@ public class Conf
 
 	public static Conf getConfiguration()
 	{
+		if (configuration == null)
+			throw new NullPointerException("No configuration file loaded");
 		return configuration;
+	}
+
+	public static void loadConfiguration(URL url) throws IOException
+	{
+		configuration = Reader.read(url);
 	}
 
 	public DataStore getDataStore(String key)
@@ -57,7 +53,8 @@ public class Conf
 	public Conf checkValidity()
 	{
 		final Set<String> keySet = dataStores.keySet();
-		entities.values().forEach(entity -> entity.validate(keySet));
+		entities.values()
+				.forEach(entity -> entity.validate(keySet));
 		return this;
 	}
 

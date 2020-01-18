@@ -1,9 +1,13 @@
+import dataLayer.configReader.Conf;
+
+import java.io.IOException;
 import java.util.Arrays;
 
 public class Main
 {
-	public static void main(String[] args)
+	public static void main(String[] args) throws IOException
 	{
+		Conf.loadConfiguration(Main.class.getResource("/configuration.json"));
 //		try (MongoClient mongoClient = MongoClients.create())
 //		{
 //			mongoClient.getDatabase("myDB").drop();

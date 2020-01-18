@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
+import java.net.URL;
 
 public class Reader
 {
@@ -13,9 +14,9 @@ public class Reader
 	{
 	}
 
-	static Conf read() throws IOException
+	static Conf read(URL url) throws IOException
 	{
-		return objectMapper.readValue(Reader.class.getResource("/configuration.json"), Conf.class).checkValidity();
+		return objectMapper.readValue(url, Conf.class).checkValidity();
 	}
 
 	public static String toJson(Object o) throws JsonProcessingException
