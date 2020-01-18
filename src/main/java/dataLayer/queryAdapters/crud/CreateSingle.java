@@ -26,4 +26,12 @@ public class CreateSingle implements VoidQuery
 	{
 		databaseAdapter.executeCreate(this);
 	}
+
+	@Override
+	public String toString()
+	{
+		return "CreateSingle{" +
+				"entity=" + entity +
+				'}';
+	}
 }

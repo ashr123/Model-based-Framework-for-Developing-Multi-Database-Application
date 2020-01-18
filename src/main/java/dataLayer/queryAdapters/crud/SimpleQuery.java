@@ -26,4 +26,12 @@ public abstract class SimpleQuery implements Query
 	{
 		return value;
 	}
+
+	@Override
+	public String toString()
+	{
+		return "entityName='" + entityName + '\'' +
+				", fieldName='" + fieldName + '\'' +
+				", value=" + value;
+	}
 }

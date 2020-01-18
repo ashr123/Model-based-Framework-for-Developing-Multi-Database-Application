@@ -22,4 +22,10 @@ public class Or extends ComplexQuery
 	{
 		return databaseAdapter.execute(this);
 	}
+
+	@Override
+	public String toString()
+	{
+		return "Or{" + super.toString() + '}';
+	}
 }

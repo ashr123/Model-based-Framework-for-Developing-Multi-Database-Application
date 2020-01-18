@@ -22,4 +22,10 @@ public class Ne extends SimpleQuery
 	{
 		return databaseAdapter.execute(this);
 	}
+
+	@Override
+	public String toString()
+	{
+		return "Ne{" + super.toString() + '}';
+	}
 }

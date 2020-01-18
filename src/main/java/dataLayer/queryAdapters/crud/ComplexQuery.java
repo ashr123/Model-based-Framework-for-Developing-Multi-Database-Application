@@ -19,8 +19,6 @@ public abstract class ComplexQuery implements Query
 	@Override
 	public String toString()
 	{
-		return "ComplexQuery{" +
-				"queries=" + Arrays.toString(queries) +
-				'}';
+		return "queries=" + Arrays.toString(queries);
 	}
 }

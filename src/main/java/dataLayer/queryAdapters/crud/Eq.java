@@ -22,4 +22,10 @@ public class Eq extends SimpleQuery
 	{
 		return databaseAdapter.execute(this);
 	}
+
+	@Override
+	public String toString()
+	{
+		return "Eq{" + super.toString() + '}';
+	}
 }

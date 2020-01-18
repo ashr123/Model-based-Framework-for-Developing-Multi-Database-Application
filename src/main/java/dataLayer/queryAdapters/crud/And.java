@@ -27,6 +27,6 @@ public class And extends ComplexQuery
 	@Override
 	public String toString()
 	{
-		return "And{} " + super.toString();
+		return "And{" + super.toString() + '}';
 	}
 }

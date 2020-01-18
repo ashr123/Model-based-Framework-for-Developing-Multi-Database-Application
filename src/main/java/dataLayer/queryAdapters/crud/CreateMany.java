@@ -45,4 +45,12 @@ public class CreateMany implements VoidQuery
 	{
 		databaseAdapter.executeCreate(this);
 	}
+
+	@Override
+	public String toString()
+	{
+		return "CreateMany{" +
+				"entities=" + entities +
+				'}';
+	}
 }
