@@ -3,7 +3,6 @@ package dataLayer.queryAdapters.dbAdapters;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import dataLayer.configReader.Conf;
-import dataLayer.queryAdapters.crud.And;
 import dataLayer.queryAdapters.crud.Gt;
 import dataLayer.queryAdapters.crud.Lt;
 import dataLayer.queryAdapters.crud.Ne;
@@ -17,7 +16,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import static dataLayer.queryAdapters.Read.read;
+import static dataLayer.queryAdapters.DBRead.read;
+import static dataLayer.queryAdapters.crud.And.and;
 import static dataLayer.queryAdapters.crud.Eq.eq;
 import static dataLayer.queryAdapters.crud.Gte.gte;
 import static dataLayer.queryAdapters.crud.Lte.lte;
@@ -259,30 +259,35 @@ class MongoDBAdapterTest
 	@Test
 	void testExecuteAnd()
 	{
-		assertEquals(List.of(Map.of("name", "Yossi",
-				"age", 22,
-				"phoneNumber", "0587158627",
-				"emailAddress", "yossilan@post.bgu.ac.il")),
-				removeId(read(And.and(
-						lte("Person", "age", 26),
-						gte("Person", "age", 18),
-						eq("Person", "name", "Yossi")))));
+		assertEquals(
+				List.of(
+						Map.of("name", "Yossi",
+								"age", 22,
+								"phoneNumber", "0587158627",
+								"emailAddress", "yossilan@post.bgu.ac.il")),
+				removeId(read(
+						and(
+								lte("Person", "age", 26),
+								gte("Person", "age", 18),
+								eq("Person", "name", "Yossi")))));
 	}
 
 	@Test
 	void testExecuteOr()
 	{
-		assertEquals(List.of(
-				Map.of("name", "Roy",
-						"age", 27,
-						"phoneNumber", "0546815181",
-						"emailAddress", "ashr@post.bgu.ac.il"),
-				Map.of("name", "Yossi",
-						"age", 22,
-						"phoneNumber", "0587158627",
-						"emailAddress", "yossilan@post.bgu.ac.il")),
-				removeId(read(or(
-						eq("Person", "age", 27),
-						eq("Person", "age", 22)))));
+		assertEquals(
+				List.of(
+						Map.of("name", "Roy",
+								"age", 27,
+								"phoneNumber", "0546815181",
+								"emailAddress", "ashr@post.bgu.ac.il"),
+						Map.of("name", "Yossi",
+								"age", 22,
+								"phoneNumber", "0587158627",
+								"emailAddress", "yossilan@post.bgu.ac.il")),
+				removeId(read(
+						or(
+								eq("Person", "age", 27),
+								eq("Person", "age", 22)))));
 	}
 }

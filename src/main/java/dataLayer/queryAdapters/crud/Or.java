@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class Or extends ComplexQuery
 {
-	public Or(Query... queries)
+	private Or(Query... queries)
 	{
 		super(queries);
 	}
@@ -31,7 +31,8 @@ public class Or extends ComplexQuery
 		return "Or{" + super.toString() + '}';
 	}
 
-	public Bson generateFromMongoDB() {
+	public Bson generateFromMongoDB()
+	{
 		return com.mongodb.client.model.Filters.or((Bson[]) Arrays.stream(getComplexQuery())
 				.map(Query::generateFromMongoDB)
 				.toArray());

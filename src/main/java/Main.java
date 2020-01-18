@@ -1,4 +1,7 @@
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
 import dataLayer.configReader.Conf;
+import org.bson.Document;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -8,16 +11,16 @@ public class Main
 	public static void main(String[] args) throws IOException
 	{
 		Conf.loadConfiguration(Main.class.getResource("/configuration.json"));
-//		try (MongoClient mongoClient = MongoClients.create())
-//		{
-//			mongoClient.getDatabase("myDB").drop();
-//			mongoClient.getDatabase("myDB")
-//					.getCollection("Person")
-//					.insertOne(new Document("name", "Alice")
-//							.append("age", 18)
-//							.append("phoneNumber", "0504563434")
-//							.append("emailAddress", "Alice@Bob.com"));
-//		}
+		try (MongoClient mongoClient = MongoClients.create())
+		{
+			mongoClient.getDatabase("myDB").drop();
+			mongoClient.getDatabase("myDB")
+					.getCollection("Person")
+					.insertOne(new Document("name", "Alice")
+							.append("age", 18)
+							.append("phoneNumber", "0504563434")
+							.append("emailAddress", "Alice@Bob.com"));
+		}
 
 		System.out.println(Arrays.stream(new int[]{1, 2, 3})
 				.reduce((acc, b) ->
@@ -26,6 +29,7 @@ public class Main
 					return acc + b;
 				})
 				.getAsInt());
+
 //		new MongoDBAdapter()
 //				.revealQuery(createMany()
 //						.add(entity("Person")

@@ -13,5 +13,6 @@ import java.util.Map;
 public interface Query
 {
 	List<Map<String, Object>> accept(DatabaseAdapter databaseAdapter);
+
 	Bson generateFromMongoDB();
 }
