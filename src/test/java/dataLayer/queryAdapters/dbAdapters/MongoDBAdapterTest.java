@@ -3,7 +3,10 @@ package dataLayer.queryAdapters.dbAdapters;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import dataLayer.configReader.Conf;
-import dataLayer.queryAdapters.crud.*;
+import dataLayer.queryAdapters.crud.And;
+import dataLayer.queryAdapters.crud.Gt;
+import dataLayer.queryAdapters.crud.Lt;
+import dataLayer.queryAdapters.crud.Ne;
 import org.bson.Document;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -18,6 +21,7 @@ import static dataLayer.queryAdapters.DBRead.read;
 import static dataLayer.queryAdapters.crud.Eq.eq;
 import static dataLayer.queryAdapters.crud.Gte.gte;
 import static dataLayer.queryAdapters.crud.Lte.lte;
+import static dataLayer.queryAdapters.crud.Or.or;
 import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -25,8 +29,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class MongoDBAdapterTest
 {
-	final MongoDBAdapter mongoDBAdapter = new MongoDBAdapter();
-
 	private List<Map<String, Object>> removeId(List<Map<String, Object>> input)
 	{
 		input.forEach(map -> map.remove("_id"));
@@ -96,7 +98,7 @@ class MongoDBAdapterTest
 				result.get(0).get("emailAddress").equals("ashr@post.bgu.ac.il");
 		assertTrue(hasRoy, "Roy's name == Roy");
 
-		result = mongoDBAdapter.revealQuery(eq("Person", "name", "Nobody"));
+		result = read(eq("Person", "name", "Nobody"));
 		assertTrue(result.isEmpty(), "There is no person named Nobody");
 	}
 
@@ -279,7 +281,7 @@ class MongoDBAdapterTest
 						"age", 22,
 						"phoneNumber", "0587158627",
 						"emailAddress", "yossilan@post.bgu.ac.il")),
-				removeId(read(Or.or(
+				removeId(read(or(
 						eq("Person", "age", 27),
 						eq("Person", "age", 22)))));
 	}
