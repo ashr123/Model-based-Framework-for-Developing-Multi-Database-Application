@@ -22,6 +22,10 @@ public class MongoDBAdapter implements DatabaseAdapter
 {
 	private final static String PREFIX = "mongodb://";
 
+	/**
+	 * An important function that Roy misnamed.
+	 * @param voidQuery
+	 */
 	public void revealQuery(VoidQuery voidQuery)
 	{
 		voidQuery.accept(this);
