@@ -3,24 +3,21 @@ package dataLayer.crud.filters;
 import dataLayer.configReader.Entity;
 import dataLayer.crud.dbAdapters.DatabaseAdapter;
 
-import java.util.LinkedList;
-import java.util.List;
-
-public class CreateMany implements VoidQuery
+public class CreateMany implements VoidFilter
 {
-	private final List<Entity> entities;
+	private final Entity[] entities;
 
-	public CreateMany()
-	{
-		entities = new LinkedList<>();
-	}
-
-	private CreateMany(List<Entity> entities)
+	private CreateMany(Entity... entities)
 	{
 		this.entities = entities;
 	}
 
-	public static CreateMany createMany(List<Entity> entities)
+//	private CreateMany(List<Entity> entities)
+//	{
+//		this.entities = entities;
+//	}
+
+	public static CreateMany createMany(Entity... entities)
 	{
 		return new CreateMany(entities);
 	}
@@ -30,16 +27,16 @@ public class CreateMany implements VoidQuery
 		return new CreateMany();
 	}
 
-	public List<Entity> getEntities()
+	public Entity[] getEntities()
 	{
 		return entities;
 	}
 
-	public CreateMany add(Entity entity)
-	{
-		entities.add(entity);
-		return this;
-	}
+//	public CreateMany add(Entity entity)
+//	{
+//		entities.add(entity);
+//		return this;
+//	}
 
 	public void accept(DatabaseAdapter databaseAdapter)
 	{

@@ -3,7 +3,7 @@ package dataLayer.crud.filters;
 import dataLayer.configReader.Entity;
 import dataLayer.crud.dbAdapters.DatabaseAdapter;
 
-public class CreateSingle implements VoidQuery
+public class CreateSingle implements VoidFilter
 {
 	private final Entity entity;
 

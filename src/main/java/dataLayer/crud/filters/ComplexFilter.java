@@ -2,16 +2,16 @@ package dataLayer.crud.filters;
 
 import java.util.Arrays;
 
-public abstract class ComplexQuery implements Query
+public abstract class ComplexFilter implements Filter
 {
-	private final Query[] queries;
+	private final Filter[] queries;
 
-	ComplexQuery(Query... queries)
+	ComplexFilter(Filter... queries)
 	{
 		this.queries = queries;
 	}
 
-	public Query[] getComplexQuery()
+	public Filter[] getComplexQuery()
 	{
 		return queries;
 	}

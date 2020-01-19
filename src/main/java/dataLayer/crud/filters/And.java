@@ -7,15 +7,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class And extends ComplexQuery
+public class And extends ComplexFilter
 {
 
-	private And(Query... queries)
+	private And(Filter... queries)
 	{
 		super(queries);
 	}
 
-	public static And and(Query... queries)
+	public static And and(Filter... queries)
 	{
 		return new And(queries);
 	}
@@ -35,7 +35,7 @@ public class And extends ComplexQuery
 	public Bson generateFromMongoDB()
 	{
 		return com.mongodb.client.model.Filters.and((Bson[]) Arrays.stream(getComplexQuery())
-				.map(Query::generateFromMongoDB)
+				.map(Filter::generateFromMongoDB)
 				.toArray());
 	}
 }

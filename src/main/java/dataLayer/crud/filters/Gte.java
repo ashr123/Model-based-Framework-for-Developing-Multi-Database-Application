@@ -6,7 +6,7 @@ import org.bson.conversions.Bson;
 import java.util.List;
 import java.util.Map;
 
-public class Gte extends SimpleQuery
+public class Gte extends SimpleFilter
 {
 	private Gte(String entityName, String fieldName, Object value)
 	{

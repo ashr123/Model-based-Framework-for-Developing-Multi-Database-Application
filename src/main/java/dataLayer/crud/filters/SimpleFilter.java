@@ -1,11 +1,11 @@
 package dataLayer.crud.filters;
 
-public abstract class SimpleQuery implements Query
+public abstract class SimpleFilter implements Filter
 {
 	private final String entityName, fieldName;
 	private final Object value;
 
-	public SimpleQuery(String entityName, String fieldName, Object value)
+	public SimpleFilter(String entityName, String fieldName, Object value)
 	{
 		this.entityName = entityName;
 		this.fieldName = fieldName;

@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * Visitor.
  */
-public interface Query
+public interface Filter
 {
 	List<Map<String, Object>> accept(DatabaseAdapter databaseAdapter);
 

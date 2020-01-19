@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
 
 /**
- * Represents one or many {@link Entity}'s fields storage
+ * Represents a mapping from one or more fields of one or more entities to certain database.
  */
 public class FieldsMapping
 {

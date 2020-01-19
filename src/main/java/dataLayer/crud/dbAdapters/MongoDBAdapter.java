@@ -26,16 +26,16 @@ public class MongoDBAdapter implements DatabaseAdapter
 	/**
 	 * An important function that Roy misnamed.
 	 *
-	 * @param voidQuery
+	 * @param voidFilter
 	 */
-	public void revealQuery(VoidQuery voidQuery)
+	public void revealQuery(VoidFilter voidFilter)
 	{
-		voidQuery.accept(this);
+		voidFilter.accept(this);
 	}
 
-	public List<Map<String, Object>> revealQuery(Query query)
+	public List<Map<String, Object>> revealQuery(Filter filter)
 	{
-		return query.accept(this);
+		return filter.accept(this);
 	}
 
 	private List<Map<String, Object>> getStringObjectMap(FindIterable<Document> myDoc)
@@ -56,13 +56,13 @@ public class MongoDBAdapter implements DatabaseAdapter
 		return null;
 	}
 
-	private List<Map<String, Object>> query(SimpleQuery simpleQuery, Bson filter)
+	private List<Map<String, Object>> query(SimpleFilter simpleFilter, Bson filter)
 	{
-		final FieldsMapping fieldsMapping = Conf.getConfiguration().getFieldsMappingFromEntityField(simpleQuery.getEntityName(), simpleQuery.getFieldName());
+		final FieldsMapping fieldsMapping = Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityName(), simpleFilter.getFieldName());
 		try (MongoClient mongoClient = MongoClients.create(PREFIX + fieldsMapping.getConnStr()))
 		{
 			return getStringObjectMap(mongoClient.getDatabase(fieldsMapping.getLocation())
-					.getCollection(simpleQuery.getEntityName())
+					.getCollection(simpleFilter.getEntityName())
 					.find(filter));
 		}
 	}
@@ -100,7 +100,7 @@ public class MongoDBAdapter implements DatabaseAdapter
 	@Override
 	public void executeCreate(CreateMany createMany)
 	{
-		createMany.getEntities()
+		Arrays.stream(createMany.getEntities())
 				.forEach(entity -> executeCreate(createSingle(entity)));
 	}
 

@@ -10,9 +10,9 @@ import java.util.Map;
  */
 public interface DatabaseAdapter
 {
-	void revealQuery(VoidQuery voidQuery);
+	void revealQuery(VoidFilter voidFilter);
 
-	List<Map<String, Object>> revealQuery(Query query);
+	List<Map<String, Object>> revealQuery(Filter filter);
 
 	void executeCreate(CreateSingle createSingle);
 

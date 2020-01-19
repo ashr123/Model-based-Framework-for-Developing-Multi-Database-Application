@@ -2,7 +2,7 @@ package dataLayer.crud.filters;
 
 import dataLayer.crud.dbAdapters.DatabaseAdapter;
 
-public interface VoidQuery
+public interface VoidFilter
 {
 	void accept(DatabaseAdapter databaseAdapter);
 }
