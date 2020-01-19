@@ -1,7 +1,7 @@
-package dataLayer.queryAdapters.crud;
+package dataLayer.crud.filters;
 
 import dataLayer.configReader.Entity;
-import dataLayer.queryAdapters.dbAdapters.DatabaseAdapter;
+import dataLayer.crud.dbAdapters.DatabaseAdapter;
 
 public class CreateSingle implements VoidQuery
 {

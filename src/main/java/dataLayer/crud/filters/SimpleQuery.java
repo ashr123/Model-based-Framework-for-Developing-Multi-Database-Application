@@ -1,4 +1,4 @@
-package dataLayer.queryAdapters.crud;
+package dataLayer.crud.filters;
 
 public abstract class SimpleQuery implements Query
 {

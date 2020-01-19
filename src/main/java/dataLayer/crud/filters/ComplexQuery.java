@@ -1,4 +1,4 @@
-package dataLayer.queryAdapters.crud;
+package dataLayer.crud.filters;
 
 import java.util.Arrays;
 

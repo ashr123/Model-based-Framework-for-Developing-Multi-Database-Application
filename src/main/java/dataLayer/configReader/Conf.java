@@ -8,14 +8,17 @@ import java.net.URL;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * The main class for loading the configuration file.
+ */
 @SuppressWarnings({"ConstantConditions", "unused"})
 public class Conf
 {
 	@JsonIgnore
 	private static Conf configuration;
 
-	@JsonProperty("dataStores")
-	private final Map<String, DataStore> dataStores = null;
+	@JsonProperty("fieldsMappings")
+	private final Map<String, FieldsMapping> fieldsMappings = null;
 	@JsonProperty("entities")
 	private final Map<String, Entity> entities = null;
 
@@ -35,9 +38,9 @@ public class Conf
 		configuration = Reader.read(url);
 	}
 
-	public DataStore getDataStore(String key)
+	public FieldsMapping getFieldsMapping(String key)
 	{
-		return dataStores.get(key);
+		return fieldsMappings.get(key);
 	}
 
 	public Entity getEntity(String key)
@@ -45,14 +48,14 @@ public class Conf
 		return entities.get(key);
 	}
 
-	public DataStore getDataStoreFromEntityField(String entity, String field)
+	public FieldsMapping getFieldsMappingFromEntityField(String entity, String field)
 	{
-		return dataStores.get(entities.get(entity).getFieldDataStoreName(field));
+		return fieldsMappings.get(entities.get(entity).getFieldFieldsMappingName(field));
 	}
 
 	public Conf checkValidity()
 	{
-		final Set<String> keySet = dataStores.keySet();
+		final Set<String> keySet = fieldsMappings.keySet();
 		entities.values()
 				.forEach(entity -> entity.validate(keySet));
 		return this;
@@ -62,7 +65,7 @@ public class Conf
 	public String toString()
 	{
 		return "Conf{" +
-				"dataStores=" + dataStores +
+				"fieldsMappings=" + fieldsMappings +
 				", entities=" + entities +
 				'}';
 	}

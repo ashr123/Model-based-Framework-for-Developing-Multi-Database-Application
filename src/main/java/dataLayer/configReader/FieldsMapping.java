@@ -4,7 +4,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Objects;
 
-public class DataStore
+/**
+ * Represents one or many {@link Entity}'s fields storage
+ */
+public class FieldsMapping
 {
 	@JsonProperty("type")
 	private final DBType type = null;
@@ -36,10 +39,10 @@ public class DataStore
 			return true;
 		if (o == null || getClass() != o.getClass())
 			return false;
-		DataStore dataStore = (DataStore) o;
-		return type == dataStore.type &&
-				connStr.equals(dataStore.connStr) &&
-				location.equals(dataStore.location);
+		FieldsMapping fieldsMapping = (FieldsMapping) o;
+		return type == fieldsMapping.type &&
+				connStr.equals(fieldsMapping.connStr) &&
+				location.equals(fieldsMapping.location);
 	}
 
 	@Override
@@ -51,7 +54,7 @@ public class DataStore
 	@Override
 	public String toString()
 	{
-		return "DataStore{" +
+		return "FieldsMapping{" +
 				"type='" + type + '\'' +
 				", connStr='" + connStr + '\'' +
 				", location='" + location + '\'' +

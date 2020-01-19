@@ -1,5 +1,5 @@
 {
-  "dataStores": {
+  "fieldsMappings": {
 	"mongo1": {
 	  "type": "mongodb",
 	  "connStr": "localhost",

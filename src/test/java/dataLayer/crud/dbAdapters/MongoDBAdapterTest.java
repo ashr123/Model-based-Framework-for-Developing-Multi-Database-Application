@@ -1,11 +1,11 @@
-package dataLayer.queryAdapters.dbAdapters;
+package dataLayer.crud.dbAdapters;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import dataLayer.configReader.Conf;
-import dataLayer.queryAdapters.crud.Gt;
-import dataLayer.queryAdapters.crud.Lt;
-import dataLayer.queryAdapters.crud.Ne;
+import dataLayer.crud.filters.Gt;
+import dataLayer.crud.filters.Lt;
+import dataLayer.crud.filters.Ne;
 import org.bson.Document;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -16,12 +16,12 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import static dataLayer.queryAdapters.Read.read;
-import static dataLayer.queryAdapters.crud.And.and;
-import static dataLayer.queryAdapters.crud.Eq.eq;
-import static dataLayer.queryAdapters.crud.Gte.gte;
-import static dataLayer.queryAdapters.crud.Lte.lte;
-import static dataLayer.queryAdapters.crud.Or.or;
+import static dataLayer.crud.Read.read;
+import static dataLayer.crud.filters.And.and;
+import static dataLayer.crud.filters.Eq.eq;
+import static dataLayer.crud.filters.Gte.gte;
+import static dataLayer.crud.filters.Lte.lte;
+import static dataLayer.crud.filters.Or.or;
 import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;

@@ -1,6 +1,6 @@
-package dataLayer.queryAdapters.crud;
+package dataLayer.crud.filters;
 
-import dataLayer.queryAdapters.dbAdapters.DatabaseAdapter;
+import dataLayer.crud.dbAdapters.DatabaseAdapter;
 import org.bson.conversions.Bson;
 
 import java.util.List;

@@ -1,6 +1,6 @@
-package dataLayer.queryAdapters.dbAdapters;
+package dataLayer.crud.dbAdapters;
 
-import dataLayer.queryAdapters.crud.*;
+import dataLayer.crud.filters.*;
 
 import java.util.List;
 import java.util.Map;

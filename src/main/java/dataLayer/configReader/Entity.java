@@ -81,7 +81,7 @@ public class Entity
 		fieldsLocations.put(key, value);
 	}
 
-	public String getFieldDataStoreName(String field)
+	public String getFieldFieldsMappingName(String field)
 	{
 		return fieldsLocations.get(field);
 	}
@@ -94,9 +94,9 @@ public class Entity
 				'}';
 	}
 
-	public void validate(Set<String> keySet)
+	void validate(Set<String> keySet)
 	{
 		if (!keySet.containsAll(fieldsLocations.values()))
-			throw new InputMismatchException("Not all fieldsLocations locations exists as DataStores!!");
+			throw new InputMismatchException("Not all fieldsLocations locations exists as FieldsMapping!!");
 	}
 }

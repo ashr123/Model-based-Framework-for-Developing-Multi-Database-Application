@@ -1,7 +1,7 @@
-package dataLayer.queryAdapters;
+package dataLayer.crud;
 
-import dataLayer.queryAdapters.crud.VoidQuery;
-import dataLayer.queryAdapters.dbAdapters.MongoDBAdapter;
+import dataLayer.crud.filters.VoidQuery;
+import dataLayer.crud.dbAdapters.MongoDBAdapter;
 
 
 public class Create {

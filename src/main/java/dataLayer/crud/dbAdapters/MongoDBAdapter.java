@@ -1,12 +1,12 @@
-package dataLayer.queryAdapters.dbAdapters;
+package dataLayer.crud.dbAdapters;
 
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import dataLayer.configReader.Conf;
-import dataLayer.configReader.DataStore;
+import dataLayer.configReader.FieldsMapping;
 import dataLayer.configReader.Entity;
-import dataLayer.queryAdapters.crud.*;
+import dataLayer.crud.filters.*;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
@@ -14,7 +14,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.mongodb.client.model.Filters.*;
-import static dataLayer.queryAdapters.crud.CreateSingle.createSingle;
+import static dataLayer.crud.filters.CreateSingle.createSingle;
 
 /**
  * Concrete element
@@ -58,24 +58,24 @@ public class MongoDBAdapter implements DatabaseAdapter
 
 	private List<Map<String, Object>> query(SimpleQuery simpleQuery, Bson filter)
 	{
-		final DataStore dataStore = Conf.getConfiguration().getDataStoreFromEntityField(simpleQuery.getEntityName(), simpleQuery.getFieldName());
-		try (MongoClient mongoClient = MongoClients.create(PREFIX + dataStore.getConnStr()))
+		final FieldsMapping fieldsMapping = Conf.getConfiguration().getFieldsMappingFromEntityField(simpleQuery.getEntityName(), simpleQuery.getFieldName());
+		try (MongoClient mongoClient = MongoClients.create(PREFIX + fieldsMapping.getConnStr()))
 		{
-			return getStringObjectMap(mongoClient.getDatabase(dataStore.getLocation())
+			return getStringObjectMap(mongoClient.getDatabase(fieldsMapping.getLocation())
 					.getCollection(simpleQuery.getEntityName())
 					.find(filter));
 		}
 	}
 
-	private Map<DataStore, Document> groupFieldsByDataStore(Entity entity)
+	private Map<FieldsMapping, Document> groupFieldsByFieldsMapping(Entity entity)
 	{
-		final Map<DataStore, Document> locationDocumentMap = new LinkedHashMap<>();
+		final Map<FieldsMapping, Document> locationDocumentMap = new LinkedHashMap<>();
 		entity.getFieldsValues()
 				.forEach((field, value) ->
 				{
-					final DataStore dataStoreFromEntityField = Conf.getConfiguration().getDataStoreFromEntityField(entity.getEntityName(), field);
-					if (dataStoreFromEntityField != null)
-						locationDocumentMap.computeIfAbsent(dataStoreFromEntityField, dataStore -> new Document())
+					final FieldsMapping fieldMappingFromEntityFields = Conf.getConfiguration().getFieldsMappingFromEntityField(entity.getEntityName(), field);
+					if (fieldMappingFromEntityFields != null)
+						locationDocumentMap.computeIfAbsent(fieldMappingFromEntityFields, fieldsMapping -> new Document())
 								.append(field, value);
 					else
 						throw new NullPointerException("Field " + field + "doesn't exists in entity " + entity.getEntityName());
@@ -85,12 +85,12 @@ public class MongoDBAdapter implements DatabaseAdapter
 
 	public void executeCreate(CreateSingle createSingle)
 	{
-		groupFieldsByDataStore(createSingle.getEntity())
-				.forEach((dataStore, document) ->
+		groupFieldsByFieldsMapping(createSingle.getEntity())
+				.forEach((fieldsMapping, document) ->
 				{
-					try (MongoClient mongoClient = MongoClients.create(PREFIX + dataStore.getConnStr()))
+					try (MongoClient mongoClient = MongoClients.create(PREFIX + fieldsMapping.getConnStr()))
 					{
-						mongoClient.getDatabase(dataStore.getLocation())
+						mongoClient.getDatabase(fieldsMapping.getLocation())
 								.getCollection(createSingle.getEntity().getEntityName())
 								.insertOne(document);
 					}

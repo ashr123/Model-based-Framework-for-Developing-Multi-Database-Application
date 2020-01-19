@@ -1,7 +1,7 @@
-package dataLayer.queryAdapters;
+package dataLayer.crud;
 
-import dataLayer.queryAdapters.crud.Query;
-import dataLayer.queryAdapters.dbAdapters.MongoDBAdapter;
+import dataLayer.crud.filters.Query;
+import dataLayer.crud.dbAdapters.MongoDBAdapter;
 
 import java.util.List;
 import java.util.Map;

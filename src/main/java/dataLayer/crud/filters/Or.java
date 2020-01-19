@@ -1,23 +1,22 @@
-package dataLayer.queryAdapters.crud;
+package dataLayer.crud.filters;
 
-import dataLayer.queryAdapters.dbAdapters.DatabaseAdapter;
+import dataLayer.crud.dbAdapters.DatabaseAdapter;
 import org.bson.conversions.Bson;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class And extends ComplexQuery
+public class Or extends ComplexQuery
 {
-
-	private And(Query... queries)
+	private Or(Query... queries)
 	{
 		super(queries);
 	}
 
-	public static And and(Query... queries)
+	public static Or or(Query... queries)
 	{
-		return new And(queries);
+		return new Or(queries);
 	}
 
 	@Override
@@ -29,12 +28,12 @@ public class And extends ComplexQuery
 	@Override
 	public String toString()
 	{
-		return "And{" + super.toString() + '}';
+		return "Or{" + super.toString() + '}';
 	}
 
 	public Bson generateFromMongoDB()
 	{
-		return com.mongodb.client.model.Filters.and((Bson[]) Arrays.stream(getComplexQuery())
+		return com.mongodb.client.model.Filters.or((Bson[]) Arrays.stream(getComplexQuery())
 				.map(Query::generateFromMongoDB)
 				.toArray());
 	}
