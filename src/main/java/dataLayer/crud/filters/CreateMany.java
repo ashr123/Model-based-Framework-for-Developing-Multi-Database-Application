@@ -3,6 +3,8 @@ package dataLayer.crud.filters;
 import dataLayer.configReader.Entity;
 import dataLayer.crud.dbAdapters.DatabaseAdapter;
 
+import java.util.Arrays;
+
 public class CreateMany implements VoidFilter
 {
 	private final Entity[] entities;
@@ -11,11 +13,6 @@ public class CreateMany implements VoidFilter
 	{
 		this.entities = entities;
 	}
-
-//	private CreateMany(List<Entity> entities)
-//	{
-//		this.entities = entities;
-//	}
 
 	public static CreateMany createMany(Entity... entities)
 	{
@@ -32,12 +29,6 @@ public class CreateMany implements VoidFilter
 		return entities;
 	}
 
-//	public CreateMany add(Entity entity)
-//	{
-//		entities.add(entity);
-//		return this;
-//	}
-
 	public void accept(DatabaseAdapter databaseAdapter)
 	{
 		databaseAdapter.executeCreate(this);
@@ -47,7 +38,7 @@ public class CreateMany implements VoidFilter
 	public String toString()
 	{
 		return "CreateMany{" +
-				"entities=" + entities +
+				"entities=" + Arrays.toString(entities) +
 				'}';
 	}
 }
