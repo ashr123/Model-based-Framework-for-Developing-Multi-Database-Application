@@ -4,21 +4,21 @@ import java.util.Arrays;
 
 public abstract class ComplexFilter implements Filter
 {
-	private final Filter[] queries;
+	private final Filter[] filters;
 
-	ComplexFilter(Filter... queries)
+	ComplexFilter(Filter... filters)
 	{
-		this.queries = queries;
+		this.filters = filters;
 	}
 
 	public Filter[] getComplexQuery()
 	{
-		return queries;
+		return filters;
 	}
 
 	@Override
 	public String toString()
 	{
-		return "queries=" + Arrays.toString(queries);
+		return "filters=" + Arrays.toString(filters);
 	}
 }
