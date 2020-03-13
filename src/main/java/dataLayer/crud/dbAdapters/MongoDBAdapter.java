@@ -12,6 +12,7 @@ import org.bson.conversions.Bson;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.mongodb.client.model.Filters.*;
 import static dataLayer.crud.filters.CreateSingle.createSingle;
@@ -100,7 +101,7 @@ public class MongoDBAdapter implements DatabaseAdapter
 	@Override
 	public void executeCreate(CreateMany createMany)
 	{
-		Arrays.stream(createMany.getEntities())
+		Stream.of(createMany.getEntities())
 				.forEach(entity -> executeCreate(createSingle(entity)));
 	}
 
@@ -143,8 +144,8 @@ public class MongoDBAdapter implements DatabaseAdapter
 	@Override
 	public List<Map<String, Object>> execute(And and)
 	{
-		return Arrays.stream(and.getComplexQuery())
-				.map(MongoDBAdapter.this::revealQuery)
+		return Stream.of(and.getComplexQuery())
+				.map(this::revealQuery)
 				.reduce((acc, map) ->
 				{
 					acc.retainAll(map);
@@ -156,8 +157,8 @@ public class MongoDBAdapter implements DatabaseAdapter
 	@Override
 	public List<Map<String, Object>> execute(Or or)
 	{
-		return Arrays.stream(or.getComplexQuery())
-				.map(MongoDBAdapter.this::revealQuery)
+		return Stream.of(or.getComplexQuery())
+				.map(this::revealQuery)
 				.flatMap(Collection::stream)
 				.distinct()
 				.collect(Collectors.toList());

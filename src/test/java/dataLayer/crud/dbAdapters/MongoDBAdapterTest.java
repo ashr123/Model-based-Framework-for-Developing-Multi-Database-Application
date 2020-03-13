@@ -19,6 +19,7 @@ import java.util.Map;
 import static dataLayer.crud.Read.read;
 import static dataLayer.crud.filters.And.and;
 import static dataLayer.crud.filters.Eq.eq;
+import static dataLayer.crud.filters.Gt.gt;
 import static dataLayer.crud.filters.Gte.gte;
 import static dataLayer.crud.filters.Lte.lte;
 import static dataLayer.crud.filters.Or.or;
@@ -106,6 +107,7 @@ class MongoDBAdapterTest
 	void testExecuteNe()
 	{
 		List<Map<String, Object>> result = read(Ne.ne("Person", "name", "Roy"));
+		System.out.println(result);
 		boolean hasYossi = result.get(0).get("name").equals("Yossi") &&
 				result.get(0).get("age").equals(22) &&
 				result.get(0).get("phoneNumber").equals("0587158627") &&
@@ -138,7 +140,7 @@ class MongoDBAdapterTest
 	@Test
 	void testExecuteGt()
 	{
-		List<Map<String, Object>> result = read(Gt.gt("Person", "age", 18));
+		List<Map<String, Object>> result = read(gt("Person", "age", 18));
 		boolean hasRoy = result.get(0).get("name").equals("Roy") &&
 				result.get(0).get("age").equals(27) &&
 				result.get(0).get("phoneNumber").equals("0546815181") &&
@@ -155,7 +157,7 @@ class MongoDBAdapterTest
 				result.get(2).get("emailAddress").equals("davidz@post.bgu.ac.il");
 		assertTrue(hasKarin, "Karin's age is > 18.");
 
-		result = read(Gt.gt("Person", "age", 30));
+		result = read(gt("Person", "age", 30));
 		assertTrue(result.isEmpty(), "Result should be empty all of the people ages are <= 30.");
 	}
 
@@ -289,5 +291,13 @@ class MongoDBAdapterTest
 						or(
 								eq("Person", "age", 27),
 								eq("Person", "age", 22)))));
+	}
+
+	@Test
+	void testExecuteTest()
+	{
+		System.out.println(read(and(
+				gt("Person", "age", 30),
+				eq("Person", "name", "Yossi"))));
 	}
 }
