@@ -79,7 +79,7 @@ public class MongoDBAdapter implements DatabaseAdapter
 						locationDocumentMap.computeIfAbsent(fieldMappingFromEntityFields, fieldsMapping -> new Document())
 								.append(field, value);
 					else
-						throw new NullPointerException("Field " + field + "doesn't exists in entity " + entity.getEntityName());
+						throw new NullPointerException("Field " + field + "doesn't exist in entity " + entity.getEntityName());
 				});
 		return locationDocumentMap;
 	}
