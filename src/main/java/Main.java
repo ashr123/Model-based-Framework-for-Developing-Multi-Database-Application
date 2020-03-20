@@ -63,10 +63,8 @@
 //
 //}
 
-import iot.jcypher.database.internal.PlannerStrategy;
 import iot.jcypher.database.util.QParamsUtil;
 import iot.jcypher.query.JcQuery;
-import iot.jcypher.query.api.IClause;
 import iot.jcypher.query.factories.clause.MATCH;
 import iot.jcypher.query.factories.clause.RETURN;
 import iot.jcypher.query.factories.clause.WHERE;
@@ -176,12 +174,11 @@ public class Main
 			try (Session session = driver.session())
 			{
 				JcNode movie = new JcNode("movie");
-				JcQuery query = new JcQuery(PlannerStrategy.DEFAULT);
-				query.setClauses(new IClause[]{
+				JcQuery query = new JcQuery();
+				query.setClauses(
 						MATCH.node(movie).label("Movie"),
 						WHERE.valueOf(movie.property("title")).EQUALS("The Polar Express"),
-						RETURN.value(movie.property("title"))
-				});
+						RETURN.value(movie.property("title")));
 				session.readTransaction(tx ->
 				{
 					execute(query, tx).stream()
@@ -208,10 +205,9 @@ public class Main
 
 				JcNode people = new JcNode("people");
 				JcRelation relatedTo = new JcRelation("relatedTo");
-				query.setClauses(new IClause[]{
+				query.setClauses(
 						MATCH.node(people).label("Person").relation(relatedTo).node().label("Movie").property("title").value("Cloud Atlas"),
-						RETURN.value(people.property("name")), RETURN.value(relatedTo.type()), RETURN.value(relatedTo)
-				});
+						RETURN.value(people.property("name")), RETURN.value(relatedTo.type()), RETURN.value(relatedTo));
 				session.readTransaction(tx ->
 				{
 					execute(query, tx).stream()
