@@ -34,4 +34,10 @@ public class Eq extends SimpleFilter
 	{
 		return com.mongodb.client.model.Filters.eq(getFieldName(), getValue());
 	}
+
+//	@Override
+	public String generateFromNeo4j()
+	{
+		return null;
+	}
 }

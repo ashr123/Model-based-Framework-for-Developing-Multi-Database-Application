@@ -15,4 +15,6 @@ public interface Filter
 	List<Map<String, Object>> accept(DatabaseAdapter databaseAdapter);
 
 	Bson generateFromMongoDB();
+
+//	String generateFromNeo4j();
 }
