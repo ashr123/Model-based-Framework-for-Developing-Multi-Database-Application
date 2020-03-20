@@ -215,7 +215,7 @@ public class Main
 				session.readTransaction(tx ->
 				{
 					execute(query, tx).stream()
-							.forEach(record -> System.out.println(record.get("people.name") + ", " + record.get("Type(relatedTo)") + ", " + record.get("relatedTo").asRelationship().asMap()));
+							.forEach(record -> System.out.println(record.get("people.name") + ", " + record.get("type(relatedTo)") + ", " + record.get("relatedTo").asRelationship().asMap()));
 					return null;
 				});
 //			System.out.println(result.list());
