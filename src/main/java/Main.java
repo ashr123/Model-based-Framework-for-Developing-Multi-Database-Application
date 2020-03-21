@@ -69,7 +69,6 @@ import iot.jcypher.database.DBType;
 import iot.jcypher.database.IDBAccess;
 import iot.jcypher.database.util.QParamsUtil;
 import iot.jcypher.query.JcQuery;
-import iot.jcypher.query.JcQueryResult;
 import iot.jcypher.query.factories.clause.MATCH;
 import iot.jcypher.query.factories.clause.RETURN;
 import iot.jcypher.query.factories.clause.WHERE;
@@ -114,16 +113,10 @@ public class Main
 		public void query()
 		{
 			JcNode movie = new JcNode("movie");
-			JcQuery query = new JcQuery();
-			query.setClauses(
+			System.out.println("RESULT!!!!!\n" + r_dbAccess.execute(new JcQuery(
 					MATCH.node(movie).label("Movie"),
-					RETURN.value(movie.property("title")));
-
-//			System.out.println(printJSON(query, Format.PRETTY_1));
-//			System.out.println(printJSON(query, Format.PRETTY_2));
-//			System.out.println(printJSON(query, Format.PRETTY_3));
-
-			System.out.println("RESULT!!!!!\n" + r_dbAccess.execute(query).resultOf(movie.property("title")));
+					RETURN.value(movie.property("title"))))
+					.resultOf(movie.property("title")));
 		}
 
 		@Override
