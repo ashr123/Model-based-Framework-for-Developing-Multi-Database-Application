@@ -67,24 +67,19 @@ import iot.jcypher.database.DBAccessFactory;
 import iot.jcypher.database.DBProperties;
 import iot.jcypher.database.DBType;
 import iot.jcypher.database.IDBAccess;
-import iot.jcypher.database.internal.PlannerStrategy;
 import iot.jcypher.database.util.QParamsUtil;
-import iot.jcypher.graph.GrNode;
 import iot.jcypher.query.JcQuery;
 import iot.jcypher.query.JcQueryResult;
-import iot.jcypher.query.api.IClause;
 import iot.jcypher.query.factories.clause.MATCH;
 import iot.jcypher.query.factories.clause.RETURN;
 import iot.jcypher.query.factories.clause.WHERE;
 import iot.jcypher.query.values.JcNode;
 import iot.jcypher.query.values.JcRelation;
 import iot.jcypher.query.writer.CypherWriter;
-import iot.jcypher.query.writer.Format;
 import iot.jcypher.query.writer.QueryParam;
 import iot.jcypher.query.writer.WriterContext;
 import org.neo4j.driver.*;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -128,8 +123,7 @@ public class Main
 //			System.out.println(printJSON(query, Format.PRETTY_2));
 //			System.out.println(printJSON(query, Format.PRETTY_3));
 
-			JcQueryResult result = r_dbAccess.execute(query);
-			System.out.println("RESULT!!!!!\n"+result.resultOf(movie.property("title")));
+			System.out.println("RESULT!!!!!\n" + r_dbAccess.execute(query).resultOf(movie.property("title")));
 		}
 
 		@Override
