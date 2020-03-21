@@ -69,11 +69,13 @@ import iot.jcypher.database.DBType;
 import iot.jcypher.database.IDBAccess;
 import iot.jcypher.database.util.QParamsUtil;
 import iot.jcypher.query.JcQuery;
+import iot.jcypher.query.JcQueryResult;
 import iot.jcypher.query.factories.clause.MATCH;
 import iot.jcypher.query.factories.clause.RETURN;
 import iot.jcypher.query.factories.clause.WHERE;
 import iot.jcypher.query.values.JcNode;
 import iot.jcypher.query.values.JcRelation;
+import iot.jcypher.query.values.JcString;
 import iot.jcypher.query.writer.CypherWriter;
 import iot.jcypher.query.writer.QueryParam;
 import iot.jcypher.query.writer.WriterContext;
@@ -112,11 +114,20 @@ public class Main
 
 		public void query()
 		{
-			JcNode movie = new JcNode("movie");
-			System.out.println("RESULT!!!!!\n" + r_dbAccess.execute(new JcQuery(
-					MATCH.node(movie).label("Movie"),
-					RETURN.value(movie.property("title"))))
-					.resultOf(movie.property("title")));
+			JcNode
+					people = new JcNode("people"),
+					m = new JcNode("m");
+			JcRelation relatedTo = new JcRelation("relatedTo");
+			JcString ty = new JcString("ty");
+			JcQuery query = new JcQuery(
+					MATCH.node(people).label("Person").relation(relatedTo).node(m).label("Movie"),
+					WHERE.valueOf(m.property("title")).EQUALS("Apollo 13"),
+					RETURN.value(people.property("name")),
+					RETURN.value(relatedTo.type()).AS(ty)/*,
+					RETURN.value(relatedTo)*/);
+			printQuery(query);
+			final JcQueryResult result = r_dbAccess.execute(query);
+			System.out.println("RESULT!!!!!\n" + (/*result.resultOf(relatedTo).size()==*/result.resultOf(ty)/*.size()*/));
 		}
 
 		@Override
@@ -137,6 +148,14 @@ public class Main
 ////			}
 //			return context.buffer.toString();
 //		}
+
+		private static void printQuery(JcQuery query)
+		{
+			WriterContext context = new WriterContext();
+			QueryParam.setExtractParams(query.isExtractParams(), context);
+			CypherWriter.toCypherExpression(query, context);
+			System.out.println("{\n\tquery: " + context.buffer.toString() + "\n\tparameters: " + QParamsUtil.createQueryParams(context) + "\n}");
+		}
 	}
 
 	private static class HelloWorldExample implements AutoCloseable

@@ -1,6 +1,11 @@
 package dataLayer.crud.filters;
 
 import dataLayer.crud.dbAdapters.DatabaseAdapter;
+import iot.jcypher.query.api.IClause;
+import iot.jcypher.query.factories.clause.MATCH;
+import iot.jcypher.query.factories.clause.RETURN;
+import iot.jcypher.query.factories.clause.WHERE;
+import iot.jcypher.query.values.JcNode;
 import org.bson.conversions.Bson;
 
 import java.util.List;
@@ -35,9 +40,13 @@ public class Eq extends SimpleFilter
 		return com.mongodb.client.model.Filters.eq(getFieldName(), getValue());
 	}
 
-//	@Override
-	public String generateFromNeo4j()
+	@Override
+	public IClause[] generateFromNeo4j()
 	{
-		return null;
+		JcNode node = new JcNode(getEntityName().toLowerCase());
+		return new IClause[]{
+				MATCH.node(node).label(getEntityName()).property(getFieldName()).value(getValue()),
+				RETURN.value(node)
+		};
 	}
 }

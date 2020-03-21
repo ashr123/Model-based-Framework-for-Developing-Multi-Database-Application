@@ -2,6 +2,7 @@ package dataLayer.crud.filters;
 
 
 import dataLayer.crud.dbAdapters.DatabaseAdapter;
+import iot.jcypher.query.api.IClause;
 import org.bson.conversions.Bson;
 
 import java.util.List;
@@ -16,5 +17,5 @@ public interface Filter
 
 	Bson generateFromMongoDB();
 
-//	String generateFromNeo4j();
+	IClause[] generateFromNeo4j();
 }

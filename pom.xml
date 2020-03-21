@@ -84,23 +84,23 @@
 <!--			<artifactId>jcypher</artifactId>-->
 <!--			<version>4.2.0</version>-->
 <!--		</dependency>-->
-		<dependency><!-- needed for embedded and in_memory database access -->
-			<groupId>org.neo4j</groupId>
-			<artifactId>neo4j</artifactId>
-			<version>3.5.2</version>
-		</dependency>
-		<dependency><!-- needed for in memory database access -->
-			<groupId>org.neo4j</groupId>
-			<artifactId>neo4j-kernel</artifactId>
-			<type>test-jar</type>
-			<version>3.5.2</version>
-		</dependency>
-		<dependency><!-- needed for embedded and in_memory database access -->
-			<groupId>org.neo4j</groupId>
-			<artifactId>neo4j-io</artifactId>
-			<version>3.5.2</version>
-			<type>test-jar</type>
-		</dependency>
+<!--		<dependency>&lt;!&ndash; needed for embedded and in_memory database access &ndash;&gt;-->
+<!--			<groupId>org.neo4j</groupId>-->
+<!--			<artifactId>neo4j</artifactId>-->
+<!--			<version>3.5.2</version>-->
+<!--		</dependency>-->
+<!--		<dependency>&lt;!&ndash; needed for in memory database access &ndash;&gt;-->
+<!--			<groupId>org.neo4j</groupId>-->
+<!--			<artifactId>neo4j-kernel</artifactId>-->
+<!--			<type>test-jar</type>-->
+<!--			<version>3.5.2</version>-->
+<!--		</dependency>-->
+<!--		<dependency>&lt;!&ndash; needed for embedded and in_memory database access &ndash;&gt;-->
+<!--			<groupId>org.neo4j</groupId>-->
+<!--			<artifactId>neo4j-io</artifactId>-->
+<!--			<version>3.5.2</version>-->
+<!--			<type>test-jar</type>-->
+<!--		</dependency>-->
 	</dependencies>
 
 	<build>

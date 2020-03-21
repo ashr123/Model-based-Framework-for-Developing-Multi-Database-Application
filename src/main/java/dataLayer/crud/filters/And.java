@@ -1,6 +1,9 @@
 package dataLayer.crud.filters;
 
 import dataLayer.crud.dbAdapters.DatabaseAdapter;
+import iot.jcypher.query.api.IClause;
+import iot.jcypher.query.factories.clause.WHERE;
+import iot.jcypher.query.values.JcNode;
 import org.bson.conversions.Bson;
 
 import java.util.Arrays;
@@ -37,5 +40,14 @@ public class And extends ComplexFilter
 		return com.mongodb.client.model.Filters.and((Bson[]) Arrays.stream(getComplexQuery())
 				.map(Filter::generateFromMongoDB)
 				.toArray());
+	}
+
+	@Override
+	public IClause[] generateFromNeo4j()
+	{
+//		return new IClause[]{
+//				WHERE.valueOf(new JcNode())
+//		};
+		return null;
 	}
 }

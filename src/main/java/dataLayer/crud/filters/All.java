@@ -1,6 +1,7 @@
 package dataLayer.crud.filters;
 
 import dataLayer.crud.dbAdapters.DatabaseAdapter;
+import iot.jcypher.query.api.IClause;
 import org.bson.conversions.Bson;
 
 import java.util.List;
@@ -36,5 +37,11 @@ public class All extends SimpleFilter
 	public Bson generateFromMongoDB()
 	{
 		throw new UnsupportedOperationException("Not implemented yet.");
+	}
+
+	@Override
+	public IClause[] generateFromNeo4j()
+	{
+		return new IClause[0];
 	}
 }
