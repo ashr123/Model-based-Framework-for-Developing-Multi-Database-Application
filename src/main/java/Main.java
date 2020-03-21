@@ -173,15 +173,14 @@ public class Main
 		{
 			try (Session session = driver.session())
 			{
-				JcNode movie = new JcNode("movie");
-				JcQuery query = new JcQuery();
-				query.setClauses(
-						MATCH.node(movie).label("Movie"),
-						WHERE.valueOf(movie.property("title")).EQUALS("The Polar Express"),
-						RETURN.value(movie.property("title")));
 				session.readTransaction(tx ->
 				{
-					execute(query, tx).stream()
+					JcNode movie = new JcNode("movie");
+					execute(new JcQuery(
+									MATCH.node(movie).label("Movie"),
+									WHERE.valueOf(movie.property("title")).EQUALS("The Polar Express"),
+									RETURN.value(movie.property("title"))),
+							tx).stream()
 							.forEach(record -> System.out.println(record.get("movie.title")));
 					return null;
 				});
@@ -203,14 +202,14 @@ public class Main
 					return null;
 				});
 
-				JcNode people = new JcNode("people");
-				JcRelation relatedTo = new JcRelation("relatedTo");
-				query.setClauses(
-						MATCH.node(people).label("Person").relation(relatedTo).node().label("Movie").property("title").value("Cloud Atlas"),
-						RETURN.value(people.property("name")), RETURN.value(relatedTo.type()), RETURN.value(relatedTo));
 				session.readTransaction(tx ->
 				{
-					execute(query, tx).stream()
+					JcNode people = new JcNode("people");
+					JcRelation relatedTo = new JcRelation("relatedTo");
+					execute(new JcQuery(
+									MATCH.node(people).label("Person").relation(relatedTo).node().label("Movie").property("title").value("Cloud Atlas"),
+									RETURN.value(people.property("name")), RETURN.value(relatedTo.type()), RETURN.value(relatedTo)),
+							tx).stream()
 							.forEach(record -> System.out.println(record.get("people.name") + ", " + record.get("type(relatedTo)") + ", " + record.get("relatedTo").asRelationship().asMap()));
 					return null;
 				});
