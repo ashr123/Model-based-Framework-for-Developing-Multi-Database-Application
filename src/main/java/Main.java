@@ -70,9 +70,7 @@ import iot.jcypher.database.IDBAccess;
 import iot.jcypher.database.util.QParamsUtil;
 import iot.jcypher.query.JcQuery;
 import iot.jcypher.query.JcQueryResult;
-import iot.jcypher.query.factories.clause.MATCH;
-import iot.jcypher.query.factories.clause.RETURN;
-import iot.jcypher.query.factories.clause.WHERE;
+import iot.jcypher.query.factories.clause.*;
 import iot.jcypher.query.values.JcNode;
 import iot.jcypher.query.values.JcRelation;
 import iot.jcypher.query.values.JcString;
@@ -118,7 +116,7 @@ public class Main
 					people = new JcNode("people"),
 					m = new JcNode("m");
 			JcRelation relatedTo = new JcRelation("relatedTo");
-			JcString ty = new JcString("ty");
+			JcString ty = new JcString("ty"), ty2 = new JcString("ty2");
 			JcQuery query = new JcQuery(
 					MATCH.node(people).label("Person").relation(relatedTo).node(m).label("Movie"),
 					WHERE.valueOf(m.property("title")).EQUALS("Apollo 13"),
@@ -126,7 +124,24 @@ public class Main
 					RETURN.value(relatedTo.type()).AS(ty)/*,
 					RETURN.value(relatedTo)*/);
 			printQuery(query);
+
+			query = new JcQuery(
+					MATCH.node(people).label("Person"),
+//					WHERE.valueOf(m.property("title")).EQUALS("Apollo 13"),
+					RETURN.value(people.property("name")).AS(ty),
+					UNION.distinct(),
+					MATCH.node(m).label("Movie"),
+					RETURN.value(m.id()).AS(ty)/*,
+					RETURN.value(relatedTo)*/);
+			query = new JcQuery(
+					MATCH.node(people).label("Person"),
+					WITH.value(people.property("name")).AS(ty),
+					MATCH.node(m).label("Movie"),
+					RETURN.value(ty),
+					RETURN.value(m.id()));
+			printQuery(query);
 			final JcQueryResult result = r_dbAccess.execute(query);
+			System.out.println("DB errors: " + result.getDBErrors() + ", general errors: " + result.getGeneralErrors());
 			System.out.println("RESULT!!!!!\n" + (/*result.resultOf(relatedTo).size()==*/result.resultOf(ty)/*.size()*/));
 		}
 
