@@ -110,6 +110,14 @@ public class Main
 			r_dbAccess = DBAccessFactory.createDBAccess(DBType.REMOTE, props, AuthTokens.basic(user, password));
 		}
 
+		private static void printQuery(JcQuery query)
+		{
+			WriterContext context = new WriterContext();
+			QueryParam.setExtractParams(query.isExtractParams(), context);
+			CypherWriter.toCypherExpression(query, context);
+			System.out.println("{\n\tquery: " + context.buffer.toString() + "\n\tparameters: " + QParamsUtil.createQueryParams(context) + "\n}");
+		}
+
 		public void query()
 		{
 			JcNode
@@ -139,16 +147,17 @@ public class Main
 					MATCH.node(m).label("Movie"),
 					RETURN.value(ty),
 					RETURN.value(m.id()));
+			query = new JcQuery(
+					MATCH.node(people).label("Person"),
+					SEPARATE.nextClause(),
+					MATCH.node(m).label("Movie"),
+					WHERE.valueOf(m.property("title")).EQUALS("Apollo 13"),
+					RETURN.value(m.property("title")).AS(ty));
 			printQuery(query);
 			final JcQueryResult result = r_dbAccess.execute(query);
-			System.out.println("DB errors: " + result.getDBErrors() + ", general errors: " + result.getGeneralErrors());
-			System.out.println("RESULT!!!!!\n" + (/*result.resultOf(relatedTo).size()==*/result.resultOf(ty)/*.size()*/));
-		}
-
-		@Override
-		public void close()
-		{
-			r_dbAccess.close();
+			System.out.println("DB errors: " + result.getDBErrors() +
+					"\nGeneral errors: " + result.getGeneralErrors() +
+					"\nResult: " + (/*result.resultOf(relatedTo).size()==*/result.resultOf(ty)/*.size()*/));
 		}
 
 //		protected String printJSON(JcQuery query, Format pretty)
@@ -164,12 +173,10 @@ public class Main
 //			return context.buffer.toString();
 //		}
 
-		private static void printQuery(JcQuery query)
+		@Override
+		public void close()
 		{
-			WriterContext context = new WriterContext();
-			QueryParam.setExtractParams(query.isExtractParams(), context);
-			CypherWriter.toCypherExpression(query, context);
-			System.out.println("{\n\tquery: " + context.buffer.toString() + "\n\tparameters: " + QParamsUtil.createQueryParams(context) + "\n}");
+			r_dbAccess.close();
 		}
 	}
 

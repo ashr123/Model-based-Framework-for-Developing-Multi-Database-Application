@@ -2,7 +2,11 @@ package dataLayer.crud.filters;
 
 import dataLayer.crud.dbAdapters.DatabaseAdapter;
 import iot.jcypher.query.api.IClause;
+import iot.jcypher.query.api.pattern.Element;
+import iot.jcypher.query.api.predicate.Concatenator;
+import iot.jcypher.query.api.returns.RSortable;
 import iot.jcypher.query.factories.clause.UNION;
+import iot.jcypher.query.factories.clause.WHERE;
 import org.bson.conversions.Bson;
 
 import java.util.Arrays;
@@ -44,8 +48,10 @@ public class Or extends ComplexFilter
 	@Override
 	public IClause[] generateFromNeo4j()
 	{
-		List<Node>
-				matches = new LinkedList<>();
+		List<Element<?>> matches = new LinkedList<>();
+		List<Concatenator> wheres = new LinkedList<>();
+		List<RSortable> returns = new LinkedList<>();
+//		WHERE.BR_OPEN().valueOf()..EQUALS().
 		return new IClause[]{
 				UNION.all()
 		};
