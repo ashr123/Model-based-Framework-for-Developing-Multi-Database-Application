@@ -93,11 +93,6 @@ public class Main
 //		{
 //			greeter.printGreeting("hello, world");
 //		}
-		try (HelloWorldExample2 greeter = new HelloWorldExample2("bolt://localhost:7687", "neo4j", "neo4j1"))
-		{
-			greeter.query();
-		}
-	}
 
 		try (HelloWorldExample2 greeter = new HelloWorldExample2("bolt://localhost:7687", "neo4j", "neo4j1"))
 		{
