@@ -76,11 +76,6 @@ import iot.jcypher.query.values.JcNode;
 import org.neo4j.driver.v1.AuthTokens;
 import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.GraphDatabase;
-import org.neo4j.driver.v1.Session;
-
-
-import java.util.Properties;
-
 
 import java.util.Properties;
 //import static org.neo4j.driver.Values.parameters;
@@ -124,7 +119,7 @@ public class Main
 			JcQueryResult result = r_dbAccess.execute(query);
 
 			System.out.println("DB errors: " + result.getDBErrors() + "\nGeneral errors: " + result.getGeneralErrors());
-			System.out.println("RESULT!!!!!\n"+result.resultOf(movie.property("title")));
+			System.out.println("RESULT!!!!!\n" + result.resultOf(movie.property("title")));
 		}
 
 		@Override
