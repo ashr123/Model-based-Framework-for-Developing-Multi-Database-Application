@@ -67,29 +67,22 @@ import iot.jcypher.database.DBAccessFactory;
 import iot.jcypher.database.DBProperties;
 import iot.jcypher.database.DBType;
 import iot.jcypher.database.IDBAccess;
-import iot.jcypher.database.util.QParamsUtil;
-import iot.jcypher.graph.GrNode;
-import iot.jcypher.graph.GrProperty;
-import iot.jcypher.graph.GrPropertyContainer;
-import iot.jcypher.graph.Graph;
 import iot.jcypher.query.JcQuery;
 import iot.jcypher.query.JcQueryResult;
-import iot.jcypher.query.factories.clause.*;
+import iot.jcypher.query.api.IClause;
+import iot.jcypher.query.factories.clause.MATCH;
+import iot.jcypher.query.factories.clause.RETURN;
 import iot.jcypher.query.values.JcNode;
-import iot.jcypher.query.values.JcNumber;
-import iot.jcypher.query.values.JcRelation;
-import iot.jcypher.query.values.JcString;
-import iot.jcypher.query.writer.CypherWriter;
-import iot.jcypher.query.writer.QueryParam;
-import iot.jcypher.query.writer.WriterContext;
-import org.neo4j.driver.*;
+import org.neo4j.driver.v1.AuthTokens;
+import org.neo4j.driver.v1.Driver;
+import org.neo4j.driver.v1.GraphDatabase;
+import org.neo4j.driver.v1.Session;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
 import java.util.Properties;
-import java.util.stream.Collectors;
 
+
+import java.util.Properties;
 //import static org.neo4j.driver.Values.parameters;
 
 public class Main
@@ -100,6 +93,12 @@ public class Main
 //		{
 //			greeter.printGreeting("hello, world");
 //		}
+		try (HelloWorldExample2 greeter = new HelloWorldExample2("bolt://localhost:7687", "neo4j", "neo4j1"))
+		{
+			greeter.query();
+		}
+	}
+
 		try (HelloWorldExample2 greeter = new HelloWorldExample2("bolt://localhost:7687", "neo4j", "neo4j1"))
 		{
 			greeter.query();
@@ -118,101 +117,26 @@ public class Main
 			r_dbAccess = DBAccessFactory.createDBAccess(DBType.REMOTE, props, AuthTokens.basic(user, password));
 		}
 
-		private static void printQuery(JcQuery query)
-		{
-			WriterContext context = new WriterContext();
-			QueryParam.setExtractParams(query.isExtractParams(), context);
-			CypherWriter.toCypherExpression(query, context);
-			System.out.println("{\n\tquery: " + context.buffer.toString() + "\n\tparameters: " + QParamsUtil.createQueryParams(context) + "\n}");
-		}
-
 		public void query()
 		{
-			JcNode
-					people = new JcNode("people"),
-					m = new JcNode("m");
-			JcRelation relatedTo = new JcRelation("relatedTo");
-			JcString ty = new JcString("ty"), ty2 = new JcString("ty2"), dummy = new JcString("dummy");
-			JcQuery query = new JcQuery(
-					MATCH.node(people).label("Person").relation(relatedTo).node(m).label("Movie"),
-					WHERE.valueOf(m.property("title")).EQUALS("Apollo 13"),
-					RETURN.value(people.property("name")),
-					RETURN.value(relatedTo.type()).AS(ty)/*,
-					RETURN.value(relatedTo)*/);
-			printQuery(query);
+			JcNode movie = new JcNode("movie");
+			JcQuery query = new JcQuery();
+			query.setClauses(new IClause[]{
+					MATCH.node(movie).label("Movie"),
+					RETURN.value(movie.property("title"))
+			});
 
-			query = new JcQuery(
-					MATCH.node(people).label("Person"),
-//					WHERE.valueOf(m.property("title")).EQUALS("Apollo 13"),
-					RETURN.value(people.property("name")).AS(ty),
-					UNION.distinct(),
-					MATCH.node(m).label("Movie"),
-					RETURN.value(m.id()).AS(ty)/*,
-					RETURN.value(relatedTo)*/);
-			query = new JcQuery(
-					MATCH.node(people).label("Person"),
-					WITH.value(people.property("name")).AS(ty),
-					MATCH.node(m).label("Movie"),
-					RETURN.value(ty),
-					RETURN.value(m.id()));
-			query = new JcQuery(
-					MATCH.node(people).label("Person"),
-					WITH.value(new JcNumber("1")).AS(dummy),
-					MATCH.node(m).label("Movie"),
-					WHERE.valueOf(m.property("title")).EQUALS("Apollo 13"),
-					RETURN.value(m.property("title")),
-					RETURN.value(people).AS(ty));
+			JcQueryResult result = r_dbAccess.execute(query);
 
-			JcNode person = new JcNode("person");
-			JcString name = new JcString("name");
-			JcString born = new JcString("born");
-			query = new JcQuery(
-					MATCH.node(person).label("Person").relation().out().type("ACTED_IN").node(),
-					RETURN.DISTINCT().value(person.property("name")).AS(name),
-					RETURN.value(person.property("born")).AS(born));
-			printQuery(query);
-			final JcQueryResult result = r_dbAccess.execute(query);
-			System.out.println("DB errors: " + result.getDBErrors() +
-					"\nGeneral errors: " + result.getGeneralErrors() /*+
-					"\nResult: " + (*//*result.resultOf(relatedTo).size()==*//*result.resultOf(ty)*//*.size()*//*)*/);
-
-			List<?> people1 = result.resultOf(born);
-			Graph graph = result.getGraph();
-
-			Object keanu = people1.get(0);
-			System.out.println(keanu);
-//			System.out.println(keanu.getProperty("name").getValue());
+			System.out.println("DB errors: " + result.getDBErrors() + "\nGeneral errors: " + result.getGeneralErrors());
+			System.out.println("RESULT!!!!!\n"+result.resultOf(movie.property("title")));
 		}
-
-//		protected String printJSON(JcQuery query, Format pretty)
-//		{
-//			WriterContext context = new WriterContext();
-//			context.cypherFormat = pretty;
-//			JSONWriter.toJSON(query, context);
-////			if (this.print)
-////			{
-////				System.out.println("");
-////				System.out.println(context.buffer.toString());
-////			}
-//			return context.buffer.toString();
-//		}
 
 		@Override
 		public void close()
 		{
 			r_dbAccess.close();
 		}
-
-		private static Map<String, Object> getElementsForGr(GrPropertyContainer propertyContainer)
-		{
-			return propertyContainer.getProperties().stream()
-					.collect(Collectors.toMap(GrProperty::getName, GrProperty::getValue, (a, b) -> b));
-		}
-
-//		private static Map<String, List<Map<String, Object>>> getAllEntities(Graph graph)
-//		{
-//			graph.
-//		}
 	}
 
 	private static class HelloWorldExample implements AutoCloseable
@@ -224,88 +148,36 @@ public class Main
 			driver = GraphDatabase.driver(uri, AuthTokens.basic(user, password));
 		}
 
-		private static Result execute(JcQuery query, Transaction tx)
-		{
-			WriterContext context = new WriterContext();
-			QueryParam.setExtractParams(query.isExtractParams(), context);
-			CypherWriter.toCypherExpression(query, context);
-			String cypher = context.buffer.toString();
-			Map<String, Object> paramsMap = QParamsUtil.createQueryParams(context);
-			System.out.println("{\n\tquery: " + cypher + "\n\tparameters: " + paramsMap + "\n}");
-			return paramsMap != null ? tx.run(cypher, paramsMap) : tx.run(cypher);
-		}
-
 		@Override
 		public void close()
 		{
 			driver.close();
 		}
 
-		public void printGreeting(final String message)
-		{
-			try (Session session = driver.session())
-			{
-				session.readTransaction(tx ->
-				{
-					JcNode movie = new JcNode("movie");
-					execute(new JcQuery(
-									MATCH.node(movie).label("Movie"),
-									WHERE.valueOf(movie.property("title")).EQUALS("The Polar Express"),
-									RETURN.value(movie.property("title"))),
-							tx).stream()
-							.forEach(record -> System.out.println(record.get("movie.title")));
-					return null;
-				});
-
-				session.readTransaction(tx ->
-				{
-					tx.run("MATCH (people:Person)-[relatedTo]-(m:Movie) " +
-							"WHERE m.title = \"Cloud Atlas\" " +
-							"RETURN people.name, Type(relatedTo), relatedTo").stream()
-							.forEach(record -> System.out.println(record.get("people.name") + ", " + record.get("Type(relatedTo)") + ", " + record.get("relatedTo").asRelationship().asMap()));
-					return null;
-				});
-
-				session.readTransaction(tx ->
-				{
-					JcNode
-							people = new JcNode("people"),
-							m = new JcNode("m");
-					JcRelation relatedTo = new JcRelation("relatedTo");
-					execute(new JcQuery(
-									MATCH.node(people).label("Person").relation(relatedTo).node(m).label("Movie"),
-									WHERE.valueOf(m.property("title")).EQUALS("Cloud Atlas"),
-									RETURN.value(people.property("name")), RETURN.value(relatedTo.type()), RETURN.value(relatedTo)),
-							tx).stream()
-							.forEach(record -> System.out.println(record.get("people.name") + ", " + record.get("type(relatedTo)") + ", " + record.get("relatedTo").asRelationship().asMap()));
-					return null;
-				});
-
-				session.readTransaction(tx ->
-				{
-					tx.run("MATCH (people:Person)-[relatedTo]-(:Movie {title: \"Cloud Atlas\"}) " +
-							"RETURN people.name, Type(relatedTo), relatedTo").stream()
-							.forEach(record -> System.out.println(record.get("people.name") + ", " + record.get("Type(relatedTo)") + ", " + record.get("relatedTo").asRelationship().asMap()));
-					return null;
-				});
-
-//				session.run("MATCH (people:Person)-[relatedTo]-(:Movie {title: \"Cloud Atlas\"}) " +
-//						"RETURN people.name, Type(relatedTo), relatedTo", TransactionConfig.builder().build())
-				session.readTransaction(tx ->
-				{
-					JcNode people = new JcNode("people");
-					JcRelation relatedTo = new JcRelation("relatedTo");
-					execute(new JcQuery(
-									MATCH.node(people).label("Person").relation(relatedTo).node().label("Movie").property("title").value("Cloud Atlas"),
-									RETURN.value(people.property("name")), RETURN.value(relatedTo.type()), RETURN.value(relatedTo)),
-							tx).stream()
-							.forEach(record -> System.out.println(record.get("people.name") + ", " + record.get("type(relatedTo)") + ", " + record.get("relatedTo").asRelationship().asMap()));
-					return null;
-				});
+//		public void printGreeting(final String message)
+//		{
+//			try (Session session = driver.session())
+//			{
+//				session.readTransaction(tx ->
+//				{
+//					tx.run("MATCH (people:Person)-[relatedTo]-(m:Movie) " +
+//							"WHERE m.title = \"Cloud Atlas\" " +
+//							"RETURN people.name, Type(relatedTo), relatedTo").stream()
+//							.forEach(record -> System.out.println(record.get("people.name") + ", " + record.get("Type(relatedTo)") + ", " + record.get("relatedTo").asRelationship().asMap()));
+//					return null;
+//				});
+//
+//				session.readTransaction(tx ->
+//				{
+//					tx.run("MATCH (people:Person)-[relatedTo]-(:Movie {title: \"Cloud Atlas\"}) " +
+//							"RETURN people.name, Type(relatedTo), relatedTo").stream()
+//							.forEach(record -> System.out.println(record.get("people.name") + ", " + record.get("Type(relatedTo)") + ", " + record.get("relatedTo").asRelationship().asMap()));
+//					return null;
+//				});
 //			System.out.println(result.list());
 //			result.stream()
 //					.forEach(record -> System.out.println(record.get("title")));
-			}
-		}
+//			}
+//		}
 	}
 }
