@@ -35,16 +35,16 @@ public class MongoDBAdapter implements DatabaseAdapter
 		voidFilter.accept(this);
 	}
 
-	public Map<String, List<Map<String, Object>>> revealQuery(Filter filter)
+	public Map<String, Set<Map<String, Object>>> revealQuery(Filter filter)
 	{
 		return filter.accept(this);
 	}
 
-	private List<Map<String, Object>> getStringObjectMap(FindIterable<Document> myDoc)
+	private Set<Map<String, Object>> getStringObjectMap(FindIterable<Document> myDoc)
 	{
 		if (myDoc != null)
 		{
-			final List<Map<String, Object>> output = new LinkedList<>();
+			final Set<Map<String, Object>> output = new HashSet<>();
 			for (Document document : myDoc)
 			{
 				final Set<Map.Entry<String, Object>> result = document.entrySet();
@@ -58,12 +58,12 @@ public class MongoDBAdapter implements DatabaseAdapter
 		return null;
 	}
 
-	private Map<String, List<Map<String, Object>>> query(SimpleFilter simpleFilter, Bson filter)
+	private Map<String, Set<Map<String, Object>>> query(SimpleFilter simpleFilter, Bson filter)
 	{
 		final FieldsMapping fieldsMapping = Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityName(), simpleFilter.getFieldName());
 		try (MongoClient mongoClient = MongoClients.create(PREFIX + fieldsMapping.getConnStr()))
 		{
-			Map<String, List<Map<String, Object>>> map = new HashMap<>();
+			Map<String, Set<Map<String, Object>>> map = new HashMap<>();
 			map.put(simpleFilter.getEntityName(), getStringObjectMap(mongoClient.getDatabase(fieldsMapping.getLocation())
 					.getCollection(simpleFilter.getEntityName())
 					.find(filter)));
@@ -109,77 +109,113 @@ public class MongoDBAdapter implements DatabaseAdapter
 	}
 
 	@Override
-	public Map<String, List<Map<String, Object>>> execute(Eq eq)
+	public Map<String, Set<Map<String, Object>>> execute(Eq eq)
 	{
 		return query(eq, eq(eq.getFieldName(), eq.getValue()));
 	}
 
 	@Override
-	public Map<String, List<Map<String, Object>>> execute(Ne ne)
+	public Map<String, Set<Map<String, Object>>> execute(Ne ne)
 	{
 		return query(ne, ne(ne.getFieldName(), ne.getValue()));
 	}
 
 	@Override
-	public Map<String, List<Map<String, Object>>> execute(Gt gt)
+	public Map<String, Set<Map<String, Object>>> execute(Gt gt)
 	{
 		return query(gt, gt(gt.getFieldName(), gt.getValue()));
 	}
 
 	@Override
-	public Map<String, List<Map<String, Object>>> execute(Lt lt)
+	public Map<String, Set<Map<String, Object>>> execute(Lt lt)
 	{
 		return query(lt, lt(lt.getFieldName(), lt.getValue()));
 	}
 
 	@Override
-	public Map<String, List<Map<String, Object>>> execute(Gte gte)
+	public Map<String, Set<Map<String, Object>>> execute(Gte gte)
 	{
 		return query(gte, gte(gte.getFieldName(), gte.getValue()));
 	}
 
 	@Override
-	public Map<String, List<Map<String, Object>>> execute(Lte lte)
+	public Map<String, Set<Map<String, Object>>> execute(Lte lte)
 	{
 		return query(lte, lte(lte.getFieldName(), lte.getValue()));
 	}
 
 	@Override
-	public Map<String, List<Map<String, Object>>> execute(And and)
+	public Map<String, Set<Map<String, Object>>> execute(And and)
 	{
-		return Stream.of(and.getComplexQuery())
-				.map(this::revealQuery)
-				.reduce((acc, map) ->
-				{
-					acc.retainAll(map);
-					return acc;
-				})
-				.orElse(new LinkedList<>());
+		return null;
+//		return Stream.of(and.getComplexQuery())
+//				.map(this::revealQuery)
+//				.reduce((acc, map) ->
+//				{
+//					acc.retainAll(map);
+//					return acc;
+//				})
+//				.orElse(new HashSet<>());
 	}
 
 	@Override
-	public Map<String, List<Map<String, Object>>> execute(Or or)
+	public Map<String, Set<Map<String, Object>>> execute(Or or)
 	{
-		List<Map<String, List<Map<String, Object>>>> tempList = Stream.of(or.getComplexQuery())
-				.map(this::revealQuery)
-				.collect(Collectors.toList());
+//		Map<String, Set<Map<String, Object>>> output = new HashMap<>();
+//		List<Map<String, Set<Map<String, Object>>>> temp = Stream.of(or.getComplexQuery())
+//				.map(this::revealQuery)
+//				.collect(Collectors.toList());
 
-		Map<String, List<Map<String, Object>>> output = new HashMap<>();
-		tempList.forEach(typeMap ->
-				tempList.stream()
-						.filter(typeMap2 -> !typeMap2.equals(typeMap))
-						.forEach(typeMap2 -> typeMap
-								.forEach((key, value) ->
-								{
-									List<Map<String, Object>> lst = typeMap2.get(key);
-									if (lst != null)
-									{
-										output.computeIfAbsent(key, type -> new LinkedList<>());
-										lst.removeAll(output.get(key));
-										output.get(key).addAll(lst);
-									}
-								})));
-		return output;
+		// See: https://www.baeldung.com/java-merge-maps#concat
+		return Stream.of(or.getComplexQuery())
+				.flatMap(filter -> revealQuery(filter).entrySet().stream())
+				.collect(Collectors.toMap(
+						Map.Entry::getKey,
+						Map.Entry::getValue,
+						(set1, set2) ->
+								Stream.concat(set1.stream(), set2.stream())
+										.collect(Collectors.toSet())));
+
+
+//		return Stream.of(or.getComplexQuery())
+//				.map(this::revealQuery)
+//				.reduce((stringSetMap, stringSetMap2) ->
+//				{
+//					stringSetMap.forEach((type, entitiesSet) -> stringSetMap2.merge(type, entitiesSet, (maps, maps2) ->
+//					{
+//						HashSet<Map<String, Object>> set = new HashSet<>(maps);
+//						set.addAll(maps2);
+//						return set;
+//					}));
+//					return stringSetMap2;
+//				})
+//				.orElse(new HashMap<>());
+//		Stream.of(or.getComplexQuery())
+//				.map(this::revealQuery)
+//				.forEach(typeMap -> typeMap
+//						.forEach((type, entitiesSet) ->
+//						{
+//							// if type doesn't exist in output-create it
+//							output.computeIfAbsent(type, typeIgnored -> new HashSet<>())
+//									.addAll(entitiesSet); // merge existing entities in the type with remaining entities
+//						}));
+//		return output;
+
+//		tempList.forEach(typeMap ->
+//				tempList.stream()
+//						.filter(typeMap2 -> !typeMap2.equals(typeMap))
+//						.forEach(typeMap2 -> typeMap
+//								.forEach((type, value) ->
+//								{
+//									Set<Map<String, Object>> lst = typeMap2.get(type);
+//									if (lst != null)
+//									{
+//										output.computeIfAbsent(type, typeIgnored -> new LinkedList<>());
+//										lst.removeAll(output.get(type));
+//										output.get(type).addAll(lst);
+//									}
+//								})));
+//		return output;
 
 //		tempList.stream()
 //				.map(typeMap -> typeMap.entrySet().stream()
@@ -198,7 +234,7 @@ public class MongoDBAdapter implements DatabaseAdapter
 	}
 
 	@Override
-	public Map<String, List<Map<String, Object>>> execute(All all)
+	public Map<String, Set<Map<String, Object>>> execute(All all)
 	{
 		throw new UnsupportedOperationException("Not yet implemented");
 //		return query(All, lte(lte.getFieldName(), lte.getValue()));

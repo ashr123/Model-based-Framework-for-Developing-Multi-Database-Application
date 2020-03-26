@@ -4,8 +4,8 @@ import dataLayer.crud.dbAdapters.DatabaseAdapter;
 import iot.jcypher.query.api.IClause;
 import org.bson.conversions.Bson;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class All extends SimpleFilter
 {
@@ -20,7 +20,7 @@ public class All extends SimpleFilter
 	}
 
 	@Override
-	public Map<String, List<Map<String, Object>>> accept(DatabaseAdapter databaseAdapter)
+	public Map<String, Set<Map<String, Object>>> accept(DatabaseAdapter databaseAdapter)
 	{
 		return databaseAdapter.execute(this);
 	}

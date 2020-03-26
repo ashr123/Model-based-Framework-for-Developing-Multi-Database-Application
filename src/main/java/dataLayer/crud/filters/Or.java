@@ -8,10 +8,7 @@ import iot.jcypher.query.api.returns.RSortable;
 import iot.jcypher.query.factories.clause.UNION;
 import org.bson.conversions.Bson;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Or extends ComplexFilter
 {
@@ -26,7 +23,7 @@ public class Or extends ComplexFilter
 	}
 
 	@Override
-	public Map<String, List<Map<String, Object>>> accept(DatabaseAdapter databaseAdapter)
+	public Map<String, Set<Map<String, Object>>> accept(DatabaseAdapter databaseAdapter)
 	{
 		return databaseAdapter.execute(this);
 	}

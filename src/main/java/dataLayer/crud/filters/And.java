@@ -5,8 +5,8 @@ import iot.jcypher.query.api.IClause;
 import org.bson.conversions.Bson;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class And extends ComplexFilter
 {
@@ -22,7 +22,7 @@ public class And extends ComplexFilter
 	}
 
 	@Override
-	public Map<String, List<Map<String, Object>>> accept(DatabaseAdapter databaseAdapter)
+	public Map<String, Set<Map<String, Object>>> accept(DatabaseAdapter databaseAdapter)
 	{
 		return databaseAdapter.execute(this);
 	}

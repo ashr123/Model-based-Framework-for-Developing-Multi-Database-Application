@@ -7,8 +7,8 @@ import iot.jcypher.query.factories.clause.RETURN;
 import iot.jcypher.query.values.JcNode;
 import org.bson.conversions.Bson;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class Eq extends SimpleFilter
 {
@@ -23,7 +23,7 @@ public class Eq extends SimpleFilter
 	}
 
 	@Override
-	public Map<String, List<Map<String, Object>>> accept(DatabaseAdapter databaseAdapter)
+	public Map<String, Set<Map<String, Object>>> accept(DatabaseAdapter databaseAdapter)
 	{
 		return databaseAdapter.execute(this);
 	}
