@@ -68,10 +68,15 @@ import iot.jcypher.database.DBProperties;
 import iot.jcypher.database.DBType;
 import iot.jcypher.database.IDBAccess;
 import iot.jcypher.database.util.QParamsUtil;
+import iot.jcypher.graph.GrNode;
+import iot.jcypher.graph.GrProperty;
+import iot.jcypher.graph.GrPropertyContainer;
+import iot.jcypher.graph.Graph;
 import iot.jcypher.query.JcQuery;
 import iot.jcypher.query.JcQueryResult;
 import iot.jcypher.query.factories.clause.*;
 import iot.jcypher.query.values.JcNode;
+import iot.jcypher.query.values.JcNumber;
 import iot.jcypher.query.values.JcRelation;
 import iot.jcypher.query.values.JcString;
 import iot.jcypher.query.writer.CypherWriter;
@@ -79,8 +84,11 @@ import iot.jcypher.query.writer.QueryParam;
 import iot.jcypher.query.writer.WriterContext;
 import org.neo4j.driver.*;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 //import static org.neo4j.driver.Values.parameters;
 
@@ -124,7 +132,7 @@ public class Main
 					people = new JcNode("people"),
 					m = new JcNode("m");
 			JcRelation relatedTo = new JcRelation("relatedTo");
-			JcString ty = new JcString("ty"), ty2 = new JcString("ty2");
+			JcString ty = new JcString("ty"), ty2 = new JcString("ty2"), dummy = new JcString("dummy");
 			JcQuery query = new JcQuery(
 					MATCH.node(people).label("Person").relation(relatedTo).node(m).label("Movie"),
 					WHERE.valueOf(m.property("title")).EQUALS("Apollo 13"),
@@ -149,15 +157,31 @@ public class Main
 					RETURN.value(m.id()));
 			query = new JcQuery(
 					MATCH.node(people).label("Person"),
-					SEPARATE.nextClause(),
+					WITH.value(new JcNumber("1")).AS(dummy),
 					MATCH.node(m).label("Movie"),
 					WHERE.valueOf(m.property("title")).EQUALS("Apollo 13"),
-					RETURN.value(m.property("title")).AS(ty));
+					RETURN.value(m.property("title")),
+					RETURN.value(people).AS(ty));
+
+			JcNode person = new JcNode("person");
+			JcString name = new JcString("name");
+			JcString born = new JcString("born");
+			query = new JcQuery(
+					MATCH.node(person).label("Person").relation().out().type("ACTED_IN").node(),
+					RETURN.DISTINCT().value(person.property("name")).AS(name),
+					RETURN.value(person.property("born")).AS(born));
 			printQuery(query);
 			final JcQueryResult result = r_dbAccess.execute(query);
 			System.out.println("DB errors: " + result.getDBErrors() +
-					"\nGeneral errors: " + result.getGeneralErrors() +
-					"\nResult: " + (/*result.resultOf(relatedTo).size()==*/result.resultOf(ty)/*.size()*/));
+					"\nGeneral errors: " + result.getGeneralErrors() /*+
+					"\nResult: " + (*//*result.resultOf(relatedTo).size()==*//*result.resultOf(ty)*//*.size()*//*)*/);
+
+			List<?> people1 = result.resultOf(born);
+			Graph graph = result.getGraph();
+
+			Object keanu = people1.get(0);
+			System.out.println(keanu);
+//			System.out.println(keanu.getProperty("name").getValue());
 		}
 
 //		protected String printJSON(JcQuery query, Format pretty)
@@ -178,6 +202,17 @@ public class Main
 		{
 			r_dbAccess.close();
 		}
+
+		private static Map<String, Object> getElementsForGr(GrPropertyContainer propertyContainer)
+		{
+			return propertyContainer.getProperties().stream()
+					.collect(Collectors.toMap(GrProperty::getName, GrProperty::getValue, (a, b) -> b));
+		}
+
+//		private static Map<String, List<Map<String, Object>>> getAllEntities(Graph graph)
+//		{
+//			graph.
+//		}
 	}
 
 	private static class HelloWorldExample implements AutoCloseable
