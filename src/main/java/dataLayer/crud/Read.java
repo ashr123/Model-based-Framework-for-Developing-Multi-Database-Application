@@ -11,7 +11,7 @@ public class Read
 {
 	private static final DatabaseAdapter MONGO_DB_ADAPTER = new MongoDBAdapter();
 
-	public static List<Map<String, Object>> read(Filter filter)
+	public static Map<String, List<Map<String, Object>>> read(Filter filter)
 	{
 		return MONGO_DB_ADAPTER.revealQuery(filter);
 	}

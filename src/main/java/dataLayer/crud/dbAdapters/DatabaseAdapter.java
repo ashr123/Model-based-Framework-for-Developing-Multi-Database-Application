@@ -12,27 +12,27 @@ public interface DatabaseAdapter
 {
 	void revealQuery(VoidFilter voidFilter);
 
-	List<Map<String, Object>> revealQuery(Filter filter);
+	Map<String, List<Map<String, Object>>> revealQuery(Filter filter);
 
 	void executeCreate(CreateSingle createSingle);
 
 	void executeCreate(CreateMany createMany);
 
-	List<Map<String, Object>> execute(Eq eq);
+	Map<String, List<Map<String, Object>>> execute(Eq eq);
 
-	List<Map<String, Object>> execute(Ne ne);
+	Map<String, List<Map<String, Object>>> execute(Ne ne);
 
-	List<Map<String, Object>> execute(Gt gt);
+	Map<String, List<Map<String, Object>>> execute(Gt gt);
 
-	List<Map<String, Object>> execute(Lt lt);
+	Map<String, List<Map<String, Object>>> execute(Lt lt);
 
-	List<Map<String, Object>> execute(Gte gte);
+	Map<String, List<Map<String, Object>>> execute(Gte gte);
 
-	List<Map<String, Object>> execute(Lte lte);
+	Map<String, List<Map<String, Object>>> execute(Lte lte);
 
-	List<Map<String, Object>> execute(And and);
+	Map<String, List<Map<String, Object>>> execute(And and);
 
-	List<Map<String, Object>> execute(Or or);
+	Map<String, List<Map<String, Object>>> execute(Or or);
 
-	List<Map<String, Object>> execute(All all);
+	Map<String, List<Map<String, Object>>> execute(All all);
 }

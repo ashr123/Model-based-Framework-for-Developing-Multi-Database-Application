@@ -2,8 +2,6 @@ package dataLayer.crud.filters;
 
 import dataLayer.crud.dbAdapters.DatabaseAdapter;
 import iot.jcypher.query.api.IClause;
-import iot.jcypher.query.factories.clause.WHERE;
-import iot.jcypher.query.values.JcNode;
 import org.bson.conversions.Bson;
 
 import java.util.Arrays;
@@ -24,7 +22,7 @@ public class And extends ComplexFilter
 	}
 
 	@Override
-	public List<Map<String, Object>> accept(DatabaseAdapter databaseAdapter)
+	public Map<String, List<Map<String, Object>>> accept(DatabaseAdapter databaseAdapter)
 	{
 		return databaseAdapter.execute(this);
 	}

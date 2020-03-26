@@ -6,7 +6,6 @@ import iot.jcypher.query.api.pattern.Element;
 import iot.jcypher.query.api.predicate.Concatenator;
 import iot.jcypher.query.api.returns.RSortable;
 import iot.jcypher.query.factories.clause.UNION;
-import iot.jcypher.query.factories.clause.WHERE;
 import org.bson.conversions.Bson;
 
 import java.util.Arrays;
@@ -27,7 +26,7 @@ public class Or extends ComplexFilter
 	}
 
 	@Override
-	public List<Map<String, Object>> accept(DatabaseAdapter databaseAdapter)
+	public Map<String, List<Map<String, Object>>> accept(DatabaseAdapter databaseAdapter)
 	{
 		return databaseAdapter.execute(this);
 	}

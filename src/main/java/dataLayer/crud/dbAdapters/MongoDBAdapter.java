@@ -4,8 +4,9 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import dataLayer.configReader.Conf;
-import dataLayer.configReader.FieldsMapping;
 import dataLayer.configReader.Entity;
+import dataLayer.configReader.FieldsMapping;
+import dataLayer.crud.filters.SimpleFilter;
 import dataLayer.crud.filters.*;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -34,7 +35,7 @@ public class MongoDBAdapter implements DatabaseAdapter
 		voidFilter.accept(this);
 	}
 
-	public List<Map<String, Object>> revealQuery(Filter filter)
+	public Map<String, List<Map<String, Object>>> revealQuery(Filter filter)
 	{
 		return filter.accept(this);
 	}
@@ -57,14 +58,16 @@ public class MongoDBAdapter implements DatabaseAdapter
 		return null;
 	}
 
-	private List<Map<String, Object>> query(SimpleFilter simpleFilter, Bson filter)
+	private Map<String, List<Map<String, Object>>> query(SimpleFilter simpleFilter, Bson filter)
 	{
 		final FieldsMapping fieldsMapping = Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityName(), simpleFilter.getFieldName());
 		try (MongoClient mongoClient = MongoClients.create(PREFIX + fieldsMapping.getConnStr()))
 		{
-			return getStringObjectMap(mongoClient.getDatabase(fieldsMapping.getLocation())
+			Map<String, List<Map<String, Object>>> map = new HashMap<>();
+			map.put(simpleFilter.getEntityName(), getStringObjectMap(mongoClient.getDatabase(fieldsMapping.getLocation())
 					.getCollection(simpleFilter.getEntityName())
-					.find(filter));
+					.find(filter)));
+			return map;
 		}
 	}
 
@@ -106,43 +109,43 @@ public class MongoDBAdapter implements DatabaseAdapter
 	}
 
 	@Override
-	public List<Map<String, Object>> execute(Eq eq)
+	public Map<String, List<Map<String, Object>>> execute(Eq eq)
 	{
 		return query(eq, eq(eq.getFieldName(), eq.getValue()));
 	}
 
 	@Override
-	public List<Map<String, Object>> execute(Ne ne)
+	public Map<String, List<Map<String, Object>>> execute(Ne ne)
 	{
 		return query(ne, ne(ne.getFieldName(), ne.getValue()));
 	}
 
 	@Override
-	public List<Map<String, Object>> execute(Gt gt)
+	public Map<String, List<Map<String, Object>>> execute(Gt gt)
 	{
 		return query(gt, gt(gt.getFieldName(), gt.getValue()));
 	}
 
 	@Override
-	public List<Map<String, Object>> execute(Lt lt)
+	public Map<String, List<Map<String, Object>>> execute(Lt lt)
 	{
 		return query(lt, lt(lt.getFieldName(), lt.getValue()));
 	}
 
 	@Override
-	public List<Map<String, Object>> execute(Gte gte)
+	public Map<String, List<Map<String, Object>>> execute(Gte gte)
 	{
 		return query(gte, gte(gte.getFieldName(), gte.getValue()));
 	}
 
 	@Override
-	public List<Map<String, Object>> execute(Lte lte)
+	public Map<String, List<Map<String, Object>>> execute(Lte lte)
 	{
 		return query(lte, lte(lte.getFieldName(), lte.getValue()));
 	}
 
 	@Override
-	public List<Map<String, Object>> execute(And and)
+	public Map<String, List<Map<String, Object>>> execute(And and)
 	{
 		return Stream.of(and.getComplexQuery())
 				.map(this::revealQuery)
@@ -155,17 +158,47 @@ public class MongoDBAdapter implements DatabaseAdapter
 	}
 
 	@Override
-	public List<Map<String, Object>> execute(Or or)
+	public Map<String, List<Map<String, Object>>> execute(Or or)
 	{
-		return Stream.of(or.getComplexQuery())
+		List<Map<String, List<Map<String, Object>>>> tempList = Stream.of(or.getComplexQuery())
 				.map(this::revealQuery)
-				.flatMap(Collection::stream)
-				.distinct()
 				.collect(Collectors.toList());
+
+		Map<String, List<Map<String, Object>>> output = new HashMap<>();
+		tempList.forEach(typeMap ->
+				tempList.stream()
+						.filter(typeMap2 -> !typeMap2.equals(typeMap))
+						.forEach(typeMap2 -> typeMap
+								.forEach((key, value) ->
+								{
+									List<Map<String, Object>> lst = typeMap2.get(key);
+									if (lst != null)
+									{
+										output.computeIfAbsent(key, type -> new LinkedList<>());
+										lst.removeAll(output.get(key));
+										output.get(key).addAll(lst);
+									}
+								})));
+		return output;
+
+//		tempList.stream()
+//				.map(typeMap -> typeMap.entrySet().stream()
+//						.forEach(stringListEntry -> tempList.stream().))
+//		tempList.stream()
+//				.map(typeMap -> tempList.stream()
+//						.flatMap(map -> map.entrySet().stream())
+//						.filter(stringListEntry -> stringListEntry.getKey().equals())
+//						.map(stringListEntry ->);
+//
+//		return Stream.of(or.getComplexQuery())
+//				.map(this::revealQuery)
+//				.flatMap(Collection::stream)
+//				.distinct()
+//				.collect(toList());
 	}
 
 	@Override
-	public List<Map<String, Object>> execute(All all)
+	public Map<String, List<Map<String, Object>>> execute(All all)
 	{
 		throw new UnsupportedOperationException("Not yet implemented");
 //		return query(All, lte(lte.getFieldName(), lte.getValue()));

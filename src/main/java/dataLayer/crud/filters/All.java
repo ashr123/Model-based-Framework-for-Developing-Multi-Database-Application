@@ -20,7 +20,7 @@ public class All extends SimpleFilter
 	}
 
 	@Override
-	public List<Map<String, Object>> accept(DatabaseAdapter databaseAdapter)
+	public Map<String, List<Map<String, Object>>> accept(DatabaseAdapter databaseAdapter)
 	{
 		return databaseAdapter.execute(this);
 	}
