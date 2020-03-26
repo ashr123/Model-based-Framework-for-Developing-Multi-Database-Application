@@ -13,6 +13,12 @@
 	</properties>
 
 	<dependencies>
+		<!-- THIS IS THE RELEVANT PART OF NEO4J COMPONENT -->
+		<dependency>
+			<groupId>net.iot-solutions.graphdb</groupId>
+			<artifactId>jcypher</artifactId>
+			<version>4.2.0</version>
+		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine -->
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
@@ -26,11 +32,6 @@
 			<version>3.12.1</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.neo4j.driver/neo4j-java-driver -->
-		<dependency>
-			<groupId>org.neo4j.driver</groupId>
-			<artifactId>neo4j-java-driver</artifactId>
-			<version>4.0.0</version>
-		</dependency>
 		<dependency>
 			<groupId>org.jsonschema2pojo</groupId>
 			<artifactId>jsonschema2pojo-core</artifactId>
