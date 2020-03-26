@@ -83,8 +83,6 @@ import java.util.Properties;
 
 
 import java.util.Properties;
->>>>>>> Stashed changes
-
 //import static org.neo4j.driver.Values.parameters;
 
 public class Main
@@ -92,7 +90,6 @@ public class Main
 	public static void main(String... args)
 	{
 //		try (HelloWorldExample greeter = new HelloWorldExample("bolt://localhost:7687", "neo4j", "neo4j1"))
-<<<<<<< Updated upstream
 //		{
 //			greeter.printGreeting("hello, world");
 //		}
@@ -135,41 +132,6 @@ public class Main
 		{
 			r_dbAccess.close();
 		}
-	}
-
-	private static class HelloWorldExample2 implements AutoCloseable
-	{
-		private final IDBAccess r_dbAccess;
-
-		public HelloWorldExample2(String uri, String user, String password)
-		{
-
-			Properties props = new Properties();
-			props.setProperty(DBProperties.SERVER_ROOT_URI, uri);
-			r_dbAccess = DBAccessFactory.createDBAccess(DBType.REMOTE, props, AuthTokens.basic(user, password));
-		}
-
-		public void query()
-		{
-			JcNode movie = new JcNode("movie");
-			JcQuery query = new JcQuery();
-			query.setClauses(new IClause[]{
-					MATCH.node(movie).label("Movie"),
-					RETURN.value(movie.property("title"))
-			});
-
-			JcQueryResult result = r_dbAccess.execute(query);
-
-			System.out.println("DB errors: " + result.getDBErrors() + "\nGeneral errors: " + result.getGeneralErrors());
-			System.out.println("RESULT!!!!!\n"+result.resultOf(movie.property("title")));
-		}
-
-		@Override
-		public void close()
-		{
-			r_dbAccess.close();
-		}
->>>>>>> Stashed changes
 	}
 
 	private static class HelloWorldExample implements AutoCloseable
