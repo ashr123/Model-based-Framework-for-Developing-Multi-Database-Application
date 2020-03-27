@@ -39,14 +39,14 @@ public class Entity
 		this.fieldsValues = new LinkedHashMap<>();
 	}
 
-	private static Entity entity(String entityName, Map<String, Object> fieldsValues)
+	public static Entity entity(String entityType, Map<String, Object> fieldsValues)
 	{
-		return new Entity(entityName, fieldsValues);
+		return new Entity(entityType, fieldsValues);
 	}
 
-	public static Entity entity(String entityName)
+	public static Entity entity(String entityType)
 	{
-		return new Entity(entityName);
+		return new Entity(entityType);
 	}
 
 	public Entity append(String field, Object value)
@@ -81,6 +81,24 @@ public class Entity
 	public String getFieldFieldsMappingName(String field)
 	{
 		return fieldsLocations.get(field);
+	}
+
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		Entity entity = (Entity) o;
+		return entityType.equals(entity.entityType) &&
+				Objects.equals(fieldsValues, entity.fieldsValues);
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return Objects.hash(entityType, fieldsValues);
 	}
 
 	@Override

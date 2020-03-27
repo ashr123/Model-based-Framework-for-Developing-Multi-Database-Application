@@ -9,5 +9,8 @@
         <module name="Model-based-Framework-for-Developing-Multi-Database-Application" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="Model-based-Framework-for-Developing-Multi-Database-Application" target="13" />
+    </bytecodeTargetLevel>
   </component>
 </project>

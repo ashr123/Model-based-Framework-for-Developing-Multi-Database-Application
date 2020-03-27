@@ -51,7 +51,8 @@ public class MongoDBAdapter implements DatabaseAdapter
 				final Set<Map.Entry<String, Object>> result = document.entrySet();
 				final Map<String, Object> map = new LinkedHashMap<>(result.size());
 				for (Map.Entry<String, Object> entry : result)
-					map.put(entry.getKey(), entry.getKey().equals("_id") ? entry.getValue().toString() : entry.getValue());
+					if(!entry.getKey().equals("_id"))
+						map.put(entry.getKey(), entry.getValue());
 				output.add(map);
 			}
 			return output;
