@@ -36,7 +36,7 @@ public class MongoDBAdapter implements DatabaseAdapter
 		voidFilter.accept(this);
 	}
 
-	public Map<String, Set<Map<String, Object>>> revealQuery(Filter filter)
+	public Set<Entity> revealQuery(Filter filter)
 	{
 		return filter.accept(this);
 	}
@@ -59,16 +59,17 @@ public class MongoDBAdapter implements DatabaseAdapter
 		return null;
 	}
 
-	private Map<String, Set<Map<String, Object>>> query(SimpleFilter simpleFilter, Bson filter)
+	private Set<Entity> query(SimpleFilter simpleFilter, Bson filter)
 	{
 		final FieldsMapping fieldsMapping = Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityName(), simpleFilter.getFieldName());
 		try (MongoClient mongoClient = MongoClients.create(PREFIX + fieldsMapping.getConnStr()))
 		{
-			Map<String, Set<Map<String, Object>>> map = new HashMap<>();
-			map.put(simpleFilter.getEntityName(), getStringObjectMap(mongoClient.getDatabase(fieldsMapping.getLocation())
+
+			return getStringObjectMap(mongoClient.getDatabase(fieldsMapping.getLocation())
 					.getCollection(simpleFilter.getEntityName())
-					.find(filter)));
-			return map;
+					.find(filter)).stream()
+					.map(fieldsMap -> new Entity(simpleFilter.getEntityName(), fieldsMap))
+					.collect(Collectors.toSet());
 		}
 	}
 
@@ -110,37 +111,37 @@ public class MongoDBAdapter implements DatabaseAdapter
 	}
 
 	@Override
-	public Map<String, Set<Map<String, Object>>> execute(Eq eq)
+	public Set<Entity> execute(Eq eq)
 	{
 		return query(eq, eq(eq.getFieldName(), eq.getValue()));
 	}
 
 	@Override
-	public Map<String, Set<Map<String, Object>>> execute(Ne ne)
+	public Set<Entity> execute(Ne ne)
 	{
 		return query(ne, ne(ne.getFieldName(), ne.getValue()));
 	}
 
 	@Override
-	public Map<String, Set<Map<String, Object>>> execute(Gt gt)
+	public Set<Entity> execute(Gt gt)
 	{
 		return query(gt, gt(gt.getFieldName(), gt.getValue()));
 	}
 
 	@Override
-	public Map<String, Set<Map<String, Object>>> execute(Lt lt)
+	public Set<Entity> execute(Lt lt)
 	{
 		return query(lt, lt(lt.getFieldName(), lt.getValue()));
 	}
 
 	@Override
-	public Map<String, Set<Map<String, Object>>> execute(Gte gte)
+	public Set<Entity> execute(Gte gte)
 	{
 		return query(gte, gte(gte.getFieldName(), gte.getValue()));
 	}
 
 	@Override
-	public Map<String, Set<Map<String, Object>>> execute(Lte lte)
+	public Set<Entity> execute(Lte lte)
 	{
 		return query(lte, lte(lte.getFieldName(), lte.getValue()));
 	}
@@ -159,19 +160,20 @@ public class MongoDBAdapter implements DatabaseAdapter
 	}
 
 	@Override
-	public Map<String, Set<Map<String, Object>>> execute(And and)
+	public Set<Entity> execute(And and)
 	{
-		return Stream.of(and.getComplexQuery())
-				.map(this::revealQuery)
-				.reduce((map1, map2) ->
-						merge(map1, map2, (set1, set2) ->
-								Stream.concat(set1.stream(), set2.stream())
-										.collect(Collectors.toSet())))
-				.orElse(new HashMap<>());
+		return null;
+//		return Stream.of(and.getComplexQuery())
+//				.map(this::revealQuery)
+//				.reduce((map1, map2) ->
+//						merge(map1, map2, (set1, set2) ->
+//								Stream.concat(set1.stream(), set2.stream())
+//										.collect(Collectors.toSet())))
+//				.orElse(new HashMap<>());
 	}
 
 	@Override
-	public Map<String, Set<Map<String, Object>>> execute(Or or)
+	public Set<Entity> execute(Or or)
 	{
 //		Map<String, Set<Map<String, Object>>> output = new HashMap<>();
 //		List<Map<String, Set<Map<String, Object>>>> temp = Stream.of(or.getComplexQuery())
@@ -180,14 +182,14 @@ public class MongoDBAdapter implements DatabaseAdapter
 
 		// TODO consider adding join to single (partial?) maps/entities to single map by UUID
 		// See: https://www.baeldung.com/java-merge-maps#concat
-		return Stream.of(or.getComplexQuery())
-				.flatMap(filter -> revealQuery(filter).entrySet().stream())
-				.collect(Collectors.toMap(
-						Map.Entry::getKey,
-						Map.Entry::getValue,
-						(set1, set2) ->
-								Stream.concat(set1.stream(), set2.stream())
-										.collect(Collectors.toSet())));
+//		return Stream.of(or.getComplexQuery())
+//				.flatMap(filter -> revealQuery(filter).entrySet().stream())
+//				.collect(Collectors.toMap(
+//						Map.Entry::getKey,
+//						Map.Entry::getValue,
+//						(set1, set2) ->
+//								Stream.concat(set1.stream(), set2.stream())
+//										.collect(Collectors.toSet())));
 
 
 //		return Stream.of(or.getComplexQuery())
@@ -239,15 +241,16 @@ public class MongoDBAdapter implements DatabaseAdapter
 //						.filter(stringListEntry -> stringListEntry.getKey().equals())
 //						.map(stringListEntry ->);
 //
-//		return Stream.of(or.getComplexQuery())
-//				.map(this::revealQuery)
-//				.flatMap(Collection::stream)
-//				.distinct()
-//				.collect(toList());
+		// Entity(“person”, {“UUID”: {“value”: 1}, “name”: “Moshe, “phone”: 0546815181})
+		// Entity(“Person”, {“UUID”: {“value”: 1}, “livesAt”: {“value”: 999}})↴
+		// Entity(“person”, {“UUID”: {“value”: 1}, “name”: “Moshe, “phone”: 0546815181, “livesAt”: {“value”: 999}})
+		return Stream.of(or.getComplexQuery())
+				.flatMap(filter -> revealQuery(filter).stream())
+				.collect(Collectors.toSet());
 	}
 
 	@Override
-	public Map<String, Set<Map<String, Object>>> execute(All all)
+	public Set<Entity> execute(All all)
 	{
 		throw new UnsupportedOperationException("Not yet implemented");
 //		return query(All, lte(lte.getFieldName(), lte.getValue()));

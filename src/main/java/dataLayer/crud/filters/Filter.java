@@ -1,11 +1,11 @@
 package dataLayer.crud.filters;
 
 
+import dataLayer.configReader.Entity;
 import dataLayer.crud.dbAdapters.DatabaseAdapter;
 import iot.jcypher.query.api.IClause;
 import org.bson.conversions.Bson;
 
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -13,7 +13,7 @@ import java.util.Set;
  */
 public interface Filter
 {
-	Map<String, Set<Map<String, Object>>> accept(DatabaseAdapter databaseAdapter);
+	Set<Entity> accept(DatabaseAdapter databaseAdapter);
 
 	Bson generateFromMongoDB();
 

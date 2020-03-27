@@ -1,5 +1,6 @@
 package dataLayer.crud.filters;
 
+import dataLayer.configReader.Entity;
 import dataLayer.crud.dbAdapters.DatabaseAdapter;
 import iot.jcypher.query.api.IClause;
 import iot.jcypher.query.factories.clause.MATCH;
@@ -7,7 +8,6 @@ import iot.jcypher.query.factories.clause.RETURN;
 import iot.jcypher.query.values.JcNode;
 import org.bson.conversions.Bson;
 
-import java.util.Map;
 import java.util.Set;
 
 public class Eq extends SimpleFilter
@@ -23,7 +23,7 @@ public class Eq extends SimpleFilter
 	}
 
 	@Override
-	public Map<String, Set<Map<String, Object>>> accept(DatabaseAdapter databaseAdapter)
+	public Set<Entity> accept(DatabaseAdapter databaseAdapter)
 	{
 		return databaseAdapter.execute(this);
 	}

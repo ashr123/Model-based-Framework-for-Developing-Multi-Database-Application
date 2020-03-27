@@ -1,10 +1,10 @@
 package dataLayer.crud.filters;
 
+import dataLayer.configReader.Entity;
 import dataLayer.crud.dbAdapters.DatabaseAdapter;
 import iot.jcypher.query.api.IClause;
 import org.bson.conversions.Bson;
 
-import java.util.Map;
 import java.util.Set;
 
 public class All extends SimpleFilter
@@ -20,7 +20,7 @@ public class All extends SimpleFilter
 	}
 
 	@Override
-	public Map<String, Set<Map<String, Object>>> accept(DatabaseAdapter databaseAdapter)
+	public Set<Entity> accept(DatabaseAdapter databaseAdapter)
 	{
 		return databaseAdapter.execute(this);
 	}

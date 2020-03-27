@@ -1,9 +1,8 @@
 package dataLayer.crud.dbAdapters;
 
+import dataLayer.configReader.Entity;
 import dataLayer.crud.filters.*;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -13,27 +12,27 @@ public interface DatabaseAdapter
 {
 	void revealQuery(VoidFilter voidFilter);
 
-	Map<String, Set<Map<String, Object>>> revealQuery(Filter filter);
+	Set<Entity> revealQuery(Filter filter);
 
 	void executeCreate(CreateSingle createSingle);
 
 	void executeCreate(CreateMany createMany);
 
-	Map<String, Set<Map<String, Object>>> execute(Eq eq);
+	Set<Entity> execute(Eq eq);
 
-	Map<String, Set<Map<String, Object>>> execute(Ne ne);
+	Set<Entity> execute(Ne ne);
 
-	Map<String, Set<Map<String, Object>>> execute(Gt gt);
+	Set<Entity> execute(Gt gt);
 
-	Map<String, Set<Map<String, Object>>> execute(Lt lt);
+	Set<Entity> execute(Lt lt);
 
-	Map<String, Set<Map<String, Object>>> execute(Gte gte);
+	Set<Entity> execute(Gte gte);
 
-	Map<String, Set<Map<String, Object>>> execute(Lte lte);
+	Set<Entity> execute(Lte lte);
 
-	Map<String, Set<Map<String, Object>>> execute(And and);
+	Set<Entity> execute(And and);
 
-	Map<String, Set<Map<String, Object>>> execute(Or or);
+	Set<Entity> execute(Or or);
 
-	Map<String, Set<Map<String, Object>>> execute(All all);
+	Set<Entity> execute(All all);
 }
