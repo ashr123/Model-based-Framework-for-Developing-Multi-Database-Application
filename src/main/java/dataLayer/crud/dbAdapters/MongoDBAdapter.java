@@ -12,6 +12,7 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -77,12 +78,12 @@ public class MongoDBAdapter implements DatabaseAdapter
 		entity.getFieldsValues()
 				.forEach((field, value) ->
 				{
-					final FieldsMapping fieldMappingFromEntityFields = Conf.getConfiguration().getFieldsMappingFromEntityField(entity.getEntityName(), field);
+					final FieldsMapping fieldMappingFromEntityFields = Conf.getConfiguration().getFieldsMappingFromEntityField(entity.getEntityType(), field);
 					if (fieldMappingFromEntityFields != null)
 						locationDocumentMap.computeIfAbsent(fieldMappingFromEntityFields, fieldsMapping -> new Document())
 								.append(field, value);
 					else
-						throw new NullPointerException("Field " + field + "doesn't exist in entity " + entity.getEntityName());
+						throw new NullPointerException("Field " + field + "doesn't exist in entity " + entity.getEntityType());
 				});
 		return locationDocumentMap;
 	}
@@ -95,7 +96,7 @@ public class MongoDBAdapter implements DatabaseAdapter
 					try (MongoClient mongoClient = MongoClients.create(PREFIX + fieldsMapping.getConnStr()))
 					{
 						mongoClient.getDatabase(fieldsMapping.getLocation())
-								.getCollection(createSingle.getEntity().getEntityName())
+								.getCollection(createSingle.getEntity().getEntityType())
 								.insertOne(document);
 					}
 				});
@@ -144,18 +145,29 @@ public class MongoDBAdapter implements DatabaseAdapter
 		return query(lte, lte(lte.getFieldName(), lte.getValue()));
 	}
 
+	private <K, V, R> Map<K, R> merge(Map<K, V> map1, Map<K, V> map2, BiFunction<V, V, R> f)
+	{
+		return map1.entrySet().stream()
+				.collect(map1.entrySet().spliterator().hasCharacteristics(Spliterator.ORDERED) ? LinkedHashMap<K, R>::new : HashMap<K, R>::new,
+						(m, e) ->
+						{
+							V v2 = map2.get(e.getKey());
+							if (v2 != null)
+								m.put(e.getKey(), f.apply(e.getValue(), v2));
+						},
+						Map::putAll);
+	}
+
 	@Override
 	public Map<String, Set<Map<String, Object>>> execute(And and)
 	{
-		return null;
-//		return Stream.of(and.getComplexQuery())
-//				.map(this::revealQuery)
-//				.reduce((acc, map) ->
-//				{
-//					acc.retainAll(map);
-//					return acc;
-//				})
-//				.orElse(new HashSet<>());
+		return Stream.of(and.getComplexQuery())
+				.map(this::revealQuery)
+				.reduce((map1, map2) ->
+						merge(map1, map2, (set1, set2) ->
+								Stream.concat(set1.stream(), set2.stream())
+										.collect(Collectors.toSet())))
+				.orElse(new HashMap<>());
 	}
 
 	@Override

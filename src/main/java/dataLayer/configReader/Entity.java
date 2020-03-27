@@ -10,7 +10,7 @@ import java.util.*;
 public class Entity
 {
 	@JsonIgnore
-	private final String entityName;
+	private final String entityType;
 
 	@JsonIgnore
 	private final Map<String, String> fieldsLocations;
@@ -20,22 +20,22 @@ public class Entity
 
 	private Entity()
 	{
-		entityName = null;
+		entityType = null;
 		fieldsValues = null;
 		fieldsLocations = new LinkedHashMap<>();
 	}
 
-	public Entity(String entityName, Map<String, Object> fieldsValues)
+	public Entity(String entityType, Map<String, Object> fieldsValues)
 	{
 		fieldsLocations = null;
-		this.entityName = entityName;
+		this.entityType = entityType;
 		this.fieldsValues = fieldsValues;
 	}
 
-	private Entity(String entityName)
+	private Entity(String entityType)
 	{
 		fieldsLocations = null;
-		this.entityName = entityName;
+		this.entityType = entityType;
 		this.fieldsValues = new LinkedHashMap<>();
 	}
 
@@ -56,9 +56,9 @@ public class Entity
 		return this;
 	}
 
-	public String getEntityName()
+	public String getEntityType()
 	{
-		return entityName;
+		return entityType;
 	}
 
 	public Map<String, Object> getFieldsValues()
@@ -87,7 +87,9 @@ public class Entity
 	public String toString()
 	{
 		return "Entity{" +
-				"fieldsLocations=" + fieldsLocations +
+				"entityType='" + entityType + '\'' +
+				", fieldsLocations=" + fieldsLocations +
+				", fieldsValues=" + fieldsValues +
 				'}';
 	}
 
