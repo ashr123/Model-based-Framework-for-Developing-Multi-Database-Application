@@ -11,8 +11,10 @@ import dataLayer.crud.filters.*;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
-import java.util.*;
-import java.util.function.BiFunction;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -51,7 +53,7 @@ public class MongoDBAdapter implements DatabaseAdapter
 				final Set<Map.Entry<String, Object>> result = document.entrySet();
 				final Map<String, Object> map = new LinkedHashMap<>(result.size());
 				for (Map.Entry<String, Object> entry : result)
-					if(!entry.getKey().equals("_id"))
+					if (!entry.getKey().equals("_id"))
 						map.put(entry.getKey(), entry.getValue());
 				output.add(map);
 			}
@@ -147,23 +149,40 @@ public class MongoDBAdapter implements DatabaseAdapter
 		return query(lte, lte(lte.getFieldName(), lte.getValue()));
 	}
 
-	private <K, V, R> Map<K, R> merge(Map<K, V> map1, Map<K, V> map2, BiFunction<V, V, R> f)
+//	private <K, V, R> Map<K, R> merge(Map<K, V> map1, Map<K, V> map2, BiFunction<V, V, R> f)
+//	{
+//		return map1.entrySet().stream()
+//				.collect(map1.entrySet().spliterator().hasCharacteristics(Spliterator.ORDERED) ? LinkedHashMap<K, R>::new : HashMap<K, R>::new,
+//						(m, e) ->
+//						{
+//							V v2 = map2.get(e.getKey());
+//							if (v2 != null)
+//								m.put(e.getKey(), f.apply(e.getValue(), v2));
+//						},
+//						Map::putAll);
+//	}
+
+	private Stream<Set<Entity>> defragEntities(ComplexFilter complexFilter)
 	{
-		return map1.entrySet().stream()
-				.collect(map1.entrySet().spliterator().hasCharacteristics(Spliterator.ORDERED) ? LinkedHashMap<K, R>::new : HashMap<K, R>::new,
-						(m, e) ->
-						{
-							V v2 = map2.get(e.getKey());
-							if (v2 != null)
-								m.put(e.getKey(), f.apply(e.getValue(), v2));
-						},
-						Map::putAll);
+		//noinspection OptionalGetWithoutIsPresent
+		return Stream.of(complexFilter.getComplexQuery())
+				.map(filter -> revealQuery(filter)
+						.stream()
+						.collect(Collectors.groupingBy(Entity::getUuid))
+						.values().stream()
+						.map(pojoFragments -> pojoFragments.stream()
+								.reduce(Entity::merge)
+								.get())
+						.collect(Collectors.toSet()));
 	}
 
 	@Override
 	public Set<Entity> execute(And and)
 	{
-		return null;
+		return defragEntities(and)
+				.;
+
+
 //		return Stream.of(and.getComplexQuery())
 //				.map(this::revealQuery)
 //				.reduce((map1, map2) ->

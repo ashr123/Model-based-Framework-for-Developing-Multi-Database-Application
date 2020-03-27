@@ -13,6 +13,13 @@
 	</properties>
 
 	<dependencies>
+<!--		&lt;!&ndash; https://mvnrepository.com/artifact/com.fasterxml.uuid/java-uuid-generator &ndash;&gt;-->
+<!--		<dependency>-->
+<!--			<groupId>com.fasterxml.uuid</groupId>-->
+<!--			<artifactId>java-uuid-generator</artifactId>-->
+<!--			<version>4.0.1</version>-->
+<!--		</dependency>-->
+
 		<!-- THIS IS THE RELEVANT PART OF NEO4J COMPONENT -->
 		<dependency>
 			<groupId>net.iot-solutions.graphdb</groupId>

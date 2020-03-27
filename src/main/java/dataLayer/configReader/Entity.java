@@ -13,6 +13,9 @@ public class Entity
 	private final String entityType;
 
 	@JsonIgnore
+	private final UUID uuid;
+
+	@JsonIgnore
 	private final Map<String, String> fieldsLocations;
 
 	@JsonIgnore
@@ -22,38 +25,46 @@ public class Entity
 	{
 		entityType = null;
 		fieldsValues = null;
+		uuid = null;
 		fieldsLocations = new LinkedHashMap<>();
 	}
 
 	public Entity(String entityType, Map<String, Object> fieldsValues)
 	{
 		fieldsLocations = null;
+		uuid = UUID.randomUUID();
 		this.entityType = entityType;
 		this.fieldsValues = fieldsValues;
 	}
 
-	private Entity(String entityType)
-	{
-		fieldsLocations = null;
-		this.entityType = entityType;
-		this.fieldsValues = new LinkedHashMap<>();
-	}
+//	private Entity(String entityType)
+//	{
+//		fieldsLocations = null;
+//		uuid = UUID.randomUUID();
+//		this.entityType = entityType;
+//		this.fieldsValues = new LinkedHashMap<>();
+//	}
 
 	public static Entity entity(String entityType, Map<String, Object> fieldsValues)
 	{
 		return new Entity(entityType, fieldsValues);
 	}
 
-	public static Entity entity(String entityType)
-	{
-		return new Entity(entityType);
-	}
+//	public static Entity entity(String entityType)
+//	{
+//		return new Entity(entityType);
+//	}
 
 	public Entity append(String field, Object value)
 	{
 		assert fieldsValues != null;
 		fieldsValues.put(field, value);
 		return this;
+	}
+
+	public UUID getUuid()
+	{
+		return uuid;
 	}
 
 	public String getEntityType()
@@ -81,6 +92,13 @@ public class Entity
 	public String getFieldFieldsMappingName(String field)
 	{
 		return fieldsLocations.get(field);
+	}
+
+	public Entity merge(Entity entity)
+	{
+		entity.fieldsValues
+				.forEach((field, value) -> fieldsValues.computeIfAbsent(field, field1 -> fieldsValues.put(field1, value)));
+		return this;
 	}
 
 	@Override
