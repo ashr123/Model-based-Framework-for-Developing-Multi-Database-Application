@@ -166,6 +166,7 @@ public class MongoDBAdapter implements DatabaseAdapter
 //				.map(this::revealQuery)
 //				.collect(Collectors.toList());
 
+		// TODO consider adding join to single (partial?) maps/entities to single map by UUID
 		// See: https://www.baeldung.com/java-merge-maps#concat
 		return Stream.of(or.getComplexQuery())
 				.flatMap(filter -> revealQuery(filter).entrySet().stream())
