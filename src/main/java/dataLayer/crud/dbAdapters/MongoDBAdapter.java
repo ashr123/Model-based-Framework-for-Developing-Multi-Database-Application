@@ -181,7 +181,7 @@ public class MongoDBAdapter implements DatabaseAdapter
 //				.map(this::revealQuery)
 //				.collect(Collectors.toList());
 
-		// TODO consider adding join to single (partial?) maps/entities to single map by UUID
+
 		// See: https://www.baeldung.com/java-merge-maps#concat
 //		return Stream.of(or.getComplexQuery())
 //				.flatMap(filter -> revealQuery(filter).entrySet().stream())
@@ -242,6 +242,7 @@ public class MongoDBAdapter implements DatabaseAdapter
 //						.filter(stringListEntry -> stringListEntry.getKey().equals())
 //						.map(stringListEntry ->);
 //
+		// TODO consider adding join to single (partial?) maps/entities to single map by UUID
 		// Entity(“person”, {“UUID”: {“value”: 1}, “name”: “Moshe, “phone”: 0546815181})
 		// Entity(“Person”, {“UUID”: {“value”: 1}, “livesAt”: {“value”: 999}})↴
 		// Entity(“person”, {“UUID”: {“value”: 1}, “name”: “Moshe, “phone”: 0546815181, “livesAt”: {“value”: 999}})

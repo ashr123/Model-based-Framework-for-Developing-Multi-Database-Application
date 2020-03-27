@@ -95,21 +95,14 @@ class MongoDBAdapterTest
 	@Test
 	void testExecuteEq()
 	{
-		Set<Entity> result = read(eq("Person", "name", "Roy"));
-//		boolean hasRoy = result.get(0).get("name").equals("Roy") &&
-//				result.get(0).get("age").equals(27) &&
-//				result.get(0).get("phoneNumber").equals("0546815181") &&
-//				result.get(0).get("emailAddress").equals("ashr@post.bgu.ac.il");
-//		assertTrue(hasRoy, "Roy's name == Roy");
-		Set<Entity> SOE = Set.of(entity("Person",
+		assertEquals(Set.of(entity("Person",
 				Map.of("name", "Roy",
 						"age", 27,
 						"phoneNumber", "0546815181",
-						"emailAddress", "ashr@post.bgu.ac.il")));
-		assertEquals(SOE,result,"Passed test !");
+						"emailAddress", "ashr@post.bgu.ac.il"))),
+				read(eq("Person", "name", "Roy")));
 
-		result = read(eq("Person", "name", "Nobody"));
-		assertTrue(result.isEmpty(), "There is no person named Nobody");
+		assertTrue(read(eq("Person", "name", "Nobody")).isEmpty(), "Should be empty!");
 	}
 
 //	@Test
