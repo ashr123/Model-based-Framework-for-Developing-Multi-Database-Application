@@ -11,10 +11,7 @@ import dataLayer.crud.filters.*;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -67,7 +64,6 @@ public class MongoDBAdapter implements DatabaseAdapter
 		final FieldsMapping fieldsMapping = Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityName(), simpleFilter.getFieldName());
 		try (MongoClient mongoClient = MongoClients.create(PREFIX + fieldsMapping.getConnStr()))
 		{
-
 			return getStringObjectMap(mongoClient.getDatabase(fieldsMapping.getLocation())
 					.getCollection(simpleFilter.getEntityName())
 					.find(filter)).stream()
@@ -179,8 +175,15 @@ public class MongoDBAdapter implements DatabaseAdapter
 	@Override
 	public Set<Entity> execute(And and)
 	{
-		return defragEntities(and)
-				.;
+		List<Set<Entity>> resultSets = defragEntities(and).collect(Collectors.toList());
+		Set<Entity> result = new HashSet<>(resultSets.get(0));
+		for (Set<Entity> resultSet : resultSets.subList(1, resultSets.size())) {
+			result.retainAll(resultSet);
+		}
+		return result;
+
+//		return defragEntities(and)
+//				.map(answerSet -> );
 
 
 //		return Stream.of(and.getComplexQuery())
@@ -195,6 +198,13 @@ public class MongoDBAdapter implements DatabaseAdapter
 	@Override
 	public Set<Entity> execute(Or or)
 	{
+		List<Set<Entity>> resultSets = defragEntities(or).collect(Collectors.toList());
+		Set<Entity> result = new HashSet<>(resultSets.get(0));
+		for (Set<Entity> resultSet : resultSets.subList(1, resultSets.size())) {
+			result.addAll(resultSet);
+		}
+		return result;
+
 //		Map<String, Set<Map<String, Object>>> output = new HashMap<>();
 //		List<Map<String, Set<Map<String, Object>>>> temp = Stream.of(or.getComplexQuery())
 //				.map(this::revealQuery)
@@ -265,9 +275,9 @@ public class MongoDBAdapter implements DatabaseAdapter
 		// Entity(“person”, {“UUID”: {“value”: 1}, “name”: “Moshe, “phone”: 0546815181})
 		// Entity(“Person”, {“UUID”: {“value”: 1}, “livesAt”: {“value”: 999}})↴
 		// Entity(“person”, {“UUID”: {“value”: 1}, “name”: “Moshe, “phone”: 0546815181, “livesAt”: {“value”: 999}})
-		return Stream.of(or.getComplexQuery())
-				.flatMap(filter -> revealQuery(filter).stream())
-				.collect(Collectors.toSet());
+//		return Stream.of(or.getComplexQuery())
+//				.flatMap(filter -> revealQuery(filter).stream())
+//				.collect(Collectors.toSet());
 	}
 
 	@Override
