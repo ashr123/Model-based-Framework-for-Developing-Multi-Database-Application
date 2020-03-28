@@ -175,14 +175,13 @@ public class MongoDBAdapter implements DatabaseAdapter
 	@Override
 	public Set<Entity> execute(And and)
 	{
-		//noinspection OptionalGetWithoutIsPresent
 		return defragEntities(and)
 				.reduce((set1, set2) ->
 				{
 					set1.retainAll(set2);
 					return set1;
 				})
-				.get();
+				.orElse(Set.of());
 //		Set<Entity> result = new HashSet<>(resultSets.get(0));
 //		resultSets.subList(1, resultSets.size()).forEach(result::retainAll);
 //		return result;
