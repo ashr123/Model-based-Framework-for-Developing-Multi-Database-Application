@@ -175,12 +175,17 @@ public class MongoDBAdapter implements DatabaseAdapter
 	@Override
 	public Set<Entity> execute(And and)
 	{
-		List<Set<Entity>> resultSets = defragEntities(and).collect(Collectors.toList());
-		Set<Entity> result = new HashSet<>(resultSets.get(0));
-		for (Set<Entity> resultSet : resultSets.subList(1, resultSets.size())) {
-			result.retainAll(resultSet);
-		}
-		return result;
+		//noinspection OptionalGetWithoutIsPresent
+		return defragEntities(and)
+				.reduce((set1, set2) ->
+				{
+					set1.retainAll(set2);
+					return set1;
+				})
+				.get();
+//		Set<Entity> result = new HashSet<>(resultSets.get(0));
+//		resultSets.subList(1, resultSets.size()).forEach(result::retainAll);
+//		return result;
 
 //		return defragEntities(and)
 //				.map(answerSet -> );
@@ -198,12 +203,9 @@ public class MongoDBAdapter implements DatabaseAdapter
 	@Override
 	public Set<Entity> execute(Or or)
 	{
-		List<Set<Entity>> resultSets = defragEntities(or).collect(Collectors.toList());
-		Set<Entity> result = new HashSet<>(resultSets.get(0));
-		for (Set<Entity> resultSet : resultSets.subList(1, resultSets.size())) {
-			result.addAll(resultSet);
-		}
-		return result;
+		return defragEntities(or)
+				.flatMap(Collection::stream)
+				.collect(Collectors.toSet());
 
 //		Map<String, Set<Map<String, Object>>> output = new HashMap<>();
 //		List<Map<String, Set<Map<String, Object>>>> temp = Stream.of(or.getComplexQuery())
