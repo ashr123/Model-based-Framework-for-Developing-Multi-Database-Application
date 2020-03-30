@@ -15,6 +15,10 @@ public class FieldsMapping
 	private final String connStr = null;
 	@JsonProperty("location")
 	private final String location = null;
+	@JsonProperty("username")
+	private final String username = null;
+	@JsonProperty("password")
+	private final String password = null;
 
 	public DBType getType()
 	{
@@ -31,33 +35,45 @@ public class FieldsMapping
 		return location;
 	}
 
-	@SuppressWarnings("ConstantConditions")
+	public String getUsername()
+	{
+		return username;
+	}
+
+	public String getPassword()
+	{
+		return password;
+	}
+
 	@Override
 	public boolean equals(Object o)
 	{
-		if (this == o)
-			return true;
-		if (o == null || getClass() != o.getClass())
-			return false;
-		FieldsMapping fieldsMapping = (FieldsMapping) o;
-		return type == fieldsMapping.type &&
-				connStr.equals(fieldsMapping.connStr) &&
-				location.equals(fieldsMapping.location);
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		FieldsMapping that = (FieldsMapping) o;
+		//noinspection ConstantConditions
+		return type == that.type &&
+				connStr.equals(that.connStr) &&
+				location.equals(that.location) &&
+				Objects.equals(username, that.username) &&
+				Objects.equals(password, that.password);
 	}
 
 	@Override
 	public int hashCode()
 	{
-		return Objects.hash(type, connStr, location);
+		return Objects.hash(type, connStr, location, username, password);
 	}
 
 	@Override
 	public String toString()
 	{
 		return "FieldsMapping{" +
-				"type='" + type + '\'' +
+				"type=" + type +
 				", connStr='" + connStr + '\'' +
 				", location='" + location + '\'' +
+				", username='" + username + '\'' +
+				", password='" + password + '\'' +
 				'}';
 	}
 }
