@@ -67,7 +67,7 @@ public class MongoDBAdapter implements DatabaseAdapter
 			return getStringObjectMap(mongoClient.getDatabase(fieldsMapping.getLocation())
 					.getCollection(simpleFilter.getEntityName())
 					.find(filter)).stream()
-					.map(fieldsMap -> new Entity(simpleFilter.getEntityName(), fieldsMap))
+					.map(fieldsMap -> new Entity((UUID) fieldsMap.remove("uuid"), simpleFilter.getEntityName(), fieldsMap))
 					.collect(Collectors.toSet());
 		}
 	}
@@ -145,19 +145,6 @@ public class MongoDBAdapter implements DatabaseAdapter
 		return query(lte, lte(lte.getFieldName(), lte.getValue()));
 	}
 
-//	private <K, V, R> Map<K, R> merge(Map<K, V> map1, Map<K, V> map2, BiFunction<V, V, R> f)
-//	{
-//		return map1.entrySet().stream()
-//				.collect(map1.entrySet().spliterator().hasCharacteristics(Spliterator.ORDERED) ? LinkedHashMap<K, R>::new : HashMap<K, R>::new,
-//						(m, e) ->
-//						{
-//							V v2 = map2.get(e.getKey());
-//							if (v2 != null)
-//								m.put(e.getKey(), f.apply(e.getValue(), v2));
-//						},
-//						Map::putAll);
-//	}
-
 	private Set<Entity> groupEntities(Stream<Entity> entities)
 	{
 		//noinspection OptionalGetWithoutIsPresent
@@ -184,9 +171,11 @@ public class MongoDBAdapter implements DatabaseAdapter
 						.stream()));
 	}
 
-	private Entity completeEntity(Entity entity)
+	private boolean isEntityInSet(Set<Entity> entities, Entity entityFrag)
 	{
-		return null;
+		return entities.stream()
+				.map(Entity::getUuid)
+				.anyMatch(uuid1 -> uuid1.equals(entityFrag.getUuid()));
 	}
 
 	@Override
@@ -196,12 +185,8 @@ public class MongoDBAdapter implements DatabaseAdapter
 				.reduce((set1, set2) ->
 						groupEntities(Stream.concat(set1.stream(), set2.stream())
 								.filter(entityFrag ->
-										set1.stream()
-												.map(Entity::getUuid)
-												.anyMatch(uuid1 -> uuid1.equals(entityFrag.getUuid()))
-												&& set2.stream()
-												.map(Entity::getUuid)
-												.anyMatch(uuid2 -> uuid2.equals(entityFrag.getUuid())))))
+										isEntityInSet(set1, entityFrag) &&
+												isEntityInSet(set2, entityFrag))))
 				.orElse(Set.of());
 //		Set<Entity> result = new HashSet<>(resultSets.get(0));
 //		resultSets.subList(1, resultSets.size()).forEach(result::retainAll);
