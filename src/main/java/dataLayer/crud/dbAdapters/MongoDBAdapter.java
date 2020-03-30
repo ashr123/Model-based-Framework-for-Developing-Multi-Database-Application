@@ -198,10 +198,10 @@ public class MongoDBAdapter implements DatabaseAdapter
 								.filter(entityFrag ->
 										set1.stream()
 												.map(Entity::getUuid)
-												.anyMatch(uuid1 -> uuid1.equals(entityFrag.getUuid()) &&
-														set2.stream()
-																.map(Entity::getUuid)
-																.anyMatch(uuid2 -> uuid2.equals(entityFrag.getUuid()))))))
+												.anyMatch(uuid1 -> uuid1.equals(entityFrag.getUuid()))
+												&& set2.stream()
+												.map(Entity::getUuid)
+												.anyMatch(uuid2 -> uuid2.equals(entityFrag.getUuid())))))
 				.orElse(Set.of());
 //		Set<Entity> result = new HashSet<>(resultSets.get(0));
 //		resultSets.subList(1, resultSets.size()).forEach(result::retainAll);
