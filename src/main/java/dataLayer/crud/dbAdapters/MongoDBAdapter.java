@@ -158,18 +158,35 @@ public class MongoDBAdapter implements DatabaseAdapter
 //						Map::putAll);
 //	}
 
-	private Stream<Set<Entity>> defragEntities(ComplexFilter complexFilter)
+	private Set<Entity> groupEntities(Stream<Entity> entities)
 	{
 		//noinspection OptionalGetWithoutIsPresent
+		return entities
+				.collect(Collectors.groupingBy(Entity::getUuid))
+				.values().stream()
+				.map(pojoFragments -> pojoFragments.stream()
+						.reduce(Entity::merge)
+						.get())
+				.collect(Collectors.toSet());
+	}
+
+	/**
+	 * given:<br>Entity{"entityType": "person", "fieldsValues": {"uuid": {"value": 1}, "name": "Moshe", "phone": 0546815181}}<br>
+	 * Entity{"entityType": "Person", "fieldsValues": {"uuid": {"value": 1}, "livesAt": {"value": 999}}}
+	 *
+	 * @param complexFilter Filter that can get results from multiple filters
+	 * @return Entity{"entityType": "person", "fieldsValues": {"uuid": {"value": 1}, "name": "Moshe", "phone": 0546815181, "livesAt": {"value": 999}}}
+	 */
+	private Stream<Set<Entity>> defragEntities(ComplexFilter complexFilter)
+	{
 		return Stream.of(complexFilter.getComplexQuery())
-				.map(filter -> revealQuery(filter)
-						.stream()
-						.collect(Collectors.groupingBy(Entity::getUuid))
-						.values().stream()
-						.map(pojoFragments -> pojoFragments.stream()
-								.reduce(Entity::merge)
-								.get())
-						.collect(Collectors.toSet()));
+				.map(filter -> groupEntities(revealQuery(filter)
+						.stream()));
+	}
+
+	private Entity completeEntity(Entity entity)
+	{
+		return null;
 	}
 
 	@Override
@@ -177,10 +194,14 @@ public class MongoDBAdapter implements DatabaseAdapter
 	{
 		return defragEntities(and)
 				.reduce((set1, set2) ->
-				{
-					set1.retainAll(set2);
-					return set1;
-				})
+						groupEntities(Stream.concat(set1.stream(), set2.stream())
+								.filter(entityFrag ->
+										set1.stream()
+												.map(Entity::getUuid)
+												.anyMatch(uuid1 -> uuid1.equals(entityFrag.getUuid()) &&
+														set2.stream()
+																.map(Entity::getUuid)
+																.anyMatch(uuid2 -> uuid2.equals(entityFrag.getUuid()))))))
 				.orElse(Set.of());
 //		Set<Entity> result = new HashSet<>(resultSets.get(0));
 //		resultSets.subList(1, resultSets.size()).forEach(result::retainAll);
@@ -202,9 +223,8 @@ public class MongoDBAdapter implements DatabaseAdapter
 	@Override
 	public Set<Entity> execute(Or or)
 	{
-		return defragEntities(or)
-				.flatMap(Collection::stream)
-				.collect(Collectors.toSet());
+		return groupEntities(defragEntities(or)
+				.flatMap(Collection::stream));
 
 //		Map<String, Set<Map<String, Object>>> output = new HashMap<>();
 //		List<Map<String, Set<Map<String, Object>>>> temp = Stream.of(or.getComplexQuery())
@@ -272,7 +292,6 @@ public class MongoDBAdapter implements DatabaseAdapter
 //						.filter(stringListEntry -> stringListEntry.getKey().equals())
 //						.map(stringListEntry ->);
 //
-		// TODO consider adding join to single (partial?) maps/entities to single map by UUID
 		// Entity(“person”, {“UUID”: {“value”: 1}, “name”: “Moshe, “phone”: 0546815181})
 		// Entity(“Person”, {“UUID”: {“value”: 1}, “livesAt”: {“value”: 999}})↴
 		// Entity(“person”, {“UUID”: {“value”: 1}, “name”: “Moshe, “phone”: 0546815181, “livesAt”: {“value”: 999}})
