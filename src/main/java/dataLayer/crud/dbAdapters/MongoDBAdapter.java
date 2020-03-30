@@ -175,7 +175,7 @@ public class MongoDBAdapter implements DatabaseAdapter
 	{
 		return entities.stream()
 				.map(Entity::getUuid)
-				.anyMatch(uuid1 -> uuid1.equals(entityFrag.getUuid()));
+				.anyMatch(entityFrag.getUuid()::equals);
 	}
 
 	@Override
