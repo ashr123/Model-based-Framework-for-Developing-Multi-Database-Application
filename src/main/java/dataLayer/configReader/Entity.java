@@ -37,6 +37,14 @@ public class Entity
 		this.fieldsValues = fieldsValues;
 	}
 
+	public Entity(UUID uuid, String entityType, Map<String, Object> fieldsValues)
+	{
+		fieldsLocations = null;
+		this.uuid = uuid;
+		this.entityType = entityType;
+		this.fieldsValues = fieldsValues;
+	}
+
 //	private Entity(String entityType)
 //	{
 //		fieldsLocations = null;
