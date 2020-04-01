@@ -259,22 +259,23 @@ class MongoDBAdapterTest
 //		result = read(lte("Person", "age", 18));
 //		assertTrue(result.isEmpty(), "Result should be empty all of the people ages are > 18.");
 //	}
-//
-//	@Test
-//	void testExecuteAnd()
-//	{
-//		assertEquals(
-//				List.of(
-//						Map.of("name", "Yossi",
-//								"age", 22,
-//								"phoneNumber", "0587158627",
-//								"emailAddress", "yossilan@post.bgu.ac.il")),
-//				removeId(read(
-//						and(
-//								lte("Person", "age", 26),
-//								gte("Person", "age", 18),
-//								eq("Person", "name", "Yossi")))));
-//	}
+
+	@Test
+	void testExecuteAnd()
+	{
+		assertEquals(
+				Set.of(
+						entity("Person",
+								Map.of("name", "Yossi",
+								"age", 22,
+								"phoneNumber", "0587158627",
+								"emailAddress", "yossilan@post.bgu.ac.il"))),
+				(read(
+						and(
+								lte("Person", "age", 26),
+								gte("Person", "age", 18),
+								eq("Person", "name", "Yossi")))));
+	}
 //
 //	@Test
 //	void testExecuteOr()
