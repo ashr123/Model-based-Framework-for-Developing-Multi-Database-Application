@@ -4,9 +4,7 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import dataLayer.configReader.Conf;
 import dataLayer.configReader.Entity;
-import dataLayer.crud.filters.Gt;
-import dataLayer.crud.filters.Lt;
-import dataLayer.crud.filters.Ne;
+import dataLayer.crud.filters.*;
 import org.bson.Document;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -33,6 +31,21 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class MongoDBAdapterTest
 {
+	Entity roy = new Entity("Person",
+			Map.of("name", "Roy",
+					"age", 27,
+					"phoneNumber", "0546815181",
+					"emailAddress", "ashr@post.bgu.ac.il"));
+	Entity yossi = new Entity("Person",
+			Map.of("name", "Yossi",
+					"age", 22,
+					"phoneNumber", "0587158627",
+					"emailAddress", "yossilan@post.bgu.ac.il"));
+	Entity karin = new Entity("Person",
+			Map.of("name", "Karin",
+					"age", 26,
+					"phoneNumber", "0504563434",
+					"emailAddress", "davidz@post.bgu.ac.il"));
 //	private Set<Entity> removeId(Set<Entity> input)
 //	{
 //		input.forEach(map -> map.remove("_id"));
@@ -45,20 +58,22 @@ class MongoDBAdapterTest
 		Conf.loadConfiguration(MongoDBAdapterTest.class.getResource("/configuration.json"));
 		try (MongoClient mongoClient = MongoClients.create())
 		{
-			mongoClient.getDatabase("TestDB")
-					.getCollection("Person")
-					.insertMany(asList(new Document("name", "Roy")
-									.append("age", 27)
-									.append("phoneNumber", "0546815181")
-									.append("emailAddress", "ashr@post.bgu.ac.il"),
-							new Document("name", "Yossi")
-									.append("age", 22)
-									.append("phoneNumber", "0587158627")
-									.append("emailAddress", "yossilan@post.bgu.ac.il"),
-							new Document("name", "Karin")
-									.append("age", 26)
-									.append("phoneNumber", "0504563434")
-									.append("emailAddress", "davidz@post.bgu.ac.il")));
+//			mongoClient.getDatabase("TestDB")
+//					.getCollection("Person")
+//					.insertMany(asList(new Document("name", "Roy")
+//									.append("age", 27)
+//									.append("phoneNumber", "0546815181")
+//									.append("emailAddress", "ashr@post.bgu.ac.il"),
+//							new Document("name", "Yossi")
+//									.append("age", 22)
+//									.append("phoneNumber", "0587158627")
+//									.append("emailAddress", "yossilan@post.bgu.ac.il"),
+//							new Document("name", "Karin")
+//									.append("age", 26)
+//									.append("phoneNumber", "0504563434")
+//									.append("emailAddress", "davidz@post.bgu.ac.il")));
+			MongoDBAdapter mongoDBAdapter = new MongoDBAdapter();
+			mongoDBAdapter.revealQuery(CreateMany.createMany(roy,yossi,karin));
 		}
 	}
 
@@ -95,11 +110,7 @@ class MongoDBAdapterTest
 	@Test
 	void testExecuteEq()
 	{
-		assertEquals(Set.of(entity("Person",
-				Map.of("name", "Roy",
-						"age", 27,
-						"phoneNumber", "0546815181",
-						"emailAddress", "ashr@post.bgu.ac.il"))),
+		assertEquals(Set.of(roy),
 				read(eq("Person", "name", "Roy")));
 
 		assertTrue(read(eq("Person", "name", "Nobody")).isEmpty(), "Should be empty!");
@@ -264,12 +275,7 @@ class MongoDBAdapterTest
 	void testExecuteAnd()
 	{
 		assertEquals(
-				Set.of(
-						entity("Person",
-								Map.of("name", "Yossi",
-								"age", 22,
-								"phoneNumber", "0587158627",
-								"emailAddress", "yossilan@post.bgu.ac.il"))),
+				Set.of(yossi),
 				(read(
 						and(
 								lte("Person", "age", 26),
