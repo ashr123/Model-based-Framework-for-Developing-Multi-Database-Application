@@ -4,27 +4,21 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import dataLayer.configReader.Conf;
 import dataLayer.configReader.Entity;
-import dataLayer.crud.filters.*;
-import org.bson.Document;
+import dataLayer.crud.filters.CreateMany;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static dataLayer.configReader.Entity.*;
 import static dataLayer.crud.Read.read;
 import static dataLayer.crud.filters.And.and;
 import static dataLayer.crud.filters.Eq.eq;
-import static dataLayer.crud.filters.Gt.gt;
 import static dataLayer.crud.filters.Gte.gte;
 import static dataLayer.crud.filters.Lte.lte;
-import static dataLayer.crud.filters.Or.or;
-import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -58,8 +52,7 @@ class MongoDBAdapterTest
 		Conf.loadConfiguration(MongoDBAdapterTest.class.getResource("/configuration.json"));
 		try (MongoClient mongoClient = MongoClients.create())
 		{
-//			mongoClient.getDatabase("TestDB")
-//					.getCollection("Person")
+			mongoClient.getDatabase("TestDB").drop();
 //					.insertMany(asList(new Document("name", "Roy")
 //									.append("age", 27)
 //									.append("phoneNumber", "0546815181")
@@ -72,9 +65,10 @@ class MongoDBAdapterTest
 //									.append("age", 26)
 //									.append("phoneNumber", "0504563434")
 //									.append("emailAddress", "davidz@post.bgu.ac.il")));
-			MongoDBAdapter mongoDBAdapter = new MongoDBAdapter();
-			mongoDBAdapter.revealQuery(CreateMany.createMany(roy,yossi,karin));
 		}
+
+		MongoDBAdapter mongoDBAdapter = new MongoDBAdapter();
+		mongoDBAdapter.revealQuery(CreateMany.createMany(roy, yossi, karin));
 	}
 
 	@AfterAll

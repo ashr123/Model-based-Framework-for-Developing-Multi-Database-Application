@@ -80,7 +80,7 @@ public class MongoDBAdapter implements DatabaseAdapter
 				{
 					final FieldsMapping fieldMappingFromEntityFields = Conf.getConfiguration().getFieldsMappingFromEntityField(entity.getEntityType(), field);
 					if (fieldMappingFromEntityFields != null)
-						locationDocumentMap.computeIfAbsent(fieldMappingFromEntityFields, fieldsMapping -> new Document())
+						locationDocumentMap.computeIfAbsent(fieldMappingFromEntityFields, fieldsMapping -> new Document().append("uuid", entity.getUuid()))
 								.append(field, value);
 					else
 						throw new NullPointerException("Field " + field + "doesn't exist in entity " + entity.getEntityType());
@@ -158,7 +158,8 @@ public class MongoDBAdapter implements DatabaseAdapter
 	}
 
 	/**
-	 * given:<br>Entity{"entityType": "person", "fieldsValues": {"uuid": {"value": 1}, "name": "Moshe", "phone": 0546815181}}<br>
+	 * given:<br>
+	 * Entity{"entityType": "person", "fieldsValues": {"uuid": {"value": 1}, "name": "Moshe", "phone": 0546815181}}<br>
 	 * Entity{"entityType": "Person", "fieldsValues": {"uuid": {"value": 1}, "livesAt": {"value": 999}}}
 	 *
 	 * @param complexFilter Filter that can get results from multiple filters
@@ -171,7 +172,7 @@ public class MongoDBAdapter implements DatabaseAdapter
 						.stream()));
 	}
 
-	private boolean isEntityInSet(Set<Entity> entities, Entity entityFrag)
+	private boolean isEntityInSet(Collection<Entity> entities, Entity entityFrag)
 	{
 		return entities.stream()
 				.map(Entity::getUuid)
