@@ -105,7 +105,9 @@ public class Entity
 	public Entity merge(Entity entity)
 	{
 		entity.fieldsValues
-				.forEach((field, value) -> fieldsValues.computeIfAbsent(field, field1 -> fieldsValues.put(field1, value)));
+				.forEach((field, value) -> fieldsValues.merge(field, value, (value1, value2) -> value1));
+//		entity.fieldsValues
+//				.forEach((field, value) -> fieldsValues.computeIfAbsent(field, field1 -> fieldsValues.put(field1, value)));
 		return this;
 	}
 

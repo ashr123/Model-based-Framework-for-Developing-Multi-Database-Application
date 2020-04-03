@@ -54,6 +54,7 @@ class MongoDBAdapterTest
 		try (MongoClient mongoClient = MongoClients.create())
 		{
 			mongoClient.getDatabase("TestDB").drop();
+			mongoClient.getDatabase("mydb").drop();
 //					.insertMany(asList(new Document("name", "Roy")
 //									.append("age", 27)
 //									.append("phoneNumber", "0546815181")
@@ -67,7 +68,6 @@ class MongoDBAdapterTest
 //									.append("phoneNumber", "0504563434")
 //									.append("emailAddress", "davidz@post.bgu.ac.il")));
 		}
-
 		MongoDBAdapter mongoDBAdapter = new MongoDBAdapter();
 		mongoDBAdapter.revealQuery(CreateMany.createMany(roy, yossi, karin));
 	}
@@ -78,6 +78,7 @@ class MongoDBAdapterTest
 		try (MongoClient mongoClient = MongoClients.create())
 		{
 			mongoClient.getDatabase("TestDB").drop();
+			mongoClient.getDatabase("myDB").drop();
 		}
 	}
 
@@ -284,22 +285,8 @@ class MongoDBAdapterTest
 	@Test
 	void testExecuteOr()
 	{
-//		assertEquals(
-//				List.of(
-//						Map.of("name", "Roy",
-//								"age", 27,
-//								"phoneNumber", "0546815181",
-//								"emailAddress", "ashr@post.bgu.ac.il"),
-//						Map.of("name", "Yossi",
-//								"age", 22,
-//								"phoneNumber", "0587158627",
-//								"emailAddress", "yossilan@post.bgu.ac.il")),
-//				removeId(read(
-//						or(
-//								eq("Person", "age", 27),
-//								eq("Person", "age", 22)))));
 		assertEquals(
-				Set.of(yossi,karin),
+				Set.of(roy,yossi,karin),
 				(read(
 						or(
 								or(
