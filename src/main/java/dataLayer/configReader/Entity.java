@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.*;
 
-@SuppressWarnings("ConstantConditions")
 public class Entity
 {
 	@JsonIgnore
@@ -31,10 +30,7 @@ public class Entity
 
 	public Entity(String entityType, Map<String, Object> fieldsValues)
 	{
-		fieldsLocations = null;
-		uuid = UUID.randomUUID();
-		this.entityType = entityType;
-		this.fieldsValues = fieldsValues;
+		this(UUID.randomUUID(), entityType, fieldsValues);
 	}
 
 	public Entity(UUID uuid, String entityType, Map<String, Object> fieldsValues)
@@ -42,7 +38,7 @@ public class Entity
 		fieldsLocations = null;
 		this.uuid = uuid;
 		this.entityType = entityType;
-		this.fieldsValues = fieldsValues;
+		this.fieldsValues = Objects.requireNonNull(fieldsValues);
 	}
 
 //	private Entity(String entityType)
@@ -53,7 +49,7 @@ public class Entity
 //		this.fieldsValues = new LinkedHashMap<>();
 //	}
 
-	public static Entity entity(String entityType, Map<String, Object> fieldsValues)
+	public static Entity of(String entityType, Map<String, Object> fieldsValues)
 	{
 		return new Entity(entityType, fieldsValues);
 	}
@@ -116,17 +112,18 @@ public class Entity
 	{
 		if (this == o)
 			return true;
-		if (o == null || getClass() != o.getClass())
+		if (!(o instanceof Entity))
 			return false;
 		Entity entity = (Entity) o;
 		return entityType.equals(entity.entityType) &&
-				Objects.equals(fieldsValues, entity.fieldsValues);
+				Objects.equals(uuid, entity.uuid) &&
+				fieldsValues.equals(entity.fieldsValues);
 	}
 
 	@Override
 	public int hashCode()
 	{
-		return Objects.hash(entityType, fieldsValues);
+		return Objects.hash(entityType, uuid, fieldsValues);
 	}
 
 	@Override
@@ -134,6 +131,7 @@ public class Entity
 	{
 		return "Entity{" +
 				"entityType='" + entityType + '\'' +
+				", uuid=" + uuid +
 				", fieldsLocations=" + fieldsLocations +
 				", fieldsValues=" + fieldsValues +
 				'}';

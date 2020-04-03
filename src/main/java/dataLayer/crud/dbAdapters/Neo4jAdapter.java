@@ -1,7 +1,5 @@
 package dataLayer.crud.dbAdapters;
 
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
 import dataLayer.configReader.Conf;
 import dataLayer.configReader.Entity;
 import dataLayer.configReader.FieldsMapping;
@@ -20,12 +18,9 @@ import iot.jcypher.query.factories.clause.MATCH;
 import iot.jcypher.query.factories.clause.RETURN;
 import iot.jcypher.query.factories.clause.WHERE;
 import iot.jcypher.query.values.JcNode;
-import org.bson.Document;
-import org.bson.conversions.Bson;
 import org.neo4j.driver.v1.AuthTokens;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static dataLayer.crud.filters.CreateSingle.createSingle;
@@ -33,15 +28,8 @@ import static dataLayer.crud.filters.CreateSingle.createSingle;
 /**
  * Concrete element
  */
-public class Neo4jAdapter implements DatabaseAdapter
+public class Neo4jAdapter extends DatabaseAdapter
 {
-
-	@Override
-	public void revealQuery(VoidFilter voidFilter) { voidFilter.accept(this); }
-
-	@Override
-	public Set<Entity> revealQuery(Filter filter) { return filter.accept(this); }
-
 	private Map<FieldsMapping, Map<String, Object>> groupFieldsByFieldsMapping(Entity entity)
 	{
 		Map<FieldsMapping, Map<String, Object>> result = new HashMap<>();
@@ -55,7 +43,7 @@ public class Neo4jAdapter implements DatabaseAdapter
 						throw new NullPointerException("Field " + field + "doesn't exist in entity " + entity.getEntityType());
 				});
 		return result;
- 	}
+	}
 
 	@Override
 	public void executeCreate(CreateSingle createSingle)
@@ -180,23 +168,5 @@ public class Neo4jAdapter implements DatabaseAdapter
 				RETURN.value(jcNode)
 		});
 		return query(lte, jcQuery, jcNode);
-	}
-
-	@Override
-	public Set<Entity> execute(And and)
-	{
-		return null;
-	}
-
-	@Override
-	public Set<Entity> execute(Or or)
-	{
-		return null;
-	}
-
-	@Override
-	public Set<Entity> execute(All all)
-	{
-		return null;
 	}
 }
