@@ -19,6 +19,7 @@ import static dataLayer.crud.filters.And.and;
 import static dataLayer.crud.filters.Eq.eq;
 import static dataLayer.crud.filters.Gte.gte;
 import static dataLayer.crud.filters.Lte.lte;
+import static dataLayer.crud.filters.Or.or;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -272,14 +273,17 @@ class MongoDBAdapterTest
 				Set.of(yossi),
 				(read(
 						and(
-								lte("Person", "age", 26),
-								gte("Person", "age", 18),
-								eq("Person", "name", "Yossi")))));
+								and(
+										lte("Person", "age", 26),
+										gte("Person", "age", 18)),
+								and(
+										eq("Person", "phoneNumber", "0587158627"),
+										eq("Person", "name", "Yossi"))))));
 	}
-//
-//	@Test
-//	void testExecuteOr()
-//	{
+
+	@Test
+	void testExecuteOr()
+	{
 //		assertEquals(
 //				List.of(
 //						Map.of("name", "Roy",
@@ -294,8 +298,18 @@ class MongoDBAdapterTest
 //						or(
 //								eq("Person", "age", 27),
 //								eq("Person", "age", 22)))));
-//	}
-//
+		assertEquals(
+				Set.of(yossi,karin),
+				(read(
+						or(
+								or(
+										lte("Person", "age", 26),
+										gte("Person", "age", 18)),
+								or(
+										eq("Person", "phoneNumber", "0587158627"),
+										eq("Person", "name", "Yossi"))))));
+	}
+
 //	@Test
 //	void testExecuteTest()
 //	{
