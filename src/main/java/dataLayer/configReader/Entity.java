@@ -82,7 +82,7 @@ public class Entity
 	}
 
 	@JsonAnyGetter
-	private Map<String, String> getFieldsLocations()
+	Map<String, String> getFieldsLocations()
 	{
 		return fieldsLocations;
 	}

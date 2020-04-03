@@ -1,12 +1,16 @@
 package dataLayer.crud.dbAdapters;
 
+import dataLayer.configReader.Conf;
 import dataLayer.configReader.Entity;
+import dataLayer.crud.Read;
 import dataLayer.crud.filters.*;
 
 import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static dataLayer.crud.filters.Eq.eq;
 
 /**
  * Element
@@ -40,6 +44,14 @@ public abstract class DatabaseAdapter
 	public abstract Set<Entity> execute(Lte lte);
 
 //	abstract Set<Entity> execute(All all);
+
+	protected Entity completeEntity(Entity entityFrag)
+	{
+		if (!Conf.getConfiguration().isEntityComplete(entityFrag))
+			Read.read(eq(entityFrag.getEntityType(), "uuid", entityFrag.getUuid()))
+					.forEach(entityFrag::merge);
+		return entityFrag;
+	}
 
 	private Set<Entity> groupEntities(Stream<Entity> entities)
 	{
@@ -179,4 +191,6 @@ public abstract class DatabaseAdapter
 //				.flatMap(filter -> revealQuery(filter).stream())
 //				.collect(Collectors.toSet());
 	}
+
+	public abstract Set<Entity> execute(UUIDEq uuidEq);
 }

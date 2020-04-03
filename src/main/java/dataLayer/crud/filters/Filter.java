@@ -14,8 +14,4 @@ import java.util.Set;
 public interface Filter
 {
 	Set<Entity> accept(DatabaseAdapter databaseAdapter);
-
-	Bson generateFromMongoDB();
-
-	IClause[] generateFromNeo4j();
 }

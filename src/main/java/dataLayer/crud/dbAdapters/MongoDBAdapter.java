@@ -87,6 +87,19 @@ public class MongoDBAdapter extends DatabaseAdapter
 				});
 	}
 
+	public Set<Entity> uuidQuery(UUIDEq uuidEq)
+	{
+		for (var entry : Conf.getConfiguration().getFieldsMapping())
+		try (MongoClient mongoClient = MongoClients.create(PREFIX + fieldsMapping.getConnStr()))
+		{
+			return getStringObjectMap(mongoClient.getDatabase(fieldsMapping.getLocation())
+					.getCollection(simpleFilter.getEntityName())
+					.find(filter)).stream()
+					.map(fieldsMap -> new Entity((UUID) fieldsMap.remove("uuid"), simpleFilter.getEntityName(), fieldsMap))
+					.collect(Collectors.toSet());
+		}
+	}
+
 	@Override
 	public void executeCreate(CreateMany createMany)
 	{
@@ -128,5 +141,11 @@ public class MongoDBAdapter extends DatabaseAdapter
 	public Set<Entity> execute(Lte lte)
 	{
 		return query(lte, lte(lte.getFieldName(), lte.getValue()));
+	}
+
+	@Override
+	public Set<Entity> execute(UUIDEq uuidEq)
+	{
+		return null;
 	}
 }
