@@ -39,13 +39,13 @@ public class Eq extends SimpleFilter
 		return com.mongodb.client.model.Filters.eq(getFieldName(), getValue());
 	}
 
-	@Override
-	public IClause[] generateFromNeo4j()
-	{
-		JcNode node = new JcNode(getEntityName().toLowerCase());
-		return new IClause[]{
-				MATCH.node(node).label(getEntityName()).property(getFieldName()).value(getValue()),
-				RETURN.value(node)
-		};
-	}
+//	@Override
+//	public IClause[] generateFromNeo4j()
+//	{
+//		JcNode node = new JcNode(getEntityName().toLowerCase());
+//		return new IClause[]{
+//				MATCH.node(node).label(getEntityName()).property(getFieldName()).value(getValue()),
+//				RETURN.value(node)
+//		};
+//	}
 }

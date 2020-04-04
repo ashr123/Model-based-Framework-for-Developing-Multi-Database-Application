@@ -40,14 +40,14 @@ public class Lte extends SimpleFilter
 		return com.mongodb.client.model.Filters.lte(getFieldName(), getValue());
 	}
 
-	@Override
-	public IClause[] generateFromNeo4j()
-	{
-		JcNode node = new JcNode(getEntityName().toLowerCase());
-		return new IClause[]{
-				MATCH.node(node).label(getEntityName()),
-				WHERE.valueOf(node.property(getFieldName())).LTE(getValue()),
-				RETURN.value(node)
-		};
-	}
+//	@Override
+//	public IClause[] generateFromNeo4j()
+//	{
+//		JcNode node = new JcNode(getEntityName().toLowerCase());
+//		return new IClause[]{
+//				MATCH.node(node).label(getEntityName()),
+//				WHERE.valueOf(node.property(getFieldName())).LTE(getValue()),
+//				RETURN.value(node)
+//		};
+//	}
 }

@@ -169,4 +169,10 @@ public class Neo4jAdapter extends DatabaseAdapter
 		});
 		return query(lte, jcQuery, jcNode);
 	}
+
+	@Override
+	public Set<Entity> execute(UUIDEq uuidEq)
+	{
+		return null;
+	}
 }

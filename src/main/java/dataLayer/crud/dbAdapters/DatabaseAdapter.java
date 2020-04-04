@@ -45,14 +45,6 @@ public abstract class DatabaseAdapter
 
 //	abstract Set<Entity> execute(All all);
 
-	protected Entity completeEntity(Entity entityFrag)
-	{
-		if (!Conf.getConfiguration().isEntityComplete(entityFrag))
-			Read.read(eq(entityFrag.getEntityType(), "uuid", entityFrag.getUuid()))
-					.forEach(entityFrag::merge);
-		return entityFrag;
-	}
-
 	private Set<Entity> groupEntities(Stream<Entity> entities)
 	{
 		//noinspection OptionalGetWithoutIsPresent

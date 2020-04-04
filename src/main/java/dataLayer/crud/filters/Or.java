@@ -35,22 +35,22 @@ public class Or extends ComplexFilter
 		return "Or{" + super.toString() + '}';
 	}
 
-	public Bson generateFromMongoDB()
-	{
-		return com.mongodb.client.model.Filters.or((Bson[]) Arrays.stream(getComplexQuery())
-				.map(Filter::generateFromMongoDB)
-				.toArray());
-	}
-
-	@Override
-	public IClause[] generateFromNeo4j()
-	{
-		List<Element<?>> matches = new LinkedList<>();
-		List<Concatenator> wheres = new LinkedList<>();
-		List<RSortable> returns = new LinkedList<>();
-//		WHERE.BR_OPEN().valueOf()..EQUALS().
-		return new IClause[]{
-				UNION.all()
-		};
-	}
+//	public Bson generateFromMongoDB()
+//	{
+//		return com.mongodb.client.model.Filters.or((Bson[]) Arrays.stream(getComplexQuery())
+//				.map(Filter::generateFromMongoDB)
+//				.toArray());
+//	}
+//
+//	@Override
+//	public IClause[] generateFromNeo4j()
+//	{
+//		List<Element<?>> matches = new LinkedList<>();
+//		List<Concatenator> wheres = new LinkedList<>();
+//		List<RSortable> returns = new LinkedList<>();
+////		WHERE.BR_OPEN().valueOf()..EQUALS().
+//		return new IClause[]{
+//				UNION.all()
+//		};
+//	}
 }

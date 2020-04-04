@@ -33,19 +33,19 @@ public class And extends ComplexFilter
 		return "And{" + super.toString() + '}';
 	}
 
-	public Bson generateFromMongoDB()
-	{
-		return com.mongodb.client.model.Filters.and((Bson[]) Arrays.stream(getComplexQuery())
-				.map(Filter::generateFromMongoDB)
-				.toArray());
-	}
-
-	@Override
-	public IClause[] generateFromNeo4j()
-	{
-//		return new IClause[]{
-//				WHERE.valueOf(new JcNode())
-//		};
-		return null;
-	}
+//	public Bson generateFromMongoDB()
+//	{
+//		return com.mongodb.client.model.Filters.and((Bson[]) Arrays.stream(getComplexQuery())
+//				.map(Filter::generateFromMongoDB)
+//				.toArray());
+//	}
+//
+//	@Override
+//	public IClause[] generateFromNeo4j()
+//	{
+////		return new IClause[]{
+////				WHERE.valueOf(new JcNode())
+////		};
+//		return null;
+//	}
 }

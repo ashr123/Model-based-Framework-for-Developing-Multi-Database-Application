@@ -87,15 +87,14 @@ public class MongoDBAdapter extends DatabaseAdapter
 				});
 	}
 
-	public Set<Entity> uuidQuery(UUIDEq uuidEq)
+	public Set<Entity> uuidQuery(String type, UUID uuid, FieldsMapping fieldsMapping)
 	{
-		for (var entry : Conf.getConfiguration().getFieldsMapping())
 		try (MongoClient mongoClient = MongoClients.create(PREFIX + fieldsMapping.getConnStr()))
 		{
 			return getStringObjectMap(mongoClient.getDatabase(fieldsMapping.getLocation())
-					.getCollection(simpleFilter.getEntityName())
-					.find(filter)).stream()
-					.map(fieldsMap -> new Entity((UUID) fieldsMap.remove("uuid"), simpleFilter.getEntityName(), fieldsMap))
+					.getCollection(type)
+					.find(eq("uuid", uuid))).stream()
+					.map(fieldsMap -> new Entity((UUID) fieldsMap.remove("uuid"), type, fieldsMap))
 					.collect(Collectors.toSet());
 		}
 	}
@@ -144,8 +143,5 @@ public class MongoDBAdapter extends DatabaseAdapter
 	}
 
 	@Override
-	public Set<Entity> execute(UUIDEq uuidEq)
-	{
-		return null;
-	}
+	public Set<Entity> execute(UUIDEq uuidEq) { return uuidQuery(uuidEq.getType(), uuidEq.getUuid(), uuidEq.getFieldsMapping()); }
 }

@@ -60,14 +60,20 @@ public class Conf
 
 	public boolean isEntityComplete(Entity entityFrag)
 	{
-		return entities.get(entityFrag.getEntityType()).getFieldsLocations().keySet().containsAll(entityFrag.getFieldsValues().keySet());
+		return entities.get(entityFrag.getEntityType()).getFieldsLocations().keySet().equals(entityFrag.getFieldsValues().keySet());
 	}
 
 	public Map<String, FieldsMapping> getMissingFields(Entity entityFrag)
 	{
-		return entities.get(entityFrag.getEntityType()).getFieldsLocations().keySet().stream()
-				.filter(field -> !entityFrag.getFieldsValues().containsKey(field))
-				.collect(Collectors.toMap(field -> field, field -> getFieldsMappingFromEntityField(entityFrag.getEntityType(), field), (a, b) -> b));
+		if(!isEntityComplete(entityFrag)){
+			return entities.get(entityFrag.getEntityType()).getFieldsLocations().keySet().stream()
+					.filter(field -> !entityFrag.getFieldsValues().containsKey(field))
+					.collect(Collectors.toMap(field -> field, field -> getFieldsMappingFromEntityField(entityFrag.getEntityType(), field), (a, b) -> b));
+
+		}
+		else{
+			return new HashMap<>();
+		}
 	}
 
 	public FieldsMapping getFieldsMappingFromEntityField(String entityType, String field)
