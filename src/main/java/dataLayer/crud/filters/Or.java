@@ -2,14 +2,8 @@ package dataLayer.crud.filters;
 
 import dataLayer.configReader.Entity;
 import dataLayer.crud.dbAdapters.DatabaseAdapter;
-import iot.jcypher.query.api.IClause;
-import iot.jcypher.query.api.pattern.Element;
-import iot.jcypher.query.api.predicate.Concatenator;
-import iot.jcypher.query.api.returns.RSortable;
-import iot.jcypher.query.factories.clause.UNION;
-import org.bson.conversions.Bson;
 
-import java.util.*;
+import java.util.Set;
 
 public class Or extends ComplexFilter
 {

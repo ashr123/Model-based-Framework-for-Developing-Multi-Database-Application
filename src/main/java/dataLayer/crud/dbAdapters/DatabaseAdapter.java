@@ -1,6 +1,5 @@
 package dataLayer.crud.dbAdapters;
 
-import dataLayer.configReader.Conf;
 import dataLayer.configReader.Entity;
 import dataLayer.crud.Read;
 import dataLayer.crud.filters.*;
@@ -9,8 +8,6 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static dataLayer.crud.filters.Eq.eq;
 
 /**
  * Element
@@ -68,7 +65,7 @@ public abstract class DatabaseAdapter
 	private Stream<Set<Entity>> defragEntities(ComplexFilter complexFilter)
 	{
 		return Stream.of(complexFilter.getComplexQuery())
-				.map(filter -> groupEntities(revealQuery(filter)
+				.map(filter -> groupEntities(Read.simpleRead(filter)
 						.stream()));
 	}
 

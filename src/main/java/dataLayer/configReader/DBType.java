@@ -10,8 +10,8 @@ public enum DBType
 	NEO4J,
 	@JsonProperty("mysql")
 	MYSQL,
-	@JsonProperty("cassandra")
-	CASSANDRA,
-	@JsonProperty("redis")
-	REDIS
+//	@JsonProperty("cassandra")
+//	CASSANDRA,
+//	@JsonProperty("redis")
+//	REDIS
 }

@@ -13,7 +13,10 @@ public class UUIDEq implements Filter
 	private final UUID uuid;
 	private final FieldsMapping fieldsMapping;
 
-	public UUIDEq(String type, String uuid, FieldsMapping fieldsMapping) { this(type, UUID.fromString(uuid), fieldsMapping); }
+	public UUIDEq(String type, String uuid, FieldsMapping fieldsMapping)
+	{
+		this(type, UUID.fromString(uuid), fieldsMapping);
+	}
 
 	public UUIDEq(String type, UUID uuid, FieldsMapping fieldsMapping)
 	{

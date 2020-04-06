@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -63,17 +62,12 @@ public class Conf
 		return entities.get(entityFrag.getEntityType()).getFieldsLocations().keySet().equals(entityFrag.getFieldsValues().keySet());
 	}
 
-	public Map<String, FieldsMapping> getMissingFields(Entity entityFrag)
+	public Set<FieldsMapping> getMissingFields(Entity entityFrag)
 	{
-		if(!isEntityComplete(entityFrag)){
-			return entities.get(entityFrag.getEntityType()).getFieldsLocations().keySet().stream()
-					.filter(field -> !entityFrag.getFieldsValues().containsKey(field))
-					.collect(Collectors.toMap(field -> field, field -> getFieldsMappingFromEntityField(entityFrag.getEntityType(), field), (a, b) -> b));
-
-		}
-		else{
-			return new HashMap<>();
-		}
+		return entities.get(entityFrag.getEntityType()).getFieldsLocations().keySet().stream()
+				.filter(field -> !entityFrag.getFieldsValues().containsKey(field))
+				.map(field -> getFieldsMappingFromEntityField(entityFrag.getEntityType(), field))
+				.collect(Collectors.toSet());
 	}
 
 	public FieldsMapping getFieldsMappingFromEntityField(String entityType, String field)

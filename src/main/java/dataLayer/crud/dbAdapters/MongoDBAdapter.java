@@ -87,7 +87,7 @@ public class MongoDBAdapter extends DatabaseAdapter
 				});
 	}
 
-	public Set<Entity> uuidQuery(String type, UUID uuid, FieldsMapping fieldsMapping)
+	public Set<Entity> query(String type, UUID uuid, FieldsMapping fieldsMapping)
 	{
 		try (MongoClient mongoClient = MongoClients.create(PREFIX + fieldsMapping.getConnStr()))
 		{
@@ -143,5 +143,8 @@ public class MongoDBAdapter extends DatabaseAdapter
 	}
 
 	@Override
-	public Set<Entity> execute(UUIDEq uuidEq) { return uuidQuery(uuidEq.getType(), uuidEq.getUuid(), uuidEq.getFieldsMapping()); }
+	public Set<Entity> execute(UUIDEq uuidEq)
+	{
+		return query(uuidEq.getType(), uuidEq.getUuid(), uuidEq.getFieldsMapping());
+	}
 }

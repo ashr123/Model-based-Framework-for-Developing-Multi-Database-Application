@@ -2,10 +2,6 @@ package dataLayer.crud.filters;
 
 import dataLayer.configReader.Entity;
 import dataLayer.crud.dbAdapters.DatabaseAdapter;
-import iot.jcypher.query.api.IClause;
-import iot.jcypher.query.factories.clause.MATCH;
-import iot.jcypher.query.factories.clause.RETURN;
-import iot.jcypher.query.values.JcNode;
 import org.bson.conversions.Bson;
 
 import java.util.Set;
