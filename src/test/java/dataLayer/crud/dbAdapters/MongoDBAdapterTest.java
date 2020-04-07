@@ -5,7 +5,6 @@ import com.mongodb.client.MongoClients;
 import dataLayer.configReader.Conf;
 import dataLayer.configReader.Entity;
 import dataLayer.crud.filters.CreateMany;
-import dataLayer.crud.filters.Ne;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -55,7 +54,7 @@ class MongoDBAdapterTest
 	@BeforeAll
 	void setUp() throws IOException
 	{
-		Conf.loadConfiguration(MongoDBAdapterTest.class.getResource("/configuration.json"));
+		Conf.loadConfiguration(MongoDBAdapterTest.class.getResource("/configurations/configuration.json"));
 //		try (MongoClient mongoClient = MongoClients.create())
 //		{
 //			mongoClient.getDatabase("TestDB").drop();

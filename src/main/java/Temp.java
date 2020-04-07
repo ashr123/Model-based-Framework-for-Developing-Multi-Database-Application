@@ -28,32 +28,33 @@ public class Temp
 	public static void main(String... args)
 	{
 		Properties props = new Properties();
-		props.setProperty(DBProperties.SERVER_ROOT_URI, "bolt://localhost:7687");
-		IDBAccess dbAccess = DBAccessFactory.createDBAccess(DBType.REMOTE, props, AuthTokens.basic("neo4j", "neo4j1"));
+//		props.setProperty(DBProperties.SERVER_ROOT_URI, "bolt://localhost:7687");
+		props.setProperty(DBProperties.DATABASE_DIR, "src/main/resources/neo4jTest");
+		IDBAccess dbAccess = DBAccessFactory.createDBAccess(DBType.EMBEDDED, props/*, AuthTokens.basic("neo4j", "neo4j1")*/);
 
-		// create a new graph model
-		Graph g = Graph.create(dbAccess);
-
-		// create a node
-		GrNode m = g.createNode();
-		// add a label
-		m.addLabel("Movie");
-		// add properties
-		m.addProperty("title", "The Matrix");
-		m.addProperty("year", "1999-03-31");
-
-		// create another node
-		GrNode k = g.createNode();
-		k.addLabel("Actor");
-		k.addProperty("name", "Keanu Reeves");
-
-		// create a relation
-		GrRelation rel = g.createRelation("ACTS_IN", k, m);
-		rel.addProperty("role", "Neo");
-
-		// store the graph
-		List<JcError> errors = g.store();
-		System.out.println("Errors of store method: " + errors);
+//		// create a new graph model
+//		Graph g = Graph.create(dbAccess);
+//
+//		// create a node
+//		GrNode m = g.createNode();
+//		// add a label
+//		m.addLabel("Movie");
+//		// add properties
+//		m.addProperty("title", "The Matrix");
+//		m.addProperty("year", "1999-03-31");
+//
+//		// create another node
+//		GrNode k = g.createNode();
+//		k.addLabel("Actor");
+//		k.addProperty("name", "Keanu Reeves");
+//
+//		// create a relation
+//		GrRelation rel = g.createRelation("ACTS_IN", k, m);
+//		rel.addProperty("role", "Neo");
+//
+//		// store the graph
+//		List<JcError> errors = g.store();
+//		System.out.println("Errors of store method: " + errors);
 
 		JcNode actor = new JcNode("actor");
 		JcNode movie = new JcNode("movie");
@@ -70,7 +71,7 @@ public class Temp
 
 		System.out.println("DB errors: " + result.getDBErrors() + "\nGeneral errors: " + result.getGeneralErrors());
 		System.out.println(result.resultOf(actor));
-		System.out.println(result.resultOf(actor.property("name")));
+//		System.out.println(result.resultOf(actor.property("name"))); // WORNG!!!
 
 		List<GrNode> actors = result.resultOf(actor);
 		List<GrNode> movies = result.resultOf(movie);
