@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -37,9 +38,7 @@ public class Conf
 
 	public static Conf getConfiguration()
 	{
-		if (configuration == null)
-			throw new NullPointerException("No configuration file loaded");
-		return configuration;
+		return Objects.requireNonNull(configuration, "No configuration file loaded");
 	}
 
 	public static void loadConfiguration(URL url) throws IOException

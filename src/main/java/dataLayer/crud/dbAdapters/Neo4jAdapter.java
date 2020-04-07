@@ -48,16 +48,14 @@ public class Neo4jAdapter extends DatabaseAdapter
 	@Override
 	public void executeCreate(CreateSingle createSingle)
 	{
-		Entity entity = createSingle.getEntity();
 		groupFieldsByFieldsMapping(createSingle.getEntity())
 				.forEach((fieldsMapping, fields) ->
 				{
 					Properties props = new Properties();
-					IDBAccess dbAccess = DBAccessFactory.createDBAccess(DBType.REMOTE, props, AuthTokens.basic(fieldsMapping.getUsername(), fieldsMapping.getPassword()));
 					props.setProperty(DBProperties.SERVER_ROOT_URI, fieldsMapping.getConnStr());
-					Graph graph = Graph.create(dbAccess);
+					Graph graph = Graph.create(DBAccessFactory.createDBAccess(DBType.REMOTE, props, AuthTokens.basic(fieldsMapping.getUsername(), fieldsMapping.getPassword())));
 					GrNode node = graph.createNode();
-					node.addLabel(entity.getEntityType());
+					node.addLabel(createSingle.getEntity().getEntityType());
 					fields.forEach(node::addProperty);
 					graph.store();
 				});
