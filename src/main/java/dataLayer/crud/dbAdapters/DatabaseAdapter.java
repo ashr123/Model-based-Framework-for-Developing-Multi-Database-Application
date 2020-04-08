@@ -68,9 +68,9 @@ public abstract class DatabaseAdapter
 				.map(filter -> groupEntities(Read.simpleRead(filter)));
 	}
 
-	private boolean isEntityInSet(Stream<Entity> entities, Entity entityFrag)
+	private static boolean isEntityInSet(Set<Entity> entities, Entity entityFrag)
 	{
-		return entities.collect(Collectors.toSet()).stream()
+		return entities.stream()
 				.map(Entity::getUuid)
 				.anyMatch(entityFrag.getUuid()::equals);
 	}
@@ -81,8 +81,8 @@ public abstract class DatabaseAdapter
 				.reduce((set1, set2) ->
 						groupEntities(Stream.concat(set1, set2)
 								.filter(entityFrag ->
-										isEntityInSet(set1, entityFrag) &&
-												isEntityInSet(set2, entityFrag))))
+										isEntityInSet(set1.collect(Collectors.toSet()), entityFrag) &&
+												isEntityInSet(set2.collect(Collectors.toSet()), entityFrag))))
 				.orElse(Stream.of());
 //		Set<Entity> result = new HashSet<>(resultSets.get(0));
 //		resultSets.subList(1, resultSets.size()).forEach(result::retainAll);
