@@ -40,7 +40,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 					if (fieldMappingFromEntityFields != null)
 						result.computeIfAbsent(fieldMappingFromEntityFields, fieldsMapping -> new HashMap<>()).put(field, value);
 					else
-						throw new NullPointerException("Field " + field + "doesn't exist in entity " + entity.getEntityType());
+						throw new NullPointerException("Field " + field + " doesn't exist in entity " + entity.getEntityType());
 				});
 		return result;
 	}
@@ -51,13 +51,15 @@ public class Neo4jAdapter extends DatabaseAdapter
 		groupFieldsByFieldsMapping(createSingle.getEntity())
 				.forEach((fieldsMapping, fields) ->
 				{
-					Properties props = new Properties();
-					props.setProperty(DBProperties.SERVER_ROOT_URI, fieldsMapping.getConnStr());
-					Graph graph = Graph.create(DBAccessFactory.createDBAccess(DBType.REMOTE, props, AuthTokens.basic(fieldsMapping.getUsername(), fieldsMapping.getPassword())));
+					Properties props = new Properties(1);
+					props.setProperty(DBProperties.SERVER_ROOT_URI, fieldsMapping.getConnStr() + '/' + fieldsMapping.getLocation());
+					final IDBAccess dbAccess = DBAccessFactory.createDBAccess(DBType.REMOTE, props, AuthTokens.basic(fieldsMapping.getUsername(), fieldsMapping.getPassword()));
+					Graph graph = Graph.create(dbAccess);
 					GrNode node = graph.createNode();
 					node.addLabel(createSingle.getEntity().getEntityType());
 					fields.forEach(node::addProperty);
 					graph.store();
+					dbAccess.close();
 				});
 	}
 
@@ -87,6 +89,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 		List<GrNode> grNodes = jcQueryResult.resultOf(jcNode);
 		Set<Entity> result = new HashSet<>();
 		grNodes.forEach(grNode -> result.add(getEntityFromNode(grNode)));
+		dbAccess.close();
 		return result;
 	}
 

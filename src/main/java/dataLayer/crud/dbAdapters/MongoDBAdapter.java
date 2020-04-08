@@ -47,6 +47,7 @@ public class MongoDBAdapter extends DatabaseAdapter
 	private Set<Entity> query(SimpleFilter simpleFilter, Bson filter)
 	{
 		final FieldsMapping fieldsMapping = Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityName(), simpleFilter.getFieldName());
+
 		try (MongoClient mongoClient = MongoClients.create(PREFIX + fieldsMapping.getConnStr()))
 		{
 			return getStringObjectMap(mongoClient.getDatabase(fieldsMapping.getLocation())

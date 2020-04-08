@@ -31,7 +31,6 @@ public class Temp
 //		props.setProperty(DBProperties.SERVER_ROOT_URI, "bolt://localhost:7687");
 		props.setProperty(DBProperties.DATABASE_DIR, "src/main/resources/neo4jTest");
 		IDBAccess dbAccess = DBAccessFactory.createDBAccess(DBType.EMBEDDED, props/*, AuthTokens.basic("neo4j", "neo4j1")*/);
-
 //		// create a new graph model
 //		Graph g = Graph.create(dbAccess);
 //
