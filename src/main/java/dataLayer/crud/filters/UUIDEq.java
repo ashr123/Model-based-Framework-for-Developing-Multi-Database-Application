@@ -6,6 +6,7 @@ import dataLayer.crud.dbAdapters.DatabaseAdapter;
 
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 public class UUIDEq implements Filter
 {
@@ -41,7 +42,7 @@ public class UUIDEq implements Filter
 	}
 
 	@Override
-	public Set<Entity> accept(DatabaseAdapter databaseAdapter)
+	public Stream<Entity> accept(DatabaseAdapter databaseAdapter)
 	{
 		return databaseAdapter.execute(this);
 	}

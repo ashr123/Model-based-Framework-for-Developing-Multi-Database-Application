@@ -6,6 +6,7 @@ import dataLayer.crud.filters.*;
 
 import java.util.Collection;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -19,7 +20,7 @@ public abstract class DatabaseAdapter
 		voidFilter.accept(this);
 	}
 
-	public Set<Entity> revealQuery(Filter filter)
+	public Stream<Entity> revealQuery(Filter filter)
 	{
 		return filter.accept(this);
 	}
@@ -28,21 +29,21 @@ public abstract class DatabaseAdapter
 
 	public abstract void executeCreate(CreateMany createMany);
 
-	public abstract Set<Entity> execute(Eq eq);
+	public abstract Stream<Entity> execute(Eq eq);
 
-	public abstract Set<Entity> execute(Ne ne);
+	public abstract Stream<Entity> execute(Ne ne);
 
-	public abstract Set<Entity> execute(Gt gt);
+	public abstract Stream<Entity> execute(Gt gt);
 
-	public abstract Set<Entity> execute(Lt lt);
+	public abstract Stream<Entity> execute(Lt lt);
 
-	public abstract Set<Entity> execute(Gte gte);
+	public abstract Stream<Entity> execute(Gte gte);
 
-	public abstract Set<Entity> execute(Lte lte);
+	public abstract Stream<Entity> execute(Lte lte);
 
 //	abstract Set<Entity> execute(All all);
 
-	private Set<Entity> groupEntities(Stream<Entity> entities)
+	private static Stream<Entity> groupEntities(Stream<Entity> entities)
 	{
 		//noinspection OptionalGetWithoutIsPresent
 		return entities
@@ -50,8 +51,7 @@ public abstract class DatabaseAdapter
 				.values().stream()
 				.map(pojoFragments -> pojoFragments.stream()
 						.reduce(Entity::merge)
-						.get())
-				.collect(Collectors.toSet());
+						.get());
 	}
 
 	/**
@@ -62,29 +62,28 @@ public abstract class DatabaseAdapter
 	 * @param complexFilter Filter that can get results from multiple filters
 	 * @return Entity{"entityType": "person", "fieldsValues": {"uuid": {"value": 1}, "name": "Moshe", "phone": 0546815181, "livesAt": {"value": 999}}}
 	 */
-	private Stream<Set<Entity>> defragEntities(ComplexFilter complexFilter)
+	private static Stream<Stream<Entity>> defragEntities(ComplexFilter complexFilter)
 	{
 		return Stream.of(complexFilter.getComplexQuery())
-				.map(filter -> groupEntities(Read.simpleRead(filter)
-						.stream()));
+				.map(filter -> groupEntities(Read.simpleRead(filter)));
 	}
 
-	private boolean isEntityInSet(Collection<Entity> entities, Entity entityFrag)
+	private boolean isEntityInSet(Stream<Entity> entities, Entity entityFrag)
 	{
-		return entities.stream()
+		return entities.collect(Collectors.toSet()).stream()
 				.map(Entity::getUuid)
 				.anyMatch(entityFrag.getUuid()::equals);
 	}
 
-	public Set<Entity> execute(And and)
+	public Stream<Entity> execute(And and)
 	{
 		return defragEntities(and)
 				.reduce((set1, set2) ->
-						groupEntities(Stream.concat(set1.stream(), set2.stream())
+						groupEntities(Stream.concat(set1, set2)
 								.filter(entityFrag ->
 										isEntityInSet(set1, entityFrag) &&
 												isEntityInSet(set2, entityFrag))))
-				.orElse(Set.of());
+				.orElse(Stream.of());
 //		Set<Entity> result = new HashSet<>(resultSets.get(0));
 //		resultSets.subList(1, resultSets.size()).forEach(result::retainAll);
 //		return result;
@@ -102,10 +101,10 @@ public abstract class DatabaseAdapter
 //				.orElse(new HashMap<>());
 	}
 
-	public Set<Entity> execute(Or or)
+	public Stream<Entity> execute(Or or)
 	{
 		return groupEntities(defragEntities(or)
-				.flatMap(Collection::stream));
+				.flatMap(Function.identity()));
 
 //		Map<String, Set<Map<String, Object>>> output = new HashMap<>();
 //		List<Map<String, Set<Map<String, Object>>>> temp = Stream.of(or.getComplexQuery())
@@ -181,5 +180,5 @@ public abstract class DatabaseAdapter
 //				.collect(Collectors.toSet());
 	}
 
-	public abstract Set<Entity> execute(UUIDEq uuidEq);
+	public abstract Stream<Entity> execute(UUIDEq uuidEq);
 }

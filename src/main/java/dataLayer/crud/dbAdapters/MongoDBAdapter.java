@@ -44,7 +44,7 @@ public class MongoDBAdapter extends DatabaseAdapter
 		return null;
 	}
 
-	private Set<Entity> query(SimpleFilter simpleFilter, Bson filter)
+	private Stream<Entity> query(SimpleFilter simpleFilter, Bson filter)
 	{
 		final FieldsMapping fieldsMapping = Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityName(), simpleFilter.getFieldName());
 		try (MongoClient mongoClient = MongoClients.create(PREFIX + fieldsMapping.getConnStr()))
@@ -52,8 +52,7 @@ public class MongoDBAdapter extends DatabaseAdapter
 			return getStringObjectMap(mongoClient.getDatabase(fieldsMapping.getLocation())
 					.getCollection(simpleFilter.getEntityName())
 					.find(filter)).stream()
-					.map(fieldsMap -> new Entity((UUID) fieldsMap.remove("uuid"), simpleFilter.getEntityName(), fieldsMap))
-					.collect(Collectors.toSet());
+					.map(fieldsMap -> new Entity((UUID) fieldsMap.remove("uuid"), simpleFilter.getEntityName(), fieldsMap));
 		}
 	}
 
@@ -87,15 +86,14 @@ public class MongoDBAdapter extends DatabaseAdapter
 				});
 	}
 
-	public Set<Entity> query(String type, UUID uuid, FieldsMapping fieldsMapping)
+	public Stream<Entity> query(String type, UUID uuid, FieldsMapping fieldsMapping)
 	{
 		try (MongoClient mongoClient = MongoClients.create(PREFIX + fieldsMapping.getConnStr()))
 		{
 			return getStringObjectMap(mongoClient.getDatabase(fieldsMapping.getLocation())
 					.getCollection(type)
 					.find(eq("uuid", uuid))).stream()
-					.map(fieldsMap -> new Entity((UUID) fieldsMap.remove("uuid"), type, fieldsMap))
-					.collect(Collectors.toSet());
+					.map(fieldsMap -> new Entity((UUID) fieldsMap.remove("uuid"), type, fieldsMap));
 		}
 	}
 
@@ -107,43 +105,43 @@ public class MongoDBAdapter extends DatabaseAdapter
 	}
 
 	@Override
-	public Set<Entity> execute(Eq eq)
+	public Stream<Entity> execute(Eq eq)
 	{
 		return query(eq, eq(eq.getFieldName(), eq.getValue()));
 	}
 
 	@Override
-	public Set<Entity> execute(Ne ne)
+	public Stream<Entity> execute(Ne ne)
 	{
 		return query(ne, ne(ne.getFieldName(), ne.getValue()));
 	}
 
 	@Override
-	public Set<Entity> execute(Gt gt)
+	public Stream<Entity> execute(Gt gt)
 	{
 		return query(gt, gt(gt.getFieldName(), gt.getValue()));
 	}
 
 	@Override
-	public Set<Entity> execute(Lt lt)
+	public Stream<Entity> execute(Lt lt)
 	{
 		return query(lt, lt(lt.getFieldName(), lt.getValue()));
 	}
 
 	@Override
-	public Set<Entity> execute(Gte gte)
+	public Stream<Entity> execute(Gte gte)
 	{
 		return query(gte, gte(gte.getFieldName(), gte.getValue()));
 	}
 
 	@Override
-	public Set<Entity> execute(Lte lte)
+	public Stream<Entity> execute(Lte lte)
 	{
 		return query(lte, lte(lte.getFieldName(), lte.getValue()));
 	}
 
 	@Override
-	public Set<Entity> execute(UUIDEq uuidEq)
+	public Stream<Entity> execute(UUIDEq uuidEq)
 	{
 		return query(uuidEq.getType(), uuidEq.getUuid(), uuidEq.getFieldsMapping());
 	}

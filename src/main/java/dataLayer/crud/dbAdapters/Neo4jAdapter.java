@@ -77,7 +77,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 		return new Entity((UUID) fieldsMap.remove("uuid"), grLabel, fieldsMap);
 	}
 
-	private Set<Entity> query(SimpleFilter simpleFilter, JcQuery jcQuery, JcNode jcNode)
+	private Stream<Entity> query(SimpleFilter simpleFilter, JcQuery jcQuery, JcNode jcNode)
 	{
 		final FieldsMapping fieldsMapping = Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityName(), simpleFilter.getFieldName());
 		Properties props = new Properties();
@@ -87,11 +87,11 @@ public class Neo4jAdapter extends DatabaseAdapter
 		List<GrNode> grNodes = jcQueryResult.resultOf(jcNode);
 		Set<Entity> result = new HashSet<>();
 		grNodes.forEach(grNode -> result.add(getEntityFromNode(grNode)));
-		return result;
+		return result.stream();
 	}
 
 	@Override
-	public Set<Entity> execute(Eq eq)
+	public Stream<Entity> execute(Eq eq)
 	{
 		JcNode jcNode = new JcNode(eq.getEntityName());
 		JcQuery jcQuery = new JcQuery();
@@ -104,7 +104,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 	}
 
 	@Override
-	public Set<Entity> execute(Ne ne)
+	public Stream<Entity> execute(Ne ne)
 	{
 		JcNode jcNode = new JcNode(ne.getEntityName());
 		JcQuery jcQuery = new JcQuery();
@@ -117,7 +117,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 	}
 
 	@Override
-	public Set<Entity> execute(Gt gt)
+	public Stream<Entity> execute(Gt gt)
 	{
 		JcNode jcNode = new JcNode(gt.getEntityName());
 		JcQuery jcQuery = new JcQuery();
@@ -130,7 +130,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 	}
 
 	@Override
-	public Set<Entity> execute(Lt lt)
+	public Stream<Entity> execute(Lt lt)
 	{
 		JcNode jcNode = new JcNode(lt.getEntityName());
 		JcQuery jcQuery = new JcQuery();
@@ -143,7 +143,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 	}
 
 	@Override
-	public Set<Entity> execute(Gte gte)
+	public Stream<Entity> execute(Gte gte)
 	{
 		JcNode jcNode = new JcNode(gte.getEntityName());
 		JcQuery jcQuery = new JcQuery();
@@ -156,7 +156,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 	}
 
 	@Override
-	public Set<Entity> execute(Lte lte)
+	public Stream<Entity> execute(Lte lte)
 	{
 		JcNode jcNode = new JcNode(lte.getEntityName());
 		JcQuery jcQuery = new JcQuery();
@@ -169,7 +169,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 	}
 
 	@Override
-	public Set<Entity> execute(UUIDEq uuidEq)
+	public Stream<Entity> execute(UUIDEq uuidEq)
 	{
 		return null;
 	}
