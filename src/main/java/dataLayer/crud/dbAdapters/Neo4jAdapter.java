@@ -184,6 +184,6 @@ public class Neo4jAdapter extends DatabaseAdapter
 	@Override
 	public Stream<Entity> execute(UUIDEq uuidEq)
 	{
-		return null;
+		throw new UnsupportedOperationException("UUIDEq on Neo4j adapter doesn't support yet");
 	}
 }

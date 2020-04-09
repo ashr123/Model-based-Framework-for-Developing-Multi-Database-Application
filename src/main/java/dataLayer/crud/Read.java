@@ -19,8 +19,6 @@ public class Read
 			MONGO_DB_ADAPTER = new MongoDBAdapter(),
 			NEO4J_DB_ADAPTER = new Neo4jAdapter();
 
-	//TODO Improve!!!
-	// Will be replacing revealQuery for working with multiple DB's.
 	public static Set<Entity> read(Filter filter)
 	{
 		return makeEntitiesWhole(simpleRead(filter));
@@ -63,9 +61,9 @@ public class Read
 						switch (missingFieldsMapping.getType())
 						{
 							case MYSQL:
-								break;
+								throw new UnsupportedOperationException("MySQL doesn't support yet");
 							case NEO4J:
-								break;
+								ref.fragments = Stream.concat(ref.fragments, NEO4J_DB_ADAPTER.execute(new UUIDEq(entityFragment.getEntityType(), entityFragment.getUuid(), missingFieldsMapping)));
 							case MONGODB:
 								// For certain entity fragment add missing field mapping entity.
 								ref.fragments = Stream.concat(ref.fragments, MONGO_DB_ADAPTER.execute(new UUIDEq(entityFragment.getEntityType(), entityFragment.getUuid(), missingFieldsMapping)));
