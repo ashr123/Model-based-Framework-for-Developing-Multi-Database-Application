@@ -4,7 +4,6 @@ import dataLayer.configReader.Entity;
 import dataLayer.crud.Read;
 import dataLayer.crud.filters.*;
 
-import java.util.Collection;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -15,34 +14,6 @@ import java.util.stream.Stream;
  */
 public abstract class DatabaseAdapter
 {
-	public void revealQuery(VoidFilter voidFilter)
-	{
-		voidFilter.accept(this);
-	}
-
-	public Stream<Entity> revealQuery(Filter filter)
-	{
-		return filter.accept(this);
-	}
-
-	public abstract void executeCreate(CreateSingle createSingle);
-
-	public abstract void executeCreate(CreateMany createMany);
-
-	public abstract Stream<Entity> execute(Eq eq);
-
-	public abstract Stream<Entity> execute(Ne ne);
-
-	public abstract Stream<Entity> execute(Gt gt);
-
-	public abstract Stream<Entity> execute(Lt lt);
-
-	public abstract Stream<Entity> execute(Gte gte);
-
-	public abstract Stream<Entity> execute(Lte lte);
-
-//	abstract Set<Entity> execute(All all);
-
 	private static Stream<Entity> groupEntities(Stream<Entity> entities)
 	{
 		//noinspection OptionalGetWithoutIsPresent
@@ -75,14 +46,47 @@ public abstract class DatabaseAdapter
 				.anyMatch(entityFrag.getUuid()::equals);
 	}
 
+	public void revealQuery(VoidFilter voidFilter)
+	{
+		voidFilter.accept(this);
+	}
+
+	public Stream<Entity> revealQuery(Filter filter)
+	{
+		return filter.accept(this);
+	}
+
+	public abstract void executeCreate(CreateSingle createSingle);
+
+	public abstract void executeCreate(CreateMany createMany);
+
+	public abstract Stream<Entity> execute(Eq eq);
+
+	public abstract Stream<Entity> execute(Ne ne);
+
+	public abstract Stream<Entity> execute(Gt gt);
+
+//	abstract Set<Entity> execute(All all);
+
+	public abstract Stream<Entity> execute(Lt lt);
+
+	public abstract Stream<Entity> execute(Gte gte);
+
+	public abstract Stream<Entity> execute(Lte lte);
+
 	public Stream<Entity> execute(And and)
 	{
 		return defragEntities(and)
 				.reduce((set1, set2) ->
-						groupEntities(Stream.concat(set1, set2)
-								.filter(entityFrag ->
-										isEntityInSet(set1.collect(Collectors.toSet()), entityFrag) &&
-												isEntityInSet(set2.collect(Collectors.toSet()), entityFrag))))
+				{
+					final Set<Entity>
+							collected1 = set1.collect(Collectors.toSet()),
+							collected2 = set2.collect(Collectors.toSet());
+					return groupEntities(Stream.concat(collected1.stream(), collected2.stream())
+							.filter(entityFrag ->
+									isEntityInSet(collected1, entityFrag) &&
+											isEntityInSet(collected2, entityFrag)));
+				})
 				.orElse(Stream.of());
 //		Set<Entity> result = new HashSet<>(resultSets.get(0));
 //		resultSets.subList(1, resultSets.size()).forEach(result::retainAll);
