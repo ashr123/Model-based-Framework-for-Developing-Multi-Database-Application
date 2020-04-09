@@ -21,6 +21,7 @@ import iot.jcypher.query.values.JcNode;
 import org.neo4j.driver.v1.AuthTokens;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static dataLayer.crud.filters.CreateSingle.createSingle;
@@ -86,11 +87,9 @@ public class Neo4jAdapter extends DatabaseAdapter
 		IDBAccess dbAccess = DBAccessFactory.createDBAccess(DBType.REMOTE, props, AuthTokens.basic(fieldsMapping.getUsername(), fieldsMapping.getPassword()));
 		props.setProperty(DBProperties.SERVER_ROOT_URI, fieldsMapping.getConnStr());
 		JcQueryResult jcQueryResult = dbAccess.execute(jcQuery);
-		List<GrNode> grNodes = jcQueryResult.resultOf(jcNode);
-		Set<Entity> result = new HashSet<>();
-		grNodes.forEach(grNode -> result.add(getEntityFromNode(grNode)));
-		dbAccess.close();
-		return result.stream();
+		dbAccess.close(); // TODO may cause failure
+		return jcQueryResult.resultOf(jcNode).stream()
+				.map(this::getEntityFromNode);
 	}
 
 	@Override
