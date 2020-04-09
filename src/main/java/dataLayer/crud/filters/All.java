@@ -20,7 +20,7 @@
 //	}
 //
 //	@Override
-//	public Set<Entity> accept(DatabaseAdapter databaseAdapter)
+//	public Stream<Entity> accept(DatabaseAdapter databaseAdapter)
 //	{
 //		return databaseAdapter.execute(this);
 //	}

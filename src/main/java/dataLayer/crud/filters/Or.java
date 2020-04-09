@@ -4,6 +4,7 @@ import dataLayer.configReader.Entity;
 import dataLayer.crud.dbAdapters.DatabaseAdapter;
 
 import java.util.Set;
+import java.util.stream.Stream;
 
 public class Or extends ComplexFilter
 {
@@ -18,7 +19,7 @@ public class Or extends ComplexFilter
 	}
 
 	@Override
-	public Set<Entity> accept(DatabaseAdapter databaseAdapter)
+	public Stream<Entity> accept(DatabaseAdapter databaseAdapter)
 	{
 		return databaseAdapter.execute(this);
 	}

@@ -5,6 +5,7 @@ import dataLayer.crud.dbAdapters.DatabaseAdapter;
 import org.bson.conversions.Bson;
 
 import java.util.Set;
+import java.util.stream.Stream;
 
 public class Eq extends SimpleFilter
 {
@@ -19,7 +20,7 @@ public class Eq extends SimpleFilter
 	}
 
 	@Override
-	public Set<Entity> accept(DatabaseAdapter databaseAdapter)
+	public Stream<Entity> accept(DatabaseAdapter databaseAdapter)
 	{
 		return databaseAdapter.execute(this);
 	}
