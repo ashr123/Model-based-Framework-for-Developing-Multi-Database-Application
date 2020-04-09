@@ -1,11 +1,13 @@
 package dataLayer.crud.dbAdapters;
 
 import dataLayer.configReader.Entity;
+import dataLayer.configReader.FieldsMapping;
 import dataLayer.crud.Read;
 import dataLayer.crud.filters.*;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -71,6 +73,8 @@ public abstract class DatabaseAdapter
 	public abstract Stream<Entity> execute(Gte gte);
 
 	public abstract Stream<Entity> execute(Lte lte);
+
+	public abstract Stream<Entity> execute(String entityType, UUID uuid, FieldsMapping fieldsMapping);
 
 	public Stream<Entity> execute(And and)
 	{
@@ -181,6 +185,4 @@ public abstract class DatabaseAdapter
 //				.flatMap(filter -> revealQuery(filter).stream())
 //				.collect(Collectors.toSet());
 	}
-
-	public abstract Stream<Entity> execute(UUIDEq uuidEq);
 }

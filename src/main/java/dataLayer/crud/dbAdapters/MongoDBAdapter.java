@@ -142,8 +142,8 @@ public class MongoDBAdapter extends DatabaseAdapter
 	}
 
 	@Override
-	public Stream<Entity> execute(UUIDEq uuidEq)
+	public Stream<Entity> execute(String entityType, UUID uuid, FieldsMapping fieldsMapping)
 	{
-		return query(uuidEq.getType(), uuidEq.getUuid(), uuidEq.getFieldsMapping());
+		return query(entityType, uuid, fieldsMapping);
 	}
 }
