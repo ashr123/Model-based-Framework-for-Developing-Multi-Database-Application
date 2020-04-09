@@ -12,7 +12,6 @@ import iot.jcypher.graph.GrNode;
 import iot.jcypher.graph.GrProperty;
 import iot.jcypher.graph.Graph;
 import iot.jcypher.query.JcQuery;
-import iot.jcypher.query.JcQueryResult;
 import iot.jcypher.query.api.IClause;
 import iot.jcypher.query.factories.clause.MATCH;
 import iot.jcypher.query.factories.clause.RETURN;
@@ -53,14 +52,20 @@ public class Neo4jAdapter extends DatabaseAdapter
 				.forEach((fieldsMapping, fields) ->
 				{
 					Properties props = new Properties(1);
-					props.setProperty(DBProperties.SERVER_ROOT_URI, fieldsMapping.getConnStr() + '/' + fieldsMapping.getLocation());
+					props.setProperty(DBProperties.SERVER_ROOT_URI, fieldsMapping.getConnStr()/* + '/' + fieldsMapping.getLocation()*/);
 					final IDBAccess dbAccess = DBAccessFactory.createDBAccess(DBType.REMOTE, props, AuthTokens.basic(fieldsMapping.getUsername(), fieldsMapping.getPassword()));
-					Graph graph = Graph.create(dbAccess);
-					GrNode node = graph.createNode();
-					node.addLabel(createSingle.getEntity().getEntityType());
-					fields.forEach(node::addProperty);
-					graph.store();
-					dbAccess.close();
+					try
+					{
+						Graph graph = Graph.create(dbAccess);
+						GrNode node = graph.createNode();
+						node.addLabel(createSingle.getEntity().getEntityType());
+						fields.forEach(node::addProperty);
+						graph.store();
+					}
+					finally
+					{
+						dbAccess.close();
+					}
 				});
 	}
 
@@ -73,23 +78,27 @@ public class Neo4jAdapter extends DatabaseAdapter
 
 	private Entity getEntityFromNode(GrNode grNode)
 	{
-		List<GrProperty> grProperties = grNode.getProperties();
-		String grLabel = grNode.getLabels().get(0).getName();
-		Map<String, Object> fieldsMap = new HashMap<>();
-		grProperties.forEach(grProperty -> fieldsMap.put(grProperty.getName(), grProperty.getValue()));
-		return new Entity((UUID) fieldsMap.remove("uuid"), grLabel, fieldsMap);
+		Map<String, Object> fieldsMap = grNode.getProperties().stream()
+				.collect(Collectors.toMap(GrProperty::getName, GrProperty::getValue, (a, b) -> b));
+		return new Entity((UUID) fieldsMap.remove("uuid"), grNode.getLabels().get(0).getName(), fieldsMap);
 	}
 
 	private Stream<Entity> query(SimpleFilter simpleFilter, JcQuery jcQuery, JcNode jcNode)
 	{
-		final FieldsMapping fieldsMapping = Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityName(), simpleFilter.getFieldName());
 		Properties props = new Properties();
-		IDBAccess dbAccess = DBAccessFactory.createDBAccess(DBType.REMOTE, props, AuthTokens.basic(fieldsMapping.getUsername(), fieldsMapping.getPassword()));
-		props.setProperty(DBProperties.SERVER_ROOT_URI, fieldsMapping.getConnStr());
-		JcQueryResult jcQueryResult = dbAccess.execute(jcQuery);
-		dbAccess.close(); // TODO may cause failure
-		return jcQueryResult.resultOf(jcNode).stream()
-				.map(this::getEntityFromNode);
+		props.setProperty(DBProperties.SERVER_ROOT_URI, Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityName(), simpleFilter.getFieldName()).getConnStr());
+		//		dbAccess.close(); // TODO may cause failure
+		IDBAccess idbAccess = DBAccessFactory.createDBAccess(DBType.REMOTE, props, AuthTokens.basic(Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityName(), simpleFilter.getFieldName()).getUsername(), Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityName(), simpleFilter.getFieldName()).getPassword()));
+		try
+		{
+			return idbAccess
+					.execute(jcQuery)
+					.resultOf(jcNode).stream()
+					.map(this::getEntityFromNode);
+		} finally
+		{
+			idbAccess.close();
+		}
 	}
 
 	@Override
