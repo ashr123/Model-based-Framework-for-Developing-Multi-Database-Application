@@ -51,7 +51,7 @@ public class Read
 		entities.forEach(entityFragment ->
 		{
 			// Gets all the mappings of entity missing fields, empty if entity is complete and not a fragment.
-			var ref = new Object()
+			final var ref = new Object()
 			{
 				Stream<Entity> fragments = Stream.of(entityFragment);
 			};
@@ -69,7 +69,6 @@ public class Read
 							case MONGODB:
 								// For certain entity fragment add missing field mapping entity.
 								ref.fragments = Stream.concat(ref.fragments, MONGO_DB_ADAPTER.execute(new UUIDEq(entityFragment.getEntityType(), entityFragment.getUuid(), missingFieldsMapping)));
-//								fragments.addAll(MONGO_DB_ADAPTER.execute(new UUIDEq(entityFragment.getEntityType(), entityFragment.getUuid(), missingFieldsMapping)));
 								break;
 						}
 					});

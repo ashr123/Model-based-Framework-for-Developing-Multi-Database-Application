@@ -4,6 +4,7 @@ import dataLayer.configReader.Entity;
 import dataLayer.crud.Read;
 import dataLayer.crud.filters.*;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -16,13 +17,10 @@ public abstract class DatabaseAdapter
 {
 	private static Stream<Entity> groupEntities(Stream<Entity> entities)
 	{
-		//noinspection OptionalGetWithoutIsPresent
 		return entities
-				.collect(Collectors.groupingBy(Entity::getUuid))
+				.collect(Collectors.groupingBy(Entity::getUuid, Collectors.reducing(Entity::merge)))
 				.values().stream()
-				.map(pojoFragments -> pojoFragments.stream()
-						.reduce(Entity::merge)
-						.get());
+				.map(Optional::get);
 	}
 
 	/**
