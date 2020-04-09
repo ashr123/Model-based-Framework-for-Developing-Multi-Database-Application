@@ -15,7 +15,7 @@
 //{
 //	public static void main(String[] args) throws IOException
 //	{
-//		Conf.loadConfiguration(Main.class.getResource("/configuration.json"));
+//		Conf.loadConfiguration(Main.class.getResource("/configurationNeo4j.json"));
 ////		try (MongoClient mongoClient = MongoClients.create())
 ////		{
 ////			mongoClient.getDatabase("myDB").drop();

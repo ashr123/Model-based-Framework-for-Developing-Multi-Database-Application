@@ -1,0 +1,23 @@
+{
+  "fieldsMappings": {
+	"mongo1": {
+	  "type": "mongodb",
+	  "connStr": "localhost",
+	  "location": "myDB"
+	},
+	"mongo2": {
+	  "type": "mongodb",
+	  "connStr": "localhost",
+	  "location": "TestDB"
+	}
+  },
+  "entities": {
+	"Person": {
+	  "name": "mongo2",
+	  "age": "mongo2",
+	  "phoneNumber": "mongo2",
+	  "emailAddress": "mongo2",
+	  "livesAt": "mongo2"
+	}
+  }
+}

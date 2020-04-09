@@ -1,7 +1,5 @@
 package dataLayer.crud.dbAdapters;
 
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
 import dataLayer.configReader.Conf;
 import dataLayer.configReader.Entity;
 import dataLayer.crud.filters.CreateMany;
@@ -17,8 +15,6 @@ import org.neo4j.driver.v1.AuthTokens;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class Neo4jAdapterTest
 {
@@ -47,7 +43,7 @@ class Neo4jAdapterTest
 	@BeforeAll
 	void setUp() throws IOException
 	{
-		Conf.loadConfiguration(MongoDBAdapterTest.class.getResource("/configurations/configuration.json"));
+		Conf.loadConfiguration(MongoDBAdapterTest.class.getResource("/configurations/configurationNeo4j.json"));
 //		try (MongoClient mongoClient = MongoClients.create())
 //		{
 //			mongoClient.getDatabase("TestDB").drop();

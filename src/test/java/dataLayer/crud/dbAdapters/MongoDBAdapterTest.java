@@ -24,7 +24,6 @@ import static dataLayer.crud.filters.Lte.lte;
 import static dataLayer.crud.filters.Ne.ne;
 import static dataLayer.crud.filters.Or.or;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class MongoDBAdapterTest
@@ -54,7 +53,7 @@ class MongoDBAdapterTest
 	@BeforeAll
 	void setUp() throws IOException
 	{
-		Conf.loadConfiguration(MongoDBAdapterTest.class.getResource("/configurations/configuration.json"));
+		Conf.loadConfiguration(MongoDBAdapterTest.class.getResource("/configurations/configurationMongoDB.json"));
 //		try (MongoClient mongoClient = MongoClients.create())
 //		{
 //			mongoClient.getDatabase("TestDB").drop();
