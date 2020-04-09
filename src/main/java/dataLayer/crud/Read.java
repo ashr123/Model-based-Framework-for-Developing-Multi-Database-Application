@@ -32,7 +32,7 @@ public class Read
 			switch (Conf.getConfiguration().getFieldsMappingFromEntityField(((SimpleFilter) filter).getEntityName(), ((SimpleFilter) filter).getFieldName()).getType())
 			{
 				case MYSQL:
-					return null;
+					throw new UnsupportedOperationException("MySQL doesn't support yet");
 				case NEO4J:
 					return NEO4J_DB_ADAPTER.revealQuery(filter);
 				case MONGODB:
