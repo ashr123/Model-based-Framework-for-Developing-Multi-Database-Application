@@ -19,7 +19,10 @@ import iot.jcypher.query.factories.clause.WHERE;
 import iot.jcypher.query.values.JcNode;
 import org.neo4j.driver.v1.AuthTokens;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -61,8 +64,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 						node.addLabel(createSingle.getEntity().getEntityType());
 						fields.forEach(node::addProperty);
 						graph.store();
-					}
-					finally
+					} finally
 					{
 						dbAccess.close();
 					}
