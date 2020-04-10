@@ -12,9 +12,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-/**
- * Element
- */
 public abstract class DatabaseAdapter
 {
 	private static Stream<Entity> groupEntities(Stream<Entity> entities)
@@ -178,9 +175,6 @@ public abstract class DatabaseAdapter
 //						.filter(stringListEntry -> stringListEntry.getKey().equals())
 //						.map(stringListEntry ->);
 //
-		// Entity(“person”, {“UUID”: {“value”: 1}, “name”: “Moshe, “phone”: 0546815181})
-		// Entity(“Person”, {“UUID”: {“value”: 1}, “livesAt”: {“value”: 999}})↴
-		// Entity(“person”, {“UUID”: {“value”: 1}, “name”: “Moshe, “phone”: 0546815181, “livesAt”: {“value”: 999}})
 //		return Stream.of(or.getComplexQuery())
 //				.flatMap(filter -> revealQuery(filter).stream())
 //				.collect(Collectors.toSet());

@@ -12,7 +12,6 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.mongodb.client.model.Filters.*;
@@ -47,7 +46,6 @@ public class MongoDBAdapter extends DatabaseAdapter
 	private Stream<Entity> query(SimpleFilter simpleFilter, Bson filter)
 	{
 		final FieldsMapping fieldsMapping = Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityName(), simpleFilter.getFieldName());
-
 		try (MongoClient mongoClient = MongoClients.create(PREFIX + fieldsMapping.getConnStr()))
 		{
 			return getStringObjectMap(mongoClient.getDatabase(fieldsMapping.getLocation())
