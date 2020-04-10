@@ -89,7 +89,6 @@ public class Neo4jAdapter extends DatabaseAdapter
 	{
 		Properties props = new Properties();
 		props.setProperty(DBProperties.SERVER_ROOT_URI, Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityName(), simpleFilter.getFieldName()).getConnStr());
-		//		dbAccess.close(); // TODO may cause failure
 		IDBAccess idbAccess = DBAccessFactory.createDBAccess(DBType.REMOTE, props, AuthTokens.basic(Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityName(), simpleFilter.getFieldName()).getUsername(), Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityName(), simpleFilter.getFieldName()).getPassword()));
 		try
 		{

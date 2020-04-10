@@ -1,6 +1,5 @@
 package dataLayer.configReader;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,7 +21,6 @@ public class Conf
 {
 	private final static ObjectMapper objectMapper = new ObjectMapper();
 
-	@JsonIgnore
 	private static Conf configuration;
 
 	/**
@@ -32,7 +30,7 @@ public class Conf
 	private final Map<String, FieldsMapping> fieldsMappings = null;
 
 	/**
-	 * Example: {"Person" -> Entity1, "Address" -> Entity2, ...}
+	 * Example: {"Person" -> {"name" -> "mongo1", "age" -> "mongo1", ...}, "Address" -> {"city" -> "Be'er Sheva", ...}, ...}
 	 */
 	@JsonProperty("entities")
 	private final Map<String, Map<String, String>> entities = null;
@@ -61,7 +59,7 @@ public class Conf
 //		return fieldsMappings.get(locationName);
 //	}
 //
-//	public Entity getEntity(String key)
+//	public Map<String, String> getEntity(String key)
 //	{
 //		return entities.get(key);
 //	}

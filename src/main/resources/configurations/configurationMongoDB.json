@@ -13,8 +13,8 @@
   },
   "entities": {
 	"Person": {
-	  "name": "mongo2",
-	  "age": "mongo2",
+	  "name": "mongo1",
+	  "age": "mongo1",
 	  "phoneNumber": "mongo2",
 	  "emailAddress": "mongo2",
 	  "livesAt": "mongo2"
