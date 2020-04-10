@@ -5,7 +5,6 @@ import dataLayer.configReader.FieldsMapping;
 import dataLayer.crud.Read;
 import dataLayer.crud.filters.*;
 
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
@@ -17,9 +16,8 @@ public abstract class DatabaseAdapter
 	private static Stream<Entity> groupEntities(Stream<Entity> entities)
 	{
 		return entities
-				.collect(Collectors.groupingBy(Entity::getUuid, Collectors.reducing(Entity::merge)))
-				.values().stream()
-				.map(Optional::get);
+				.collect(Collectors.toMap(Entity::getUuid, Function.identity(), Entity::merge))
+				.values().stream();
 	}
 
 	/**
