@@ -2,6 +2,8 @@ package dataLayer.configReader;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dataLayer.crud.Entity;
 
 import java.io.IOException;
@@ -18,6 +20,8 @@ import java.util.stream.Collectors;
 @SuppressWarnings({"ConstantConditions", "unused"})
 public class Conf
 {
+	private final static ObjectMapper objectMapper = new ObjectMapper();
+
 	@JsonIgnore
 	private static Conf configuration;
 
@@ -44,7 +48,12 @@ public class Conf
 
 	public static void loadConfiguration(URL url) throws IOException
 	{
-		configuration = Reader.read(url);
+		configuration = objectMapper.readValue(url, Conf.class).checkValidity();
+	}
+
+	public static String toJson(Object o) throws JsonProcessingException
+	{
+		return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(o);
 	}
 
 //	public FieldsMapping getFieldsMapping(String locationName)
