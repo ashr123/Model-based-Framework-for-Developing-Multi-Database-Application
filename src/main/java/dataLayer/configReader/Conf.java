@@ -2,9 +2,11 @@ package dataLayer.configReader;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import dataLayer.crud.Entity;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.InputMismatchException;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -29,7 +31,7 @@ public class Conf
 	 * Example: {"Person" -> Entity1, "Address" -> Entity2, ...}
 	 */
 	@JsonProperty("entities")
-	private final Map<String, Entity> entities = null;
+	private final Map<String, Map<String, String>> entities = null;
 
 	private Conf()
 	{
@@ -45,24 +47,24 @@ public class Conf
 		configuration = Reader.read(url);
 	}
 
-	public FieldsMapping getFieldsMapping(String locationName)
-	{
-		return fieldsMappings.get(locationName);
-	}
-
-	public Entity getEntity(String key)
-	{
-		return entities.get(key);
-	}
+//	public FieldsMapping getFieldsMapping(String locationName)
+//	{
+//		return fieldsMappings.get(locationName);
+//	}
+//
+//	public Entity getEntity(String key)
+//	{
+//		return entities.get(key);
+//	}
 
 	public boolean isEntityComplete(Entity entityFrag)
 	{
-		return entities.get(entityFrag.getEntityType()).getFieldsLocations().keySet().equals(entityFrag.getFieldsValues().keySet());
+		return entities.get(entityFrag.getEntityType()).keySet().equals(entityFrag.getFieldsValues().keySet());
 	}
 
 	public Set<FieldsMapping> getMissingFields(Entity entityFrag)
 	{
-		return entities.get(entityFrag.getEntityType()).getFieldsLocations().keySet().stream()
+		return entities.get(entityFrag.getEntityType()).keySet().stream()
 				.filter(field -> !entityFrag.getFieldsValues().containsKey(field))
 				.map(field -> getFieldsMappingFromEntityField(entityFrag.getEntityType(), field))
 				.collect(Collectors.toSet());
@@ -70,14 +72,18 @@ public class Conf
 
 	public FieldsMapping getFieldsMappingFromEntityField(String entityType, String field)
 	{
-		return fieldsMappings.get(entities.get(entityType).getFieldFieldsMappingName(field));
+		return fieldsMappings.get(entities.get(entityType).get(field));
 	}
 
 	public Conf checkValidity()
 	{
 		final Set<String> keySet = fieldsMappings.keySet();
 		entities.values()
-				.forEach(entity -> entity.validate(keySet));
+				.forEach(entityLocations ->
+				{
+					if (!keySet.containsAll(entityLocations.values()))
+						throw new InputMismatchException("Not all fieldsLocations locations exists as FieldsMapping!!");
+				});
 		return this;
 	}
 

@@ -1,6 +1,7 @@
 package dataLayer.configReader;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import dataLayer.crud.dbAdapters.DBType;
 
 import java.util.Objects;
 

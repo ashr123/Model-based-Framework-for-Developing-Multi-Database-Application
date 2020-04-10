@@ -1,8 +1,8 @@
 package dataLayer.crud.dbAdapters;
 
 import dataLayer.configReader.Conf;
-import dataLayer.configReader.Entity;
 import dataLayer.configReader.FieldsMapping;
+import dataLayer.crud.Entity;
 import dataLayer.crud.filters.*;
 import iot.jcypher.database.DBAccessFactory;
 import iot.jcypher.database.DBProperties;

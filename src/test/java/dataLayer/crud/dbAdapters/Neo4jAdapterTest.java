@@ -1,7 +1,7 @@
 package dataLayer.crud.dbAdapters;
 
 import dataLayer.configReader.Conf;
-import dataLayer.configReader.Entity;
+import dataLayer.crud.Entity;
 import dataLayer.crud.filters.CreateMany;
 import iot.jcypher.database.DBAccessFactory;
 import iot.jcypher.database.DBProperties;
@@ -61,7 +61,7 @@ class Neo4jAdapterTest
 ////									.append("phoneNumber", "0504563434")
 ////									.append("emailAddress", "davidz@post.bgu.ac.il")));
 //		}
-		CreateMany.createMany(roy, yossi, karin).accept(dataLayer.configReader.DBType.NEO4J.getDatabaseAdapter());
+		CreateMany.createMany(roy, yossi, karin).accept(dataLayer.crud.dbAdapters.DBType.NEO4J.getDatabaseAdapter());
 	}
 
 	@AfterAll

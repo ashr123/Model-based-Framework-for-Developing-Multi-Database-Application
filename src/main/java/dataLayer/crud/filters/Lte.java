@@ -1,10 +1,8 @@
 package dataLayer.crud.filters;
 
-import dataLayer.configReader.Entity;
+import dataLayer.crud.Entity;
 import dataLayer.crud.dbAdapters.DatabaseAdapter;
-import org.bson.conversions.Bson;
 
-import java.util.Set;
 import java.util.stream.Stream;
 
 public class Lte extends SimpleFilter
@@ -30,20 +28,4 @@ public class Lte extends SimpleFilter
 	{
 		return "Lte{" + super.toString() + '}';
 	}
-
-	public Bson generateFromMongoDB()
-	{
-		return com.mongodb.client.model.Filters.lte(getFieldName(), getValue());
-	}
-
-//	@Override
-//	public IClause[] generateFromNeo4j()
-//	{
-//		JcNode node = new JcNode(getEntityName().toLowerCase());
-//		return new IClause[]{
-//				MATCH.node(node).label(getEntityName()),
-//				WHERE.valueOf(node.property(getFieldName())).LTE(getValue()),
-//				RETURN.value(node)
-//		};
-//	}
 }

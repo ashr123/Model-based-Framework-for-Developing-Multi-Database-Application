@@ -1,6 +1,6 @@
 //package dataLayer.crud.filters;
 //
-//import dataLayer.configReader.Entity;
+//import dataLayer.crud.Entity;
 //import dataLayer.configReader.FieldsMapping;
 //import dataLayer.crud.dbAdapters.DatabaseAdapter;
 //

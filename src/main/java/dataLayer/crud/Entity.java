@@ -1,32 +1,12 @@
-package dataLayer.configReader;
-
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+package dataLayer.crud;
 
 import java.util.*;
 
 public class Entity
 {
-	@JsonIgnore
-	private final String entityType;
-
-	@JsonIgnore
 	private final UUID uuid;
-
-	@JsonIgnore
-	private final Map<String, String> fieldsLocations;
-
-	@JsonIgnore
+	private final String entityType;
 	private final Map<String, Object> fieldsValues;
-
-	private Entity()
-	{
-		entityType = null;
-		fieldsValues = null;
-		uuid = null;
-		fieldsLocations = new LinkedHashMap<>();
-	}
 
 	public Entity(String entityType, Map<String, Object> fieldsValues)
 	{
@@ -35,36 +15,22 @@ public class Entity
 
 	public Entity(UUID uuid, String entityType, Map<String, Object> fieldsValues)
 	{
-		fieldsLocations = null;
 		this.uuid = uuid;
 		this.entityType = entityType;
 		this.fieldsValues = Objects.requireNonNull(fieldsValues);
 	}
-
-//	private Entity(String entityType)
-//	{
-//		fieldsLocations = null;
-//		uuid = UUID.randomUUID();
-//		this.entityType = entityType;
-//		this.fieldsValues = new LinkedHashMap<>();
-//	}
 
 	public static Entity of(String entityType, Map<String, Object> fieldsValues)
 	{
 		return new Entity(entityType, fieldsValues);
 	}
 
-//	public static Entity entity(String entityType)
+//	public Entity append(String field, Object value)
 //	{
-//		return new Entity(entityType);
+//		assert fieldsValues != null;
+//		fieldsValues.put(field, value);
+//		return this;
 //	}
-
-	public Entity append(String field, Object value)
-	{
-		assert fieldsValues != null;
-		fieldsValues.put(field, value);
-		return this;
-	}
 
 	public UUID getUuid()
 	{
@@ -79,23 +45,6 @@ public class Entity
 	public Map<String, Object> getFieldsValues()
 	{
 		return fieldsValues;
-	}
-
-	@JsonAnyGetter
-	Map<String, String> getFieldsLocations()
-	{
-		return fieldsLocations;
-	}
-
-	@JsonAnySetter
-	private void addFieldLocation(String key, String value)
-	{
-		fieldsLocations.put(key, value);
-	}
-
-	public String getFieldFieldsMappingName(String field)
-	{
-		return fieldsLocations.get(field);
 	}
 
 	public Entity merge(Entity entity)
@@ -132,14 +81,7 @@ public class Entity
 		return "Entity{" +
 				"entityType='" + entityType + '\'' +
 				", uuid=" + uuid +
-				", fieldsLocations=" + fieldsLocations +
 				", fieldsValues=" + fieldsValues +
 				'}';
-	}
-
-	void validate(Set<String> keySet)
-	{
-		if (!keySet.containsAll(fieldsLocations.values()))
-			throw new InputMismatchException("Not all fieldsLocations locations exists as FieldsMapping!!");
 	}
 }

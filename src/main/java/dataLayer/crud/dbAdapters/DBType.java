@@ -1,9 +1,6 @@
-package dataLayer.configReader;
+package dataLayer.crud.dbAdapters;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import dataLayer.crud.dbAdapters.DatabaseAdapter;
-import dataLayer.crud.dbAdapters.MongoDBAdapter;
-import dataLayer.crud.dbAdapters.Neo4jAdapter;
 
 public enum DBType
 {

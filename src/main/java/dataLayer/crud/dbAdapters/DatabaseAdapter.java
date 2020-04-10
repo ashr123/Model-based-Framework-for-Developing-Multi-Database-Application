@@ -1,7 +1,7 @@
 package dataLayer.crud.dbAdapters;
 
-import dataLayer.configReader.Entity;
 import dataLayer.configReader.FieldsMapping;
+import dataLayer.crud.Entity;
 import dataLayer.crud.Read;
 import dataLayer.crud.filters.*;
 

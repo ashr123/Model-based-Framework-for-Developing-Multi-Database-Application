@@ -1,10 +1,8 @@
 package dataLayer.crud.filters;
 
-import dataLayer.configReader.Entity;
+import dataLayer.crud.Entity;
 import dataLayer.crud.dbAdapters.DatabaseAdapter;
-import org.bson.conversions.Bson;
 
-import java.util.Set;
 import java.util.stream.Stream;
 
 public class Ne extends SimpleFilter
@@ -30,21 +28,4 @@ public class Ne extends SimpleFilter
 	{
 		return "Ne{" + super.toString() + '}';
 	}
-
-	public Bson generateFromMongoDB()
-	{
-		return com.mongodb.client.model.Filters.ne(getFieldName(), getValue());
-	}
-
-//	@Override
-//	public IClause[] generateFromNeo4j()
-//	{
-//		JcNode node = new JcNode(getEntityName().toLowerCase());
-//		return new IClause[]{
-//				MATCH.node(node).label(getEntityName()),
-//				WHERE.valueOf(node.property(getFieldName())).NOT_EQUALS(
-//						getValue()),
-//				RETURN.value(node)
-//		};
-//	}
 }
