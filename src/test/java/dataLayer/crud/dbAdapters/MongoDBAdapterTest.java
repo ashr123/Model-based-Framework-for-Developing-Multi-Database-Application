@@ -3,6 +3,7 @@ package dataLayer.crud.dbAdapters;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import dataLayer.configReader.Conf;
+import dataLayer.configReader.DBType;
 import dataLayer.configReader.Entity;
 import dataLayer.crud.filters.CreateMany;
 import org.junit.jupiter.api.AfterAll;
@@ -71,8 +72,7 @@ class MongoDBAdapterTest
 ////									.append("phoneNumber", "0504563434")
 ////									.append("emailAddress", "davidz@post.bgu.ac.il")));
 //		}
-		MongoDBAdapter mongoDBAdapter = new MongoDBAdapter();
-		mongoDBAdapter.revealQuery(CreateMany.createMany(roy, yossi, karin));
+		CreateMany.createMany(roy, yossi, karin).accept(DBType.MONGODB.getDatabaseAdapter());
 	}
 
 	@AfterAll
@@ -85,15 +85,15 @@ class MongoDBAdapterTest
 		}
 	}
 
-	@Test
-	void revealQuery()
-	{
-	}
+//	@Test
+//	void revealQuery()
+//	{
+//	}
 
-	@Test
-	void testRevealQuery()
-	{
-	}
+//	@Test
+//	void testRevealQuery()
+//	{
+//	}
 
 	@Test
 	void executeCreate()

@@ -43,15 +43,15 @@ public abstract class DatabaseAdapter
 				.anyMatch(entityFrag.getUuid()::equals);
 	}
 
-	public void revealQuery(VoidFilter voidFilter)
-	{
-		voidFilter.accept(this);
-	}
+//	public void revealQuery(VoidFilter voidFilter)
+//	{
+//		voidFilter.accept(this);
+//	}
 
-	public Stream<Entity> revealQuery(Filter filter)
-	{
-		return filter.accept(this);
-	}
+//	public Stream<Entity> revealQuery(Filter filter)
+//	{
+//		return filter.accept(this);
+//	}
 
 	public abstract void executeCreate(CreateSingle createSingle);
 

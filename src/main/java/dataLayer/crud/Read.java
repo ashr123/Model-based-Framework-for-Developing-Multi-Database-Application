@@ -20,11 +20,10 @@ public class Read
 	public static Stream<Entity> simpleRead(Filter filter)
 	{
 		return filter instanceof SimpleFilter /*simpleFilter*/ ?
-				Conf.getConfiguration().getFieldsMappingFromEntityField(((SimpleFilter) filter).getEntityName(), ((SimpleFilter) filter).getFieldName())
+				filter.accept(Conf.getConfiguration().getFieldsMappingFromEntityField(((SimpleFilter) filter).getEntityName(), ((SimpleFilter) filter).getFieldName())
 						.getType()
-						.getDatabaseAdapter()
-						.revealQuery(filter) :
-				DBType.MONGODB.getDatabaseAdapter().revealQuery(filter); // Complex query, the adapter doesn't matter
+						.getDatabaseAdapter()) :
+				filter.accept(DBType.MONGODB.getDatabaseAdapter()); // Complex query, the adapter doesn't matter
 	}
 
 	//for every entity I need Set<fieldsMapping> for unvisited locations and UUID of the entity to send the appropriate adapter

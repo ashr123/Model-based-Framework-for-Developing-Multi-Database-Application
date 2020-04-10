@@ -61,8 +61,7 @@ class Neo4jAdapterTest
 ////									.append("phoneNumber", "0504563434")
 ////									.append("emailAddress", "davidz@post.bgu.ac.il")));
 //		}
-		Neo4jAdapter neo4jAdapter = new Neo4jAdapter();
-		neo4jAdapter.revealQuery(CreateMany.createMany(roy, yossi, karin));
+		CreateMany.createMany(roy, yossi, karin).accept(dataLayer.configReader.DBType.NEO4J.getDatabaseAdapter());
 	}
 
 	@AfterAll
@@ -81,15 +80,15 @@ class Neo4jAdapterTest
 		dbAccess.close();
 	}
 
-	@Test
-	void revealQuery()
-	{
-	}
-
-	@Test
-	void testRevealQuery()
-	{
-	}
+//	@Test
+//	void revealQuery()
+//	{
+//	}
+//
+//	@Test
+//	void testRevealQuery()
+//	{
+//	}
 
 	@Test
 	void execute()
