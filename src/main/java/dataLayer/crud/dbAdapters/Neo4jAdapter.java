@@ -62,6 +62,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 						Graph graph = Graph.create(dbAccess);
 						GrNode node = graph.createNode();
 						node.addLabel(createSingle.getEntity().getEntityType());
+						node.addProperty("uuid", createSingle.getEntity().getUuid());
 						fields.forEach(node::addProperty);
 						graph.store();
 					} finally
@@ -82,7 +83,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 	{
 		Map<String, Object> fieldsMap = grNode.getProperties().stream()
 				.collect(Collectors.toMap(GrProperty::getName, GrProperty::getValue, (a, b) -> b));
-		return new Entity((UUID) fieldsMap.remove("uuid"), grNode.getLabels().get(0).getName(), fieldsMap);
+		return new Entity((String) fieldsMap.remove("uuid"), grNode.getLabels().get(0).getName(), fieldsMap);
 	}
 
 	private Stream<Entity> query(SimpleFilter simpleFilter, JcQuery jcQuery, JcNode jcNode)

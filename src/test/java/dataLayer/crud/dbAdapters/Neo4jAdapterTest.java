@@ -10,6 +10,7 @@ import iot.jcypher.database.IDBAccess;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.neo4j.driver.v1.AuthTokens;
 
 import java.io.IOException;
@@ -28,6 +29,7 @@ import static dataLayer.crud.filters.Ne.ne;
 import static dataLayer.crud.filters.Or.or;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class Neo4jAdapterTest
 {
 	private final Entity
@@ -82,14 +84,26 @@ class Neo4jAdapterTest
 		Properties props = new Properties();
 		props.setProperty(DBProperties.SERVER_ROOT_URI, "bolt://localhost:7687");
 		IDBAccess dbAccess = DBAccessFactory.createDBAccess(DBType.REMOTE, props, AuthTokens.basic("neo4j", "neo4j1"));
-		dbAccess.clearDatabase();
-		dbAccess.close();
+		try
+		{
+			dbAccess.clearDatabase();
+		}
+		finally
+		{
+			dbAccess.close();
+		}
 
 		props = new Properties();
 		props.setProperty(DBProperties.SERVER_ROOT_URI, "bolt://localhost:11008");
 		dbAccess = DBAccessFactory.createDBAccess(DBType.REMOTE, props, AuthTokens.basic("neo4j", "neo4j1"));
-		dbAccess.clearDatabase();
-		dbAccess.close();
+		try
+		{
+			dbAccess.clearDatabase();
+		}
+		finally
+		{
+			dbAccess.close();
+		}
 	}
 
 //	@Test

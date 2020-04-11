@@ -13,6 +13,11 @@ public class Entity
 		this(UUID.randomUUID(), entityType, fieldsValues);
 	}
 
+	public Entity(String uuid, String entityType, Map<String, Object> fieldsValues)
+	{
+		this(UUID.fromString(uuid), entityType, fieldsValues);
+	}
+
 	public Entity(UUID uuid, String entityType, Map<String, Object> fieldsValues)
 	{
 		this.uuid = uuid;
