@@ -24,6 +24,12 @@ public class Lt extends SimpleFilter
 	}
 
 	@Override
+	public void acceptDelete(DatabaseAdapter databaseAdapter)
+	{
+		databaseAdapter.executeDelete(this);
+	}
+
+	@Override
 	public String toString()
 	{
 		return "Lt{" + super.toString() + '}';

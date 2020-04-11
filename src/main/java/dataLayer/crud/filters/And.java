@@ -25,6 +25,9 @@ public class And extends ComplexFilter
 	}
 
 	@Override
+	public void acceptDelete(DatabaseAdapter databaseAdapter) { databaseAdapter.executeDelete(this); }
+
+	@Override
 	public String toString()
 	{
 		return "And{" + super.toString() + '}';

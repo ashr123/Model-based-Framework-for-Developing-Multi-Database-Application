@@ -24,6 +24,12 @@ public class Lte extends SimpleFilter
 	}
 
 	@Override
+	public void acceptDelete(DatabaseAdapter databaseAdapter)
+	{
+		databaseAdapter.executeDelete(this);
+	}
+
+	@Override
 	public String toString()
 	{
 		return "Lte{" + super.toString() + '}';

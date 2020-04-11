@@ -24,6 +24,12 @@ public class Eq extends SimpleFilter
 	}
 
 	@Override
+	public void acceptDelete(DatabaseAdapter databaseAdapter)
+	{
+		databaseAdapter.executeDelete(this);
+	}
+
+	@Override
 	public String toString()
 	{
 		return "Eq{" + super.toString() + '}';

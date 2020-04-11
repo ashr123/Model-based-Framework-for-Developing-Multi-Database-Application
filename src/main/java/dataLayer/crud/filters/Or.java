@@ -24,6 +24,12 @@ public class Or extends ComplexFilter
 	}
 
 	@Override
+	public void acceptDelete(DatabaseAdapter databaseAdapter)
+	{
+		databaseAdapter.executeDelete(this);
+	}
+
+	@Override
 	public String toString()
 	{
 		return "Or{" + super.toString() + '}';

@@ -211,4 +211,46 @@ public class Neo4jAdapter extends DatabaseAdapter
 	{
 		return query(entityType, uuid, fieldsMapping);
 	}
+
+	@Override
+	public void executeDelete(Eq eq)
+	{
+
+	}
+
+	@Override
+	public void executeDelete(Ne ne)
+	{
+
+	}
+
+	@Override
+	public void executeDelete(Gt gt)
+	{
+
+	}
+
+	@Override
+	public void executeDelete(Lt lt)
+	{
+
+	}
+
+	@Override
+	public void executeDelete(Gte gte)
+	{
+
+	}
+
+	@Override
+	public void executeDelete(Lte lte)
+	{
+
+	}
+
+	@Override
+	public void executeDelete(String entityType, UUID uuid, FieldsMapping fieldsMapping)
+	{
+
+	}
 }

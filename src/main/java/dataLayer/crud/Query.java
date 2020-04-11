@@ -27,12 +27,12 @@ public class Query
 
 	public static void delete(Filter filter)
 	{
-
+		delete(read(filter).stream());
 	}
 
-	public static void delete(Set<Entity> entities)
+	public static void delete(Stream<Entity> entities)
 	{
-
+		
 	}
 
 	private static Set<Entity> makeEntitiesWhole(Stream<Entity> entities)

@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
+import static dataLayer.crud.Query.delete;
 import static dataLayer.crud.Query.read;
 import static dataLayer.crud.filters.And.and;
 import static dataLayer.crud.filters.Eq.eq;
@@ -57,8 +58,8 @@ class MongoDBAdapterTest
 	{
 		try (MongoClient mongoClient = MongoClients.create())
 		{
-			mongoClient.getDatabase("TestDB").drop();
-			mongoClient.getDatabase("myDB").drop();
+//			mongoClient.getDatabase("TestDB").drop();
+//			mongoClient.getDatabase("myDB").drop();
 		}
 	}
 
@@ -71,6 +72,20 @@ class MongoDBAdapterTest
 	@Test
 	void testExecuteCreate()
 	{
+	}
+
+	@Test
+	void testExecuteDelete()
+	{
+		assertEquals(Set.of(roy),
+				read(eq("Person", "name", "Roy")),
+				"Should return person named Roy.");
+
+		delete(eq("Person", "name", "Roy"));
+
+		assertEquals(Set.of(),
+				read(eq("Person", "name", "Roy")),
+				"Roy has been removed !");
 	}
 
 	@Test

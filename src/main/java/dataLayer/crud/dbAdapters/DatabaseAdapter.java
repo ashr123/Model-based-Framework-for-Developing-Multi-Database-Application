@@ -5,11 +5,14 @@ import dataLayer.crud.Entity;
 import dataLayer.crud.Query;
 import dataLayer.crud.filters.*;
 
+import java.util.Arrays;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static dataLayer.crud.Query.delete;
 
 public abstract class DatabaseAdapter
 {
@@ -111,23 +114,11 @@ public abstract class DatabaseAdapter
 
 	public void executeDelete(And and)
 	{
-		return defragEntities(and)
-				.reduce((set1, set2) ->
-				{
-					final Set<Entity>
-							collected1 = set1.collect(Collectors.toSet()),
-							collected2 = set2.collect(Collectors.toSet());
-					return groupEntities(Stream.concat(collected1.stream(), collected2.stream())
-							.filter(entityFrag ->
-									isEntityInSet(collected1, entityFrag) &&
-											isEntityInSet(collected2, entityFrag)));
-				})
-				.orElse(Stream.of());
+		delete(executeRead(and));
 	}
 
 	public void executeDelete(Or or)
 	{
-		return groupEntities(defragEntities(or)
-				.flatMap(Function.identity()));
+		Arrays.stream(or.getComplexQuery()).forEach(Query::delete);
 	}
 }
