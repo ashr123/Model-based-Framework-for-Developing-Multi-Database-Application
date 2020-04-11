@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "description": "A student class",
+  "type": "object",
+  "extends": {
+	"$ref": "Person.json"
+  },
+  "properties": {
+	"student-number": {
+	  "type": "string"
+	},
+	"average-mark": {
+	  "type": "number"
+	}
+  }
+}

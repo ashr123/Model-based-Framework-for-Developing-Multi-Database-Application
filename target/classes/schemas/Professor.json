@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "description": "A professor class",
+  "type": "object",
+  "extends": {
+	"$ref": "Person.json"
+  },
+  "properties": {
+	"student-number": {
+	  "type": "number"
+	}
+  }
+}

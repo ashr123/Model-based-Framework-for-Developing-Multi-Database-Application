@@ -41,7 +41,9 @@ public class Neo4jAdapter extends DatabaseAdapter
 				{
 					final FieldsMapping fieldMappingFromEntityFields = Conf.getConfiguration().getFieldsMappingFromEntityField(entity.getEntityType(), field);
 					if (fieldMappingFromEntityFields != null)
+					{
 						result.computeIfAbsent(fieldMappingFromEntityFields, fieldsMapping -> new HashMap<>()).put(field, value);
+					}
 					else
 						throw new NullPointerException("Field " + field + " doesn't exist in entity " + entity.getEntityType());
 				});
@@ -83,6 +85,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 	{
 		Map<String, Object> fieldsMap = grNode.getProperties().stream()
 				.collect(Collectors.toMap(GrProperty::getName, GrProperty::getValue, (a, b) -> b));
+		fieldsMap.remove("_c_version_");
 		return new Entity((String) fieldsMap.remove("uuid"), grNode.getLabels().get(0).getName(), fieldsMap);
 	}
 
@@ -91,6 +94,30 @@ public class Neo4jAdapter extends DatabaseAdapter
 		Properties props = new Properties();
 		props.setProperty(DBProperties.SERVER_ROOT_URI, Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityName(), simpleFilter.getFieldName()).getConnStr());
 		IDBAccess idbAccess = DBAccessFactory.createDBAccess(DBType.REMOTE, props, AuthTokens.basic(Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityName(), simpleFilter.getFieldName()).getUsername(), Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityName(), simpleFilter.getFieldName()).getPassword()));
+		try
+		{
+			return idbAccess
+					.execute(jcQuery)
+					.resultOf(jcNode).stream()
+					.map(this::getEntityFromNode);
+		} finally
+		{
+			idbAccess.close();
+		}
+	}
+
+	private Stream<Entity> query(String entityType, UUID uuid, FieldsMapping fieldsMapping)
+	{
+		Properties props = new Properties();
+		props.setProperty(DBProperties.SERVER_ROOT_URI, fieldsMapping.getConnStr());
+		IDBAccess idbAccess = DBAccessFactory.createDBAccess(DBType.REMOTE, props, AuthTokens.basic(fieldsMapping.getUsername(), fieldsMapping.getPassword()));
+		JcNode jcNode = new JcNode(entityType);
+		JcQuery jcQuery = new JcQuery();
+		jcQuery.setClauses(new IClause[]{
+				MATCH.node(jcNode).label(entityType),
+				WHERE.valueOf(jcNode.property("uuid")).EQUALS(uuid),
+				RETURN.value(jcNode)
+		});
 		try
 		{
 			return idbAccess
@@ -184,6 +211,6 @@ public class Neo4jAdapter extends DatabaseAdapter
 	@Override
 	public Stream<Entity> execute(String entityType, UUID uuid, FieldsMapping fieldsMapping)
 	{
-		throw new UnsupportedOperationException("UUIDEq on Neo4j adapter doesn't support yet");
+		return query(entityType, uuid, fieldsMapping);
 	}
 }

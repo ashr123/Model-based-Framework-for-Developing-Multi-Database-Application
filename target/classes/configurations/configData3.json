@@ -1,0 +1,30 @@
+{
+  "fieldMapping": {
+	"mongo1": {
+	  "type": "mongodb",
+	  "connStr": "localhost",
+	  "location": "myDB"
+	},
+	"mongo2": {
+	  "type": "mongodb",
+	  "connStr": "localhost2",
+	  "location": "myDB"
+	},
+	"sql1": {
+	  "type": "mysql",
+	  "connStr": "localhost",
+	  "location": "myDB"
+	}
+  },
+  "entities": {
+	"A": {
+	  "a": "mongo1",
+	  "b": "mongo1",
+	  "c": "mongo2"
+	},
+	"B": {
+	  "a": "mongo2",
+	  "b": "sql1"
+	}
+  }
+}

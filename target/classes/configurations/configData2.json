@@ -1,0 +1,26 @@
+{
+  "fieldMapping": {
+	"mongodb1": {
+	  "type": "mongodb",
+	  "connStr": "localhost",
+	  "entities": {
+		"Person": {
+		  "age": {
+			"path": "/myDB/personCollection/ageCol"
+		  },
+		  "name": {
+			"path": "/myDB/personCollection/nameCol"
+		  }
+		},
+		"Person": {
+		  "age": {
+			"path": "/myDB/personCollection/ageCol"
+		  },
+		  "name": {
+			"path": "/myDB/personCollection/nameCol"
+		  }
+		}
+	  }
+	}
+  }
+}

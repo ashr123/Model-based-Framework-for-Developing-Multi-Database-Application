@@ -31,46 +31,24 @@ class MongoDBAdapterTest
 	private final Entity
 			roy = Entity.of("Person",
 			Map.of("name", "Roy",
-					"age", 27,
+					"age", 27L,
 					"phoneNumber", "0546815181",
 					"emailAddress", "ashr@post.bgu.ac.il")),
 			yossi = Entity.of("Person",
 					Map.of("name", "Yossi",
-							"age", 22,
+							"age", 22L,
 							"phoneNumber", "0587158627",
 							"emailAddress", "yossilan@post.bgu.ac.il")),
 			karin = Entity.of("Person",
 					Map.of("name", "Karin",
-							"age", 26,
+							"age", 26L,
 							"phoneNumber", "0504563434",
 							"emailAddress", "davidz@post.bgu.ac.il"));
-//	private Set<Entity> removeId(Set<Entity> input)
-//	{
-//		input.forEach(map -> map.remove("_id"));
-//		return input;
-//	}
 
 	@BeforeAll
 	void setUp() throws IOException
 	{
 		Conf.loadConfiguration(MongoDBAdapterTest.class.getResource("/configurations/configurationMongoDB.json"));
-//		try (MongoClient mongoClient = MongoClients.create())
-//		{
-//			mongoClient.getDatabase("TestDB").drop();
-//			mongoClient.getDatabase("mydb").drop();
-////					.insertMany(asList(new Document("name", "Roy")
-////									.append("age", 27)
-////									.append("phoneNumber", "0546815181")
-////									.append("emailAddress", "ashr@post.bgu.ac.il"),
-////							new Document("name", "Yossi")
-////									.append("age", 22)
-////									.append("phoneNumber", "0587158627")
-////									.append("emailAddress", "yossilan@post.bgu.ac.il"),
-////							new Document("name", "Karin")
-////									.append("age", 26)
-////									.append("phoneNumber", "0504563434")
-////									.append("emailAddress", "davidz@post.bgu.ac.il")));
-//		}
 		CreateMany.createMany(roy, yossi, karin).accept(DBType.MONGODB.getDatabaseAdapter());
 	}
 
@@ -83,16 +61,6 @@ class MongoDBAdapterTest
 			mongoClient.getDatabase("myDB").drop();
 		}
 	}
-
-//	@Test
-//	void revealQuery()
-//	{
-//	}
-
-//	@Test
-//	void testRevealQuery()
-//	{
-//	}
 
 	@Test
 	void executeCreate()

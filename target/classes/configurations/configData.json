@@ -1,0 +1,46 @@
+{
+  "data": [
+	{
+	  "type": "mongodb",
+	  "connString": "localhost",
+	  "data": [
+		{
+		  "name": "myDB",
+		  "data": [
+			{
+			  "class": "Person",
+			  "prop": "name"
+			},
+			{
+			  "class": "Person",
+			  "prop": "phoneNumber"
+			},
+			{
+			  "class": "Phone",
+			  "prop": "number"
+			}
+		  ]
+		}
+	  ]
+	},
+	{
+	  "type": "neo4j",
+	  "connString": "localhost",
+	  "data": [
+		{
+		  "name": "elseDB",
+		  "data": [
+			{
+			  "class": "Person",
+			  "prop": "emailAddress"
+			},
+			{
+			  "class": "Person",
+			  "prop": "livesAtJavaType"
+			}
+		  ]
+		}
+	  ]
+	}
+  ]
+}

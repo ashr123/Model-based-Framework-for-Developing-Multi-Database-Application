@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "description": "An config class",
+  "type": "object",
+  "properties": {
+	"line": {
+	  "type": "array",
+	  "items": {
+		"type": "object",
+		"javaType": "ConfigurationLine"
+	  }
+	}
+  }
+}

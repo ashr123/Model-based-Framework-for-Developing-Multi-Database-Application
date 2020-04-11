@@ -1,0 +1,25 @@
+{
+  "fieldsMappings": {
+	"neo1": {
+	  "type": "neo4j",
+	  "connStr": "bolt://localhost:7687",
+	  "username": "neo4j",
+	  "password": "neo4j1"
+	},
+	"neo2": {
+	  "type": "neo4j",
+	  "connStr": "bolt://localhost:11008",
+	  "username": "neo4j",
+	  "password": "neo4j1"
+	}
+  },
+  "entities": {
+	"Person": {
+	  "name": "neo1",
+	  "age": "neo1",
+	  "phoneNumber": "neo2",
+	  "emailAddress": "neo2",
+	  "livesAt": "neo2"
+	}
+  }
+}
