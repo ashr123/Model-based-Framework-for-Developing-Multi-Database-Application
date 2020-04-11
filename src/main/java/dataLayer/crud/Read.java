@@ -25,7 +25,6 @@ public class Read
 				filter.accept(DBType.MONGODB.getDatabaseAdapter()); // Complex query, the adapter doesn't matter
 	}
 
-	//for every entity I need Set<fieldsMapping> for unvisited locations and UUID of the entity to send the appropriate adapter
 	private static Set<Entity> makeEntitiesWhole(Stream<Entity> entities)
 	{
 		Set<Entity> wholeEntities = new HashSet<>();
@@ -36,7 +35,6 @@ public class Read
 			{
 				Stream<Entity> fragments = Stream.of(entityFragment);
 			};
-//			fragments.add(entityFragment);
 			// For each missing field of entity fragment (Maybe should be for missing fields mapping).
 			Conf.getConfiguration().getMissingFields(entityFragment)
 					.forEach(missingFieldsMapping ->

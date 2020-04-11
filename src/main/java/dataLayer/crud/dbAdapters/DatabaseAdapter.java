@@ -85,96 +85,11 @@ public abstract class DatabaseAdapter
 											isEntityInSet(collected2, entityFrag)));
 				})
 				.orElse(Stream.of());
-//		Set<Entity> result = new HashSet<>(resultSets.get(0));
-//		resultSets.subList(1, resultSets.size()).forEach(result::retainAll);
-//		return result;
-
-//		return defragEntities(and)
-//				.map(answerSet -> );
-
-
-//		return Stream.of(and.getComplexQuery())
-//				.map(this::revealQuery)
-//				.reduce((map1, map2) ->
-//						merge(map1, map2, (set1, set2) ->
-//								Stream.concat(set1.stream(), set2.stream())
-//										.collect(Collectors.toSet())))
-//				.orElse(new HashMap<>());
 	}
 
 	public Stream<Entity> execute(Or or)
 	{
 		return groupEntities(defragEntities(or)
 				.flatMap(Function.identity()));
-
-//		Map<String, Set<Map<String, Object>>> output = new HashMap<>();
-//		List<Map<String, Set<Map<String, Object>>>> temp = Stream.of(or.getComplexQuery())
-//				.map(this::revealQuery)
-//				.collect(Collectors.toList());
-
-
-		// See: https://www.baeldung.com/java-merge-maps#concat
-//		return Stream.of(or.getComplexQuery())
-//				.flatMap(filter -> revealQuery(filter).entrySet().stream())
-//				.collect(Collectors.toMap(
-//						Map.Entry::getKey,
-//						Map.Entry::getValue,
-//						(set1, set2) ->
-//								Stream.concat(set1.stream(), set2.stream())
-//										.collect(Collectors.toSet())));
-
-
-//		return Stream.of(or.getComplexQuery())
-//				.map(this::revealQuery)
-//				.reduce((stringSetMap, stringSetMap2) ->
-//				{
-//					stringSetMap.forEach((type, entitiesSet) -> stringSetMap2.merge(type, entitiesSet, (maps, maps2) ->
-//					{
-//						HashSet<Map<String, Object>> set = new HashSet<>(maps);
-//						set.addAll(maps2);
-//						return set;
-//					}));
-//					return stringSetMap2;
-//				})
-//				.orElse(new HashMap<>());
-//		Stream.of(or.getComplexQuery())
-//				.map(this::revealQuery)
-//				.forEach(typeMap -> typeMap
-//						.forEach((type, entitiesSet) ->
-//						{
-//							// if type doesn't exist in output-create it
-//							output.computeIfAbsent(type, typeIgnored -> new HashSet<>())
-//									.addAll(entitiesSet); // merge existing entities in the type with remaining entities
-//						}));
-//		return output;
-
-//		tempList.forEach(typeMap ->
-//				tempList.stream()
-//						.filter(typeMap2 -> !typeMap2.equals(typeMap))
-//						.forEach(typeMap2 -> typeMap
-//								.forEach((type, value) ->
-//								{
-//									Set<Map<String, Object>> lst = typeMap2.get(type);
-//									if (lst != null)
-//									{
-//										output.computeIfAbsent(type, typeIgnored -> new LinkedList<>());
-//										lst.removeAll(output.get(type));
-//										output.get(type).addAll(lst);
-//									}
-//								})));
-//		return output;
-
-//		tempList.stream()
-//				.map(typeMap -> typeMap.entrySet().stream()
-//						.forEach(stringListEntry -> tempList.stream().))
-//		tempList.stream()
-//				.map(typeMap -> tempList.stream()
-//						.flatMap(map -> map.entrySet().stream())
-//						.filter(stringListEntry -> stringListEntry.getKey().equals())
-//						.map(stringListEntry ->);
-//
-//		return Stream.of(or.getComplexQuery())
-//				.flatMap(filter -> revealQuery(filter).stream())
-//				.collect(Collectors.toSet());
 	}
 }
