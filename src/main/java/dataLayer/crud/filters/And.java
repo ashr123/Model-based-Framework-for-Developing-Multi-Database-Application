@@ -19,9 +19,9 @@ public class And extends ComplexFilter
 	}
 
 	@Override
-	public Stream<Entity> accept(DatabaseAdapter databaseAdapter)
+	public Stream<Entity> acceptRead(DatabaseAdapter databaseAdapter)
 	{
-		return databaseAdapter.execute(this);
+		return databaseAdapter.executeRead(this);
 	}
 
 	@Override

@@ -9,7 +9,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
 
-public class Read
+public class Query
 {
 	public static Set<Entity> read(Filter filter)
 	{
@@ -19,10 +19,20 @@ public class Read
 	public static Stream<Entity> simpleRead(Filter filter)
 	{
 		return filter instanceof SimpleFilter /*simpleFilter*/ ?
-				filter.accept(Conf.getConfiguration().getFieldsMappingFromEntityField(((SimpleFilter) filter).getEntityName(), ((SimpleFilter) filter).getFieldName())
+				filter.acceptRead(Conf.getConfiguration().getFieldsMappingFromEntityField(((SimpleFilter) filter).getEntityName(), ((SimpleFilter) filter).getFieldName())
 						.getType()
 						.getDatabaseAdapter()) :
-				filter.accept(DBType.MONGODB.getDatabaseAdapter()); // Complex query, the adapter doesn't matter
+				filter.acceptRead(DBType.MONGODB.getDatabaseAdapter()); // Complex query, the adapter doesn't matter
+	}
+
+	public static void delete(Filter filter)
+	{
+
+	}
+
+	public static void delete(Set<Entity> entities)
+	{
+
 	}
 
 	private static Set<Entity> makeEntitiesWhole(Stream<Entity> entities)
@@ -42,7 +52,7 @@ public class Read
 							ref.fragments = Stream.concat(ref.fragments, missingFieldsMapping
 									.getType()
 									.getDatabaseAdapter()
-									.execute(entityFragment.getEntityType(), entityFragment.getUuid(), missingFieldsMapping)));
+									.executeRead(entityFragment.getEntityType(), entityFragment.getUuid(), missingFieldsMapping)));
 			//noinspection OptionalGetWithoutIsPresent
 			wholeEntities.add(ref.fragments
 					.reduce(Entity::merge).get());

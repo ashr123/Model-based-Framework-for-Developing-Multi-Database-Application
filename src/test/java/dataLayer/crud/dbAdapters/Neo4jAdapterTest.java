@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import static dataLayer.crud.Read.read;
+import static dataLayer.crud.Query.read;
 import static dataLayer.crud.filters.And.and;
 import static dataLayer.crud.filters.Eq.eq;
 import static dataLayer.crud.filters.Gt.gt;

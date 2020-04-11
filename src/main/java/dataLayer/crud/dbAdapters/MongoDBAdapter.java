@@ -43,7 +43,7 @@ public class MongoDBAdapter extends DatabaseAdapter
 		return null;
 	}
 
-	private Stream<Entity> query(SimpleFilter simpleFilter, Bson filter)
+	private Stream<Entity> queryRead(SimpleFilter simpleFilter, Bson filter)
 	{
 		final FieldsMapping fieldsMapping = Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityName(), simpleFilter.getFieldName());
 		try (MongoClient mongoClient = MongoClients.create(PREFIX + fieldsMapping.getConnStr()))
@@ -85,14 +85,14 @@ public class MongoDBAdapter extends DatabaseAdapter
 				});
 	}
 
-	public Stream<Entity> query(String type, UUID uuid, FieldsMapping fieldsMapping)
+	public Stream<Entity> queryRead(String entityType, UUID uuid, FieldsMapping fieldsMapping)
 	{
 		try (MongoClient mongoClient = MongoClients.create(PREFIX + fieldsMapping.getConnStr()))
 		{
 			return getStringObjectMap(mongoClient.getDatabase(fieldsMapping.getLocation())
-					.getCollection(type)
+					.getCollection(entityType)
 					.find(eq("uuid", uuid))).stream()
-					.map(fieldsMap -> new Entity((UUID) fieldsMap.remove("uuid"), type, fieldsMap));
+					.map(fieldsMap -> new Entity((UUID) fieldsMap.remove("uuid"), entityType, fieldsMap));
 		}
 	}
 
@@ -104,44 +104,107 @@ public class MongoDBAdapter extends DatabaseAdapter
 	}
 
 	@Override
-	public Stream<Entity> execute(Eq eq)
+	public Stream<Entity> executeRead(Eq eq)
 	{
-		return query(eq, eq(eq.getFieldName(), eq.getValue()));
+		return queryRead(eq, eq(eq.getFieldName(), eq.getValue()));
 	}
 
 	@Override
-	public Stream<Entity> execute(Ne ne)
+	public Stream<Entity> executeRead(Ne ne)
 	{
-		return query(ne, ne(ne.getFieldName(), ne.getValue()));
+		return queryRead(ne, ne(ne.getFieldName(), ne.getValue()));
 	}
 
 	@Override
-	public Stream<Entity> execute(Gt gt)
+	public Stream<Entity> executeRead(Gt gt)
 	{
-		return query(gt, gt(gt.getFieldName(), gt.getValue()));
+		return queryRead(gt, gt(gt.getFieldName(), gt.getValue()));
 	}
 
 	@Override
-	public Stream<Entity> execute(Lt lt)
+	public Stream<Entity> executeRead(Lt lt)
 	{
-		return query(lt, lt(lt.getFieldName(), lt.getValue()));
+		return queryRead(lt, lt(lt.getFieldName(), lt.getValue()));
 	}
 
 	@Override
-	public Stream<Entity> execute(Gte gte)
+	public Stream<Entity> executeRead(Gte gte)
 	{
-		return query(gte, gte(gte.getFieldName(), gte.getValue()));
+		return queryRead(gte, gte(gte.getFieldName(), gte.getValue()));
 	}
 
 	@Override
-	public Stream<Entity> execute(Lte lte)
+	public Stream<Entity> executeRead(Lte lte)
 	{
-		return query(lte, lte(lte.getFieldName(), lte.getValue()));
+		return queryRead(lte, lte(lte.getFieldName(), lte.getValue()));
 	}
 
 	@Override
-	public Stream<Entity> execute(String entityType, UUID uuid, FieldsMapping fieldsMapping)
+	public Stream<Entity> executeRead(String entityType, UUID uuid, FieldsMapping fieldsMapping)
 	{
-		return query(entityType, uuid, fieldsMapping);
+		return queryRead(entityType, uuid, fieldsMapping);
+	}
+
+	private void queryDelete(SimpleFilter simpleFilter, Bson filter)
+	{
+		final FieldsMapping fieldsMapping = Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityName(), simpleFilter.getFieldName());
+		try (MongoClient mongoClient = MongoClients.create(PREFIX + fieldsMapping.getConnStr()))
+		{
+			mongoClient.getDatabase(fieldsMapping.getLocation())
+					.getCollection(simpleFilter.getEntityName())
+					.deleteMany(filter);
+		}
+	}
+
+	private void queryDelete(String entityType, UUID uuid, FieldsMapping fieldsMapping)
+	{
+		try (MongoClient mongoClient = MongoClients.create(PREFIX + fieldsMapping.getConnStr()))
+		{
+			mongoClient.getDatabase(fieldsMapping.getLocation())
+					.getCollection(entityType)
+					.deleteOne(eq("uuid", uuid));
+		}
+	}
+
+	@Override
+	public void executeDelete(Eq eq)
+	{
+		queryDelete(eq, eq(eq.getFieldName(), eq.getValue()));
+	}
+
+	@Override
+	public void executeDelete(Ne ne)
+	{
+		queryDelete(ne, ne(ne.getFieldName(), ne.getValue()));
+	}
+
+	@Override
+	public void executeDelete(Gt gt)
+	{
+		queryDelete(gt, gt(gt.getFieldName(), gt.getValue()));
+	}
+
+	@Override
+	public void executeDelete(Lt lt)
+	{
+		queryDelete(lt, lt(lt.getFieldName(), lt.getValue()));
+	}
+
+	@Override
+	public void executeDelete(Gte gte)
+	{
+		queryDelete(gte, gte(gte.getFieldName(), gte.getValue()));
+	}
+
+	@Override
+	public void executeDelete(Lte lte)
+	{
+		queryDelete(lte, lte(lte.getFieldName(), lte.getValue()));
+	}
+
+	@Override
+	public void executeDelete(String entityType, UUID uuid, FieldsMapping fieldsMapping)
+	{
+		queryDelete(entityType, uuid, fieldsMapping);
 	}
 }

@@ -18,9 +18,9 @@ public class Ne extends SimpleFilter
 	}
 
 	@Override
-	public Stream<Entity> accept(DatabaseAdapter databaseAdapter)
+	public Stream<Entity> acceptRead(DatabaseAdapter databaseAdapter)
 	{
-		return databaseAdapter.execute(this);
+		return databaseAdapter.executeRead(this);
 	}
 
 	@Override

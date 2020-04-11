@@ -41,9 +41,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 				{
 					final FieldsMapping fieldMappingFromEntityFields = Conf.getConfiguration().getFieldsMappingFromEntityField(entity.getEntityType(), field);
 					if (fieldMappingFromEntityFields != null)
-					{
 						result.computeIfAbsent(fieldMappingFromEntityFields, fieldsMapping -> new HashMap<>()).put(field, value);
-					}
 					else
 						throw new NullPointerException("Field " + field + " doesn't exist in entity " + entity.getEntityType());
 				});
@@ -131,7 +129,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 	}
 
 	@Override
-	public Stream<Entity> execute(Eq eq)
+	public Stream<Entity> executeRead(Eq eq)
 	{
 		JcNode jcNode = new JcNode(eq.getEntityName());
 		JcQuery jcQuery = new JcQuery();
@@ -144,7 +142,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 	}
 
 	@Override
-	public Stream<Entity> execute(Ne ne)
+	public Stream<Entity> executeRead(Ne ne)
 	{
 		JcNode jcNode = new JcNode(ne.getEntityName());
 		JcQuery jcQuery = new JcQuery();
@@ -157,7 +155,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 	}
 
 	@Override
-	public Stream<Entity> execute(Gt gt)
+	public Stream<Entity> executeRead(Gt gt)
 	{
 		JcNode jcNode = new JcNode(gt.getEntityName());
 		JcQuery jcQuery = new JcQuery();
@@ -170,7 +168,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 	}
 
 	@Override
-	public Stream<Entity> execute(Lt lt)
+	public Stream<Entity> executeRead(Lt lt)
 	{
 		JcNode jcNode = new JcNode(lt.getEntityName());
 		JcQuery jcQuery = new JcQuery();
@@ -183,7 +181,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 	}
 
 	@Override
-	public Stream<Entity> execute(Gte gte)
+	public Stream<Entity> executeRead(Gte gte)
 	{
 		JcNode jcNode = new JcNode(gte.getEntityName());
 		JcQuery jcQuery = new JcQuery();
@@ -196,7 +194,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 	}
 
 	@Override
-	public Stream<Entity> execute(Lte lte)
+	public Stream<Entity> executeRead(Lte lte)
 	{
 		JcNode jcNode = new JcNode(lte.getEntityName());
 		JcQuery jcQuery = new JcQuery();
@@ -209,7 +207,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 	}
 
 	@Override
-	public Stream<Entity> execute(String entityType, UUID uuid, FieldsMapping fieldsMapping)
+	public Stream<Entity> executeRead(String entityType, UUID uuid, FieldsMapping fieldsMapping)
 	{
 		return query(entityType, uuid, fieldsMapping);
 	}

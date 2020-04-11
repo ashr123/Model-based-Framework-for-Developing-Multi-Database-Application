@@ -11,5 +11,5 @@ import java.util.stream.Stream;
  */
 public interface Filter
 {
-	Stream<Entity> accept(DatabaseAdapter databaseAdapter);
+	Stream<Entity> acceptRead(DatabaseAdapter databaseAdapter);
 }
