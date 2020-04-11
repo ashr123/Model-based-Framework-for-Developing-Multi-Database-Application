@@ -58,8 +58,8 @@ class MongoDBAdapterTest
 	{
 		try (MongoClient mongoClient = MongoClients.create())
 		{
-//			mongoClient.getDatabase("TestDB").drop();
-//			mongoClient.getDatabase("myDB").drop();
+			mongoClient.getDatabase("TestDB").drop();
+			mongoClient.getDatabase("myDB").drop();
 		}
 	}
 

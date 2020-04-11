@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * The main class for loading the configuration file.
@@ -75,6 +76,17 @@ public class Conf
 				.filter(field -> !entityFrag.getFieldsValues().containsKey(field))
 				.map(field -> getFieldsMappingFromEntityField(entityFrag.getEntityType(), field))
 				.collect(Collectors.toSet());
+	}
+
+	public Stream<FieldsMapping> getFieldsMappingForEntity(String entityType)
+	{
+		return entities.get(entityType).values().stream()
+				.map(fieldsMappings::get);
+	}
+
+	public Stream<FieldsMapping> getFieldsMappingForEntity(Entity entity)
+	{
+		return getFieldsMappingForEntity(entity.getEntityType());
 	}
 
 	public FieldsMapping getFieldsMappingFromEntityField(String entityType, String field)

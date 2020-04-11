@@ -29,7 +29,7 @@
 //	public String toString()
 //	{
 //		return "All{" +
-//				"entityName='" + getEntityName() + '\'' +
+//				"entityName='" + getEntityType() + '\'' +
 //				", value=" + getValue()
 //				+ '}';
 //	}

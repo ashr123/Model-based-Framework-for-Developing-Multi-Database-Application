@@ -3,6 +3,7 @@ package dataLayer.crud.dbAdapters;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoDatabase;
 import dataLayer.configReader.Conf;
 import dataLayer.configReader.FieldsMapping;
 import dataLayer.crud.Entity;
@@ -45,13 +46,13 @@ public class MongoDBAdapter extends DatabaseAdapter
 
 	private Stream<Entity> queryRead(SimpleFilter simpleFilter, Bson filter)
 	{
-		final FieldsMapping fieldsMapping = Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityName(), simpleFilter.getFieldName());
+		final FieldsMapping fieldsMapping = Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityType(), simpleFilter.getFieldName());
 		try (MongoClient mongoClient = MongoClients.create(PREFIX + fieldsMapping.getConnStr()))
 		{
 			return getStringObjectMap(mongoClient.getDatabase(fieldsMapping.getLocation())
-					.getCollection(simpleFilter.getEntityName())
+					.getCollection(simpleFilter.getEntityType())
 					.find(filter)).stream()
-					.map(fieldsMap -> new Entity((UUID) fieldsMap.remove("uuid"), simpleFilter.getEntityName(), fieldsMap));
+					.map(fieldsMap -> new Entity((UUID) fieldsMap.remove("uuid"), simpleFilter.getEntityType(), fieldsMap));
 		}
 	}
 
@@ -147,11 +148,11 @@ public class MongoDBAdapter extends DatabaseAdapter
 
 	private void queryDelete(SimpleFilter simpleFilter, Bson filter)
 	{
-		final FieldsMapping fieldsMapping = Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityName(), simpleFilter.getFieldName());
+		final FieldsMapping fieldsMapping = Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityType(), simpleFilter.getFieldName());
 		try (MongoClient mongoClient = MongoClients.create(PREFIX + fieldsMapping.getConnStr()))
 		{
 			mongoClient.getDatabase(fieldsMapping.getLocation())
-					.getCollection(simpleFilter.getEntityName())
+					.getCollection(simpleFilter.getEntityType())
 					.deleteMany(filter);
 		}
 	}
@@ -206,5 +207,19 @@ public class MongoDBAdapter extends DatabaseAdapter
 	public void executeDelete(String entityType, UUID uuid, FieldsMapping fieldsMapping)
 	{
 		queryDelete(entityType, uuid, fieldsMapping);
+	}
+
+	@Override
+	public void executeDelete(FieldsMapping fieldsMapping, Map<String, Collection<UUID>> typesAndUuids)
+	{
+		try (MongoClient mongoClient = MongoClients.create(PREFIX + fieldsMapping.getConnStr()))
+		{
+			final MongoDatabase db = mongoClient.getDatabase(fieldsMapping.getLocation());
+			typesAndUuids.forEach((entityType, uuids) ->
+					db.getCollection(entityType)
+							.deleteMany(or(uuids.stream()
+									.map(uuid -> eq("uuid", uuid))
+									.toArray(Bson[]::new))));
+		}
 	}
 }

@@ -5,9 +5,7 @@ import dataLayer.crud.Entity;
 import dataLayer.crud.Query;
 import dataLayer.crud.filters.*;
 
-import java.util.Arrays;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -112,6 +110,8 @@ public abstract class DatabaseAdapter
 
 	public abstract void executeDelete(String entityType, UUID uuid, FieldsMapping fieldsMapping);
 
+//	public
+
 	public void executeDelete(And and)
 	{
 		delete(executeRead(and));
@@ -121,4 +121,6 @@ public abstract class DatabaseAdapter
 	{
 		Arrays.stream(or.getComplexQuery()).forEach(Query::delete);
 	}
+
+	public abstract void executeDelete(FieldsMapping fieldsMapping, Map<String, Collection<UUID>> typesAndUuids);
 }

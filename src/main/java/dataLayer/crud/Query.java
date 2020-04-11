@@ -1,12 +1,12 @@
 package dataLayer.crud;
 
 import dataLayer.configReader.Conf;
+import dataLayer.configReader.FieldsMapping;
 import dataLayer.crud.dbAdapters.DBType;
 import dataLayer.crud.filters.Filter;
 import dataLayer.crud.filters.SimpleFilter;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class Query
@@ -19,7 +19,7 @@ public class Query
 	public static Stream<Entity> simpleRead(Filter filter)
 	{
 		return filter instanceof SimpleFilter /*simpleFilter*/ ?
-				filter.acceptRead(Conf.getConfiguration().getFieldsMappingFromEntityField(((SimpleFilter) filter).getEntityName(), ((SimpleFilter) filter).getFieldName())
+				filter.acceptRead(Conf.getConfiguration().getFieldsMappingFromEntityField(((SimpleFilter) filter).getEntityType(), ((SimpleFilter) filter).getFieldName())
 						.getType()
 						.getDatabaseAdapter()) :
 				filter.acceptRead(DBType.MONGODB.getDatabaseAdapter()); // Complex query, the adapter doesn't matter
@@ -32,7 +32,13 @@ public class Query
 
 	public static void delete(Stream<Entity> entities)
 	{
-		
+		Map<FieldsMapping, Map<String, Collection<UUID>>> temp = new HashMap<>();
+		entities.forEach(entity ->
+				Conf.getConfiguration().getFieldsMappingForEntity(entity)
+						.forEach(fieldsMapping -> temp.computeIfAbsent(fieldsMapping, fieldsMapping1 -> new HashMap<>(1))
+								.computeIfAbsent(entity.getEntityType(), entityType -> new HashSet<>(1))
+								.add(entity.getUuid())));
+		temp.forEach((fieldsMapping, typesAndUuids) -> fieldsMapping.getType().getDatabaseAdapter().executeDelete(fieldsMapping, typesAndUuids));
 	}
 
 	private static Set<Entity> makeEntitiesWhole(Stream<Entity> entities)

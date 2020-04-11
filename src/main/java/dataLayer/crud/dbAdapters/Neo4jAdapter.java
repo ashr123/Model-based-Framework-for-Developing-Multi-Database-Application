@@ -19,10 +19,7 @@ import iot.jcypher.query.factories.clause.WHERE;
 import iot.jcypher.query.values.JcNode;
 import org.neo4j.driver.v1.AuthTokens;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -90,8 +87,8 @@ public class Neo4jAdapter extends DatabaseAdapter
 	private Stream<Entity> query(SimpleFilter simpleFilter, JcQuery jcQuery, JcNode jcNode)
 	{
 		Properties props = new Properties();
-		props.setProperty(DBProperties.SERVER_ROOT_URI, Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityName(), simpleFilter.getFieldName()).getConnStr());
-		IDBAccess idbAccess = DBAccessFactory.createDBAccess(DBType.REMOTE, props, AuthTokens.basic(Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityName(), simpleFilter.getFieldName()).getUsername(), Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityName(), simpleFilter.getFieldName()).getPassword()));
+		props.setProperty(DBProperties.SERVER_ROOT_URI, Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityType(), simpleFilter.getFieldName()).getConnStr());
+		IDBAccess idbAccess = DBAccessFactory.createDBAccess(DBType.REMOTE, props, AuthTokens.basic(Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityType(), simpleFilter.getFieldName()).getUsername(), Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityType(), simpleFilter.getFieldName()).getPassword()));
 		try
 		{
 			return idbAccess
@@ -131,10 +128,10 @@ public class Neo4jAdapter extends DatabaseAdapter
 	@Override
 	public Stream<Entity> executeRead(Eq eq)
 	{
-		JcNode jcNode = new JcNode(eq.getEntityName());
+		JcNode jcNode = new JcNode(eq.getEntityType());
 		JcQuery jcQuery = new JcQuery();
 		jcQuery.setClauses(new IClause[]{
-				MATCH.node(jcNode).label(eq.getEntityName()),
+				MATCH.node(jcNode).label(eq.getEntityType()),
 				WHERE.valueOf(jcNode.property(eq.getFieldName())).EQUALS(eq.getValue()),
 				RETURN.value(jcNode)
 		});
@@ -144,10 +141,10 @@ public class Neo4jAdapter extends DatabaseAdapter
 	@Override
 	public Stream<Entity> executeRead(Ne ne)
 	{
-		JcNode jcNode = new JcNode(ne.getEntityName());
+		JcNode jcNode = new JcNode(ne.getEntityType());
 		JcQuery jcQuery = new JcQuery();
 		jcQuery.setClauses(new IClause[]{
-				MATCH.node(jcNode).label(ne.getEntityName()),
+				MATCH.node(jcNode).label(ne.getEntityType()),
 				WHERE.valueOf(jcNode.property(ne.getFieldName())).NOT_EQUALS(ne.getValue()),
 				RETURN.value(jcNode)
 		});
@@ -157,10 +154,10 @@ public class Neo4jAdapter extends DatabaseAdapter
 	@Override
 	public Stream<Entity> executeRead(Gt gt)
 	{
-		JcNode jcNode = new JcNode(gt.getEntityName());
+		JcNode jcNode = new JcNode(gt.getEntityType());
 		JcQuery jcQuery = new JcQuery();
 		jcQuery.setClauses(new IClause[]{
-				MATCH.node(jcNode).label(gt.getEntityName()),
+				MATCH.node(jcNode).label(gt.getEntityType()),
 				WHERE.valueOf(jcNode.property(gt.getFieldName())).GT(gt.getValue()),
 				RETURN.value(jcNode)
 		});
@@ -170,10 +167,10 @@ public class Neo4jAdapter extends DatabaseAdapter
 	@Override
 	public Stream<Entity> executeRead(Lt lt)
 	{
-		JcNode jcNode = new JcNode(lt.getEntityName());
+		JcNode jcNode = new JcNode(lt.getEntityType());
 		JcQuery jcQuery = new JcQuery();
 		jcQuery.setClauses(new IClause[]{
-				MATCH.node(jcNode).label(lt.getEntityName()),
+				MATCH.node(jcNode).label(lt.getEntityType()),
 				WHERE.valueOf(jcNode.property(lt.getFieldName())).LT(lt.getValue()),
 				RETURN.value(jcNode)
 		});
@@ -183,10 +180,10 @@ public class Neo4jAdapter extends DatabaseAdapter
 	@Override
 	public Stream<Entity> executeRead(Gte gte)
 	{
-		JcNode jcNode = new JcNode(gte.getEntityName());
+		JcNode jcNode = new JcNode(gte.getEntityType());
 		JcQuery jcQuery = new JcQuery();
 		jcQuery.setClauses(new IClause[]{
-				MATCH.node(jcNode).label(gte.getEntityName()),
+				MATCH.node(jcNode).label(gte.getEntityType()),
 				WHERE.valueOf(jcNode.property(gte.getFieldName())).GTE(gte.getValue()),
 				RETURN.value(jcNode)
 		});
@@ -196,10 +193,10 @@ public class Neo4jAdapter extends DatabaseAdapter
 	@Override
 	public Stream<Entity> executeRead(Lte lte)
 	{
-		JcNode jcNode = new JcNode(lte.getEntityName());
+		JcNode jcNode = new JcNode(lte.getEntityType());
 		JcQuery jcQuery = new JcQuery();
 		jcQuery.setClauses(new IClause[]{
-				MATCH.node(jcNode).label(lte.getEntityName()),
+				MATCH.node(jcNode).label(lte.getEntityType()),
 				WHERE.valueOf(jcNode.property(lte.getFieldName())).LTE(lte.getValue()),
 				RETURN.value(jcNode)
 		});
@@ -250,6 +247,12 @@ public class Neo4jAdapter extends DatabaseAdapter
 
 	@Override
 	public void executeDelete(String entityType, UUID uuid, FieldsMapping fieldsMapping)
+	{
+
+	}
+
+	@Override
+	public void executeDelete(FieldsMapping fieldsMapping, Map<String, Collection<UUID>> typesAndUuids)
 	{
 
 	}
