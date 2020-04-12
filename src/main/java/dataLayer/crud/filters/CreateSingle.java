@@ -22,7 +22,8 @@ public class CreateSingle implements VoidFilter
 		return entity;
 	}
 
-	public void accept(DatabaseAdapter databaseAdapter)
+	@Override
+	public void executeAt(DatabaseAdapter databaseAdapter)
 	{
 		databaseAdapter.executeCreate(this);
 	}

@@ -110,8 +110,6 @@ public abstract class DatabaseAdapter
 
 	public abstract void executeDelete(String entityType, UUID uuid, FieldsMapping fieldsMapping);
 
-//	public
-
 	public void executeDelete(And and)
 	{
 		delete(executeRead(and));

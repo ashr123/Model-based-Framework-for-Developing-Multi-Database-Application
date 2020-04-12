@@ -53,7 +53,7 @@ class Neo4jAdapterTest
 	void setUp() throws IOException
 	{
 		Conf.loadConfiguration(Neo4jAdapter.class.getResource("/configurations/configurationNeo4j.json"));
-		CreateMany.createMany(roy, yossi, karin).accept(dataLayer.crud.dbAdapters.DBType.NEO4J.getDatabaseAdapter());
+		CreateMany.createMany(roy, yossi, karin).executeAt(dataLayer.crud.dbAdapters.DBType.NEO4J.getDatabaseAdapter());
 	}
 
 	@AfterAll

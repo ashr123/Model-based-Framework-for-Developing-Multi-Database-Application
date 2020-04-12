@@ -18,13 +18,13 @@ public class Eq extends SimpleFilter
 	}
 
 	@Override
-	public Stream<Entity> acceptRead(DatabaseAdapter databaseAdapter)
+	public Stream<Entity> executeRead(DatabaseAdapter databaseAdapter)
 	{
 		return databaseAdapter.executeRead(this);
 	}
 
 	@Override
-	public void acceptDelete(DatabaseAdapter databaseAdapter)
+	public void executeDelete(DatabaseAdapter databaseAdapter)
 	{
 		databaseAdapter.executeDelete(this);
 	}

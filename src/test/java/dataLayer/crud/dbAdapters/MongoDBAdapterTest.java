@@ -51,7 +51,7 @@ class MongoDBAdapterTest
 	void setUp() throws IOException
 	{
 		Conf.loadConfiguration(MongoDBAdapterTest.class.getResource("/configurations/configurationMongoDB.json"));
-		createMany(roy, yossi, karin).accept(DBType.MONGODB.getDatabaseAdapter());
+		createMany(roy, yossi, karin).executeAt(DBType.MONGODB.getDatabaseAdapter());
 	}
 
 	@AfterAll
@@ -84,7 +84,7 @@ class MongoDBAdapterTest
 						"phoneNumber", "0546815181",
 						"emailAddress", "ashr@post.bgu.ac.il"));
 
-		createSingle(royForDelete).accept(DBType.MONGODB.getDatabaseAdapter());
+		createSingle(royForDelete).executeAt(DBType.MONGODB.getDatabaseAdapter());
 
 		assertEquals(Set.of(royForDelete),
 				read(eq("Person", "name", "RoyForDelete")),

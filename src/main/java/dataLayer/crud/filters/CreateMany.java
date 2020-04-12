@@ -29,7 +29,8 @@ public class CreateMany implements VoidFilter
 		return entities;
 	}
 
-	public void accept(DatabaseAdapter databaseAdapter)
+	@Override
+	public void executeAt(DatabaseAdapter databaseAdapter)
 	{
 		databaseAdapter.executeCreate(this);
 	}
