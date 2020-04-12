@@ -27,7 +27,7 @@ public class Query
 
 	public static void delete(Filter filter)
 	{
-		delete(read(filter).stream());
+		delete(simpleRead(filter));
 	}
 
 	public static void delete(Stream<Entity> entities)
@@ -35,9 +35,10 @@ public class Query
 		Map<FieldsMapping, Map<String, Collection<UUID>>> temp = new HashMap<>();
 		entities.forEach(entity ->
 				Conf.getConfiguration().getFieldsMappingForEntity(entity)
-						.forEach(fieldsMapping -> temp.computeIfAbsent(fieldsMapping, fieldsMapping1 -> new HashMap<>(1))
-								.computeIfAbsent(entity.getEntityType(), entityType -> new HashSet<>(1))
-								.add(entity.getUuid())));
+						.forEach(fieldsMapping ->
+								temp.computeIfAbsent(fieldsMapping, fieldsMapping1 -> new HashMap<>())
+										.computeIfAbsent(entity.getEntityType(), entityType -> new HashSet<>())
+										.add(entity.getUuid())));
 		temp.forEach((fieldsMapping, typesAndUuids) -> fieldsMapping.getType().getDatabaseAdapter().executeDelete(fieldsMapping, typesAndUuids));
 	}
 

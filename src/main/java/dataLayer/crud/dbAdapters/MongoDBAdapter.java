@@ -13,6 +13,8 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.mongodb.client.model.Filters.*;
@@ -30,15 +32,9 @@ public class MongoDBAdapter extends DatabaseAdapter
 		if (myDoc != null)
 		{
 			final Set<Map<String, Object>> output = new HashSet<>();
-			for (Document document : myDoc)
-			{
-				final Set<Map.Entry<String, Object>> result = document.entrySet();
-				final Map<String, Object> map = new LinkedHashMap<>(result.size());
-				for (Map.Entry<String, Object> entry : result)
-					if (!entry.getKey().equals("_id"))
-						map.put(entry.getKey(), entry.getValue());
-				output.add(map);
-			}
+			myDoc.forEach((Consumer<? super Document>) document -> output.add(document.entrySet().stream()
+					.filter(entry -> !entry.getKey().equals("_id"))
+					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> b))));
 			return output;
 		}
 		return null;
@@ -58,7 +54,7 @@ public class MongoDBAdapter extends DatabaseAdapter
 
 	private Map<FieldsMapping, Document> groupFieldsByFieldsMapping(Entity entity)
 	{
-		final Map<FieldsMapping, Document> locationDocumentMap = new LinkedHashMap<>();
+		final Map<FieldsMapping, Document> locationDocumentMap = new HashMap<>();
 		entity.getFieldsValues()
 				.forEach((field, value) ->
 				{

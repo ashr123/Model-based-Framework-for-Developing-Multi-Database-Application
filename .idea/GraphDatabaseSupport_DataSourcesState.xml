@@ -18,6 +18,19 @@
                 </map>
               </option>
             </DataSourceV1>
+            <DataSourceV1>
+              <option name="uuid" value="48b8b917-56bd-4f9d-895d-fb30a3b78a9f" />
+              <option name="name" value="neo4j2" />
+              <option name="dataSourceType" value="NEO4J_BOLT" />
+              <option name="configuration">
+                <map>
+                  <entry key="host" value="localhost" />
+                  <entry key="password" value="neo4j1" />
+                  <entry key="port" value="11008" />
+                  <entry key="user" value="neo4j" />
+                </map>
+              </option>
+            </DataSourceV1>
           </list>
         </option>
       </DataSourceContainerV1>

@@ -4,7 +4,6 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import dataLayer.configReader.Conf;
 import dataLayer.crud.Entity;
-import dataLayer.crud.filters.CreateMany;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -17,6 +16,8 @@ import java.util.Set;
 import static dataLayer.crud.Query.delete;
 import static dataLayer.crud.Query.read;
 import static dataLayer.crud.filters.And.and;
+import static dataLayer.crud.filters.CreateMany.createMany;
+import static dataLayer.crud.filters.CreateSingle.createSingle;
 import static dataLayer.crud.filters.Eq.eq;
 import static dataLayer.crud.filters.Gt.gt;
 import static dataLayer.crud.filters.Gte.gte;
@@ -50,7 +51,7 @@ class MongoDBAdapterTest
 	void setUp() throws IOException
 	{
 		Conf.loadConfiguration(MongoDBAdapterTest.class.getResource("/configurations/configurationMongoDB.json"));
-		CreateMany.createMany(roy, yossi, karin).accept(DBType.MONGODB.getDatabaseAdapter());
+		createMany(roy, yossi, karin).accept(DBType.MONGODB.getDatabaseAdapter());
 	}
 
 	@AfterAll
@@ -77,15 +78,23 @@ class MongoDBAdapterTest
 	@Test
 	void testExecuteDelete()
 	{
-		assertEquals(Set.of(roy),
-				read(eq("Person", "name", "Roy")),
+		final Entity royForDelete = Entity.of("Person",
+				Map.of("name", "RoyForDelete",
+						"age", 27L,
+						"phoneNumber", "0546815181",
+						"emailAddress", "ashr@post.bgu.ac.il"));
+
+		createSingle(royForDelete).accept(DBType.MONGODB.getDatabaseAdapter());
+
+		assertEquals(Set.of(royForDelete),
+				read(eq("Person", "name", "RoyForDelete")),
 				"Should return person named Roy.");
 
-		delete(eq("Person", "name", "Roy"));
+		delete(eq("Person", "name", "RoyForDelete"));
 
 		assertEquals(Set.of(),
-				read(eq("Person", "name", "Roy")),
-				"Roy has been removed !");
+				read(eq("Person", "name", "RoyForDelete")),
+				"RoyForDelete should have been removed!");
 	}
 
 	@Test
