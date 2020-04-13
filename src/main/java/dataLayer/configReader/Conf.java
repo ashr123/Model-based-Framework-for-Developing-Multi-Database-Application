@@ -7,10 +7,7 @@ import dataLayer.crud.Entity;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.InputMismatchException;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -92,6 +89,18 @@ public class Conf
 	public FieldsMapping getFieldsMappingFromEntityField(String entityType, String field)
 	{
 		return fieldsMappings.get(entities.get(entityType).get(field));
+	}
+
+	public Set<String> getFieldsFromTypeAndMapping(String entityType, FieldsMapping fieldsMapping)
+	{
+		//noinspection OptionalGetWithoutIsPresent
+		String nickname = fieldsMappings.entrySet().stream()
+				.filter(stringFieldsMappingEntry -> stringFieldsMappingEntry.getValue().equals(fieldsMapping))
+				.findFirst().get().getKey();
+		return entities.get(entityType).entrySet().stream()
+				.filter(mapping -> mapping.getValue().equals(nickname))
+				.map(Map.Entry::getKey)
+				.collect(Collectors.toSet());
 	}
 
 	public Conf checkValidity()
