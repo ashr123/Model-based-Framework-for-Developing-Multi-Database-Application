@@ -108,7 +108,7 @@ public abstract class DatabaseAdapter
 
 	public abstract void executeDelete(Lte lte);
 
-	public abstract void executeDelete(String entityType, UUID uuid, FieldsMapping fieldsMapping);
+//	public abstract void executeDelete(String entityType, UUID uuid, FieldsMapping fieldsMapping);
 
 	public void executeDelete(And and)
 	{
@@ -117,8 +117,39 @@ public abstract class DatabaseAdapter
 
 	public void executeDelete(Or or)
 	{
-		Arrays.stream(or.getComplexQuery()).forEach(Query::delete);
+		Stream.of(or.getComplexQuery())
+				.forEach(Query::delete);
 	}
 
 	public abstract void executeDelete(FieldsMapping fieldsMapping, Map<String, Collection<UUID>> typesAndUuids);
+
+	//------------------------------------------------------------------------------------------------------------------
+	public abstract void executeUpdate(Eq eq, Map<String, Object> update);
+
+	public abstract void executeUpdate(Ne ne, Map<String, Object> update);
+
+	public abstract void executeUpdate(Gt gt, Map<String, Object> update);
+
+	public abstract void executeUpdate(Lt lt, Map<String, Object> update);
+
+	public abstract void executeUpdate(Gte gte);
+
+	public abstract void executeUpdate(Lte lte);
+
+//	public abstract void executeUpdate(String entityType, UUID uuid, FieldsMapping fieldsMapping);
+
+	//TODO Change
+	public void executeUpdate(And and)
+	{
+		delete(executeRead(and));
+	}
+
+	//TODO Change
+	public void executeUpdate(Or or)
+	{
+		Stream.of(or.getComplexQuery())
+				.forEach(Query::delete);
+	}
+
+	public abstract void executeUpdate(FieldsMapping fieldsMapping, Map<String, Collection<UUID>> typesAndUuids);
 }

@@ -4,6 +4,7 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Updates;
 import dataLayer.configReader.Conf;
 import dataLayer.configReader.FieldsMapping;
 import dataLayer.crud.Entity;
@@ -21,7 +22,7 @@ import static com.mongodb.client.model.Filters.*;
 import static dataLayer.crud.filters.CreateSingle.createSingle;
 
 /**
- * Concrete element
+ * @author Roy Ash
  */
 public class MongoDBAdapter extends DatabaseAdapter
 {
@@ -29,27 +30,27 @@ public class MongoDBAdapter extends DatabaseAdapter
 
 	private Set<Map<String, Object>> getStringObjectMap(FindIterable<Document> myDoc)
 	{
-		if (myDoc != null)
+		final Set<Map<String, Object>> output = new HashSet<>();
+		myDoc.forEach((Consumer<? super Document>) document -> output.add(document.entrySet().stream()
+				.filter(entry -> !entry.getKey().equals("_id"))
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> b))));
+		return output;
+	}
+
+	private Stream<Entity> makeEntities(FieldsMapping fieldsMapping, String entityType, Bson filter)
+	{
+		try (MongoClient mongoClient = MongoClients.create(PREFIX + fieldsMapping.getConnStr()))
 		{
-			final Set<Map<String, Object>> output = new HashSet<>();
-			myDoc.forEach((Consumer<? super Document>) document -> output.add(document.entrySet().stream()
-					.filter(entry -> !entry.getKey().equals("_id"))
-					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> b))));
-			return output;
+			return getStringObjectMap(mongoClient.getDatabase(fieldsMapping.getLocation())
+					.getCollection(entityType)
+					.find(filter)).stream()
+					.map(fieldsMap -> new Entity((UUID) fieldsMap.remove("uuid"), entityType, fieldsMap));
 		}
-		return null;
 	}
 
 	private Stream<Entity> queryRead(SimpleFilter simpleFilter, Bson filter)
 	{
-		final FieldsMapping fieldsMapping = Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityType(), simpleFilter.getFieldName());
-		try (MongoClient mongoClient = MongoClients.create(PREFIX + fieldsMapping.getConnStr()))
-		{
-			return getStringObjectMap(mongoClient.getDatabase(fieldsMapping.getLocation())
-					.getCollection(simpleFilter.getEntityType())
-					.find(filter)).stream()
-					.map(fieldsMap -> new Entity((UUID) fieldsMap.remove("uuid"), simpleFilter.getEntityType(), fieldsMap));
-		}
+		return makeEntities(Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityType(), simpleFilter.getFieldName()), simpleFilter.getEntityType(), filter);
 	}
 
 	private Map<FieldsMapping, Document> groupFieldsByFieldsMapping(Entity entity)
@@ -84,13 +85,7 @@ public class MongoDBAdapter extends DatabaseAdapter
 
 	public Stream<Entity> queryRead(String entityType, UUID uuid, FieldsMapping fieldsMapping)
 	{
-		try (MongoClient mongoClient = MongoClients.create(PREFIX + fieldsMapping.getConnStr()))
-		{
-			return getStringObjectMap(mongoClient.getDatabase(fieldsMapping.getLocation())
-					.getCollection(entityType)
-					.find(eq("uuid", uuid))).stream()
-					.map(fieldsMap -> new Entity((UUID) fieldsMap.remove("uuid"), entityType, fieldsMap));
-		}
+		return makeEntities(fieldsMapping, entityType, eq("uuid", uuid));
 	}
 
 	@Override
@@ -142,26 +137,25 @@ public class MongoDBAdapter extends DatabaseAdapter
 		return queryRead(entityType, uuid, fieldsMapping);
 	}
 
-	private void queryDelete(SimpleFilter simpleFilter, Bson filter)
-	{
-		final FieldsMapping fieldsMapping = Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityType(), simpleFilter.getFieldName());
-		try (MongoClient mongoClient = MongoClients.create(PREFIX + fieldsMapping.getConnStr()))
-		{
-			mongoClient.getDatabase(fieldsMapping.getLocation())
-					.getCollection(simpleFilter.getEntityType())
-					.deleteMany(filter);
-		}
-	}
-
-	private void queryDelete(String entityType, UUID uuid, FieldsMapping fieldsMapping)
+	private void deleteEntities(FieldsMapping fieldsMapping, String entityType, Bson filter)
 	{
 		try (MongoClient mongoClient = MongoClients.create(PREFIX + fieldsMapping.getConnStr()))
 		{
 			mongoClient.getDatabase(fieldsMapping.getLocation())
 					.getCollection(entityType)
-					.deleteOne(eq("uuid", uuid));
+					.deleteMany(filter);
 		}
 	}
+
+	private void queryDelete(SimpleFilter simpleFilter, Bson filter)
+	{
+		deleteEntities(Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityType(), simpleFilter.getFieldName()), simpleFilter.getEntityType(), filter);
+	}
+
+//	private void queryDelete(String entityType, UUID uuid, FieldsMapping fieldsMapping)
+//	{
+//		deleteEntities(fieldsMapping, entityType, eq("uuid", uuid));
+//	}
 
 	@Override
 	public void executeDelete(Eq eq)
@@ -199,11 +193,11 @@ public class MongoDBAdapter extends DatabaseAdapter
 		queryDelete(lte, lte(lte.getFieldName(), lte.getValue()));
 	}
 
-	@Override
-	public void executeDelete(String entityType, UUID uuid, FieldsMapping fieldsMapping)
-	{
-		queryDelete(entityType, uuid, fieldsMapping);
-	}
+//	@Override
+//	public void executeDelete(String entityType, UUID uuid, FieldsMapping fieldsMapping)
+//	{
+//		queryDelete(entityType, uuid, fieldsMapping);
+//	}
 
 	@Override
 	public void executeDelete(FieldsMapping fieldsMapping, Map<String, Collection<UUID>> typesAndUuids)
@@ -215,7 +209,64 @@ public class MongoDBAdapter extends DatabaseAdapter
 					db.getCollection(entityType)
 							.deleteMany(or(uuids.stream()
 									.map(uuid -> eq("uuid", uuid))
-									.toArray(Bson[]::new))));
+									.collect(Collectors.toList()))));
 		}
+	}
+
+	private void updateEntities(FieldsMapping fieldsMapping, String entityType, Bson filter, Bson update)
+	{
+		try (MongoClient mongoClient = MongoClients.create(PREFIX + fieldsMapping.getConnStr()))
+		{
+			mongoClient.getDatabase(fieldsMapping.getLocation())
+					.getCollection(entityType)
+					.updateMany(filter, update);
+		}
+	}
+
+	private void queryUpdate(SimpleFilter simpleFilter, Bson filter, Bson update)
+	{
+		updateEntities(Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityType(), simpleFilter.getFieldName()), simpleFilter.getEntityType(), filter, update);
+	}
+
+	@Override
+	public void executeUpdate(Eq eq)
+	{
+		queryUpdate(eq, eq(eq.getFieldName(), eq.getValue()), Updates.set());
+	}
+
+	@Override
+	public void executeUpdate(Ne ne)
+	{
+
+	}
+
+	@Override
+	public void executeUpdate(Gt gt)
+	{
+
+	}
+
+	@Override
+	public void executeUpdate(Lt lt)
+	{
+
+	}
+
+	@Override
+	public void executeUpdate(Gte gte)
+	{
+
+	}
+
+	@Override
+	public void executeUpdate(Lte lte)
+	{
+
+	}
+
+	@Override
+	public void executeUpdate(FieldsMapping fieldsMapping, Map<String, Collection<UUID>> typesAndUuids)
+	{
+
 	}
 }

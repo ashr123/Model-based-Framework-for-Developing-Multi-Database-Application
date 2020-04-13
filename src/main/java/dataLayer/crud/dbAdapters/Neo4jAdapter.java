@@ -74,10 +74,11 @@ public class Neo4jAdapter extends DatabaseAdapter
 
 	private Entity getEntityFromNode(GrNode grNode)
 	{
-		Map<String, Object> fieldsMap = grNode.getProperties().stream()
-				.collect(Collectors.toMap(GrProperty::getName, GrProperty::getValue, (a, b) -> b));
-		fieldsMap.remove("_c_version_");
-		return new Entity((String) fieldsMap.remove("uuid"), grNode.getLabels().get(0).getName(), fieldsMap);
+		return new Entity((String) grNode.getProperty("uuid").getValue(),
+				grNode.getLabels().get(0).getName(),
+				grNode.getProperties().stream()
+						.filter(grProperty -> !(grProperty.getName().equals("_c_version_") || grProperty.getName().equals("uuid")))
+						.collect(Collectors.toMap(GrProperty::getName, GrProperty::getValue, (a, b) -> b)));
 	}
 
 	private Stream<Entity> query(SimpleFilter simpleFilter, JcQuery jcQuery, JcNode jcNode)
@@ -86,8 +87,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 		IDBAccess idbAccess = getDBAccess(fieldsMapping);
 		try
 		{
-			return idbAccess
-					.execute(jcQuery)
+			return idbAccess.execute(jcQuery)
 					.resultOf(jcNode).stream()
 					.map(this::getEntityFromNode);
 		} finally
@@ -108,8 +108,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 		});
 		try
 		{
-			return idbAccess
-					.execute(jcQuery)
+			return idbAccess.execute(jcQuery)
 					.resultOf(jcNode).stream()
 					.map(this::getEntityFromNode);
 		} finally
@@ -312,11 +311,11 @@ public class Neo4jAdapter extends DatabaseAdapter
 		queryDelete(lte, jcQuery, jcNode);
 	}
 
-	@Override
-	public void executeDelete(String entityType, UUID uuid, FieldsMapping fieldsMapping)
-	{
-		queryDelete(entityType, uuid, fieldsMapping);
-	}
+//	@Override
+//	public void executeDelete(String entityType, UUID uuid, FieldsMapping fieldsMapping)
+//	{
+//		queryDelete(entityType, uuid, fieldsMapping);
+//	}
 
 	@Override
 	public void executeDelete(FieldsMapping fieldsMapping, Map<String, Collection<UUID>> typesAndUuids)

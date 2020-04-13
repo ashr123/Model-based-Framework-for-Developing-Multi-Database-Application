@@ -97,13 +97,17 @@ public class Conf
 	public Conf checkValidity()
 	{
 		final Set<String> keySet = fieldsMappings.keySet();
-		entities.values()
-				.forEach(entityLocations ->
-				{
-					if (!keySet.containsAll(entityLocations.values()))
-						throw new InputMismatchException("Not all fieldsLocations locations exists as FieldsMapping!!");
-				});
-		return this;
+		if (entities.values().stream()
+				.allMatch(entityLocations -> keySet.containsAll(entityLocations.values())))
+			return this;
+		throw new InputMismatchException("Not all fieldsLocations locations exists as FieldsMapping!!");
+//		entities.values()
+//				.forEach(entityLocations ->
+//				{
+//					if (!keySet.containsAll(entityLocations.values()))
+//						throw new InputMismatchException("Not all fieldsLocations locations exists as FieldsMapping!!");
+//				});
+//		return this;
 	}
 
 	@Override
