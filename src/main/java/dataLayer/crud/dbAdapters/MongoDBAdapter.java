@@ -8,6 +8,7 @@ import com.mongodb.client.model.Updates;
 import dataLayer.configReader.Conf;
 import dataLayer.configReader.FieldsMapping;
 import dataLayer.crud.Entity;
+import dataLayer.crud.Pair;
 import dataLayer.crud.filters.SimpleFilter;
 import dataLayer.crud.filters.*;
 import org.bson.Document;
@@ -137,101 +138,35 @@ public class MongoDBAdapter extends DatabaseAdapter
 		return queryRead(entityType, uuid, fieldsMapping);
 	}
 
-	private void deleteEntities(FieldsMapping fieldsMapping, String entityType, Bson filter)
-	{
-		try (MongoClient mongoClient = MongoClients.create(PREFIX + fieldsMapping.getConnStr()))
-		{
-			mongoClient.getDatabase(fieldsMapping.getLocation())
-					.getCollection(entityType)
-					.deleteMany(filter);
-		}
-	}
-
-	private void queryDelete(SimpleFilter simpleFilter, Bson filter)
-	{
-		deleteEntities(Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityType(), simpleFilter.getFieldName()), simpleFilter.getEntityType(), filter);
-	}
-
-//	private void queryDelete(String entityType, UUID uuid, FieldsMapping fieldsMapping)
-//	{
-//		deleteEntities(fieldsMapping, entityType, eq("uuid", uuid));
-//	}
-
-//	@Override
-//	public void executeDelete(Eq eq)
-//	{
-//		queryDelete(eq, eq(eq.getFieldName(), eq.getValue()));
-//	}
-//
-//	@Override
-//	public void executeDelete(Ne ne)
-//	{
-//		queryDelete(ne, ne(ne.getFieldName(), ne.getValue()));
-//	}
-//
-//	@Override
-//	public void executeDelete(Gt gt)
-//	{
-//		queryDelete(gt, gt(gt.getFieldName(), gt.getValue()));
-//	}
-//
-//	@Override
-//	public void executeDelete(Lt lt)
-//	{
-//		queryDelete(lt, lt(lt.getFieldName(), lt.getValue()));
-//	}
-//
-//	@Override
-//	public void executeDelete(Gte gte)
-//	{
-//		queryDelete(gte, gte(gte.getFieldName(), gte.getValue()));
-//	}
-//
-//	@Override
-//	public void executeDelete(Lte lte)
-//	{
-//		queryDelete(lte, lte(lte.getFieldName(), lte.getValue()));
-//	}
-
-//	@Override
-//	public void executeDelete(String entityType, UUID uuid, FieldsMapping fieldsMapping)
-//	{
-//		queryDelete(entityType, uuid, fieldsMapping);
-//	}
-
 	@Override
 	public void executeDelete(FieldsMapping fieldsMapping, Map<String, Collection<UUID>> typesAndUuids)
 	{
 		try (MongoClient mongoClient = MongoClients.create(PREFIX + fieldsMapping.getConnStr()))
 		{
-			final MongoDatabase db = mongoClient.getDatabase(fieldsMapping.getLocation());
+			final MongoDatabase database = mongoClient.getDatabase(fieldsMapping.getLocation());
 			typesAndUuids.forEach((entityType, uuids) ->
-					db.getCollection(entityType)
+					database.getCollection(entityType)
 							.deleteMany(or(uuids.stream()
 									.map(uuid -> eq("uuid", uuid))
 									.collect(Collectors.toList()))));
 		}
 	}
 
-	private void updateEntities(FieldsMapping fieldsMapping, String entityType, Bson filter, Bson update)
+	@Override
+	public void executeUpdate(FieldsMapping fieldsMapping,
+	                          Map<String/*type*/, Pair<Collection<UUID>, Map<String/*field*/, Object/*value*/>>> updates)
 	{
 		try (MongoClient mongoClient = MongoClients.create(PREFIX + fieldsMapping.getConnStr()))
 		{
-			mongoClient.getDatabase(fieldsMapping.getLocation())
-					.getCollection(entityType)
-					.updateMany(filter, update);
+			final MongoDatabase database = mongoClient.getDatabase(fieldsMapping.getLocation());
+			updates.forEach((entityType, uuidsAndUpdates) ->
+					database.getCollection(entityType)
+							.updateMany(or(uuidsAndUpdates.getFirst().stream()
+											.map(uuid -> eq("uuid", uuid))
+											.collect(Collectors.toList())),
+									Updates.combine(uuidsAndUpdates.getSecond().entrySet().stream()
+											.map(fieldsAndValues -> Updates.set(fieldsAndValues.getKey(), fieldsAndValues.getValue()))
+											.collect(Collectors.toList()))));
 		}
-	}
-
-	private void queryUpdate(SimpleFilter simpleFilter, Bson filter, Bson update)
-	{
-		updateEntities(Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityType(), simpleFilter.getFieldName()), simpleFilter.getEntityType(), filter, update);
-	}
-
-	@Override
-	public void executeUpdate(FieldsMapping fieldsMapping,
-	                          Map<String/*type*/, Map<Collection<UUID>, Map<String/*field*/, Object/*value*/>>> updates)
-	{
-		
 	}
 }

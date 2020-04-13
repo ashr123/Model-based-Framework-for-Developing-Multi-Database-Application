@@ -2,6 +2,7 @@ package dataLayer.crud.dbAdapters;
 
 import dataLayer.configReader.FieldsMapping;
 import dataLayer.crud.Entity;
+import dataLayer.crud.Pair;
 import dataLayer.crud.Query;
 import dataLayer.crud.filters.*;
 
@@ -100,5 +101,5 @@ public abstract class DatabaseAdapter
 
 	//------------------------------------------------------------------------------------------------------------------
 	public abstract void executeUpdate(FieldsMapping fieldsMapping,
-	                                   Map<String/*type*/, Map<Collection<UUID>, Map<String/*field*/, Object/*value*/>>> updates);
+	                                   Map<String/*type*/, Pair<Collection<UUID>, Map<String/*field*/, Object/*value*/>>> updates);
 }
