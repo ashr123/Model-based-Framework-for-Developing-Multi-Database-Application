@@ -24,12 +24,6 @@ public class Gte extends SimpleFilter
 	}
 
 	@Override
-	public void executeDelete(DatabaseAdapter databaseAdapter)
-	{
-		databaseAdapter.executeDelete(this);
-	}
-
-	@Override
 	public String toString()
 	{
 		return "Gte{" + super.toString() + '}';

@@ -233,83 +233,83 @@ public class Neo4jAdapter extends DatabaseAdapter
 		return query(entityType, uuid, fieldsMapping);
 	}
 
-	@Override
-	public void executeDelete(Eq eq)
-	{
-		JcNode jcNode = new JcNode(eq.getEntityType());
-		JcQuery jcQuery = new JcQuery();
-		jcQuery.setClauses(new IClause[]{
-				MATCH.node(jcNode).label(eq.getEntityType()),
-				WHERE.valueOf(jcNode.property(eq.getFieldName())).EQUALS(eq.getValue()),
-				DO.DETACH_DELETE(jcNode)
-		});
-		queryDelete(eq, jcQuery, jcNode);
-	}
-
-	@Override
-	public void executeDelete(Ne ne)
-	{
-		JcNode jcNode = new JcNode(ne.getEntityType());
-		JcQuery jcQuery = new JcQuery();
-		jcQuery.setClauses(new IClause[]{
-				MATCH.node(jcNode).label(ne.getEntityType()),
-				WHERE.valueOf(jcNode.property(ne.getFieldName())).NOT_EQUALS(ne.getValue()),
-				DO.DETACH_DELETE(jcNode)
-		});
-		queryDelete(ne, jcQuery, jcNode);
-	}
-
-	@Override
-	public void executeDelete(Gt gt)
-	{
-		JcNode jcNode = new JcNode(gt.getEntityType());
-		JcQuery jcQuery = new JcQuery();
-		jcQuery.setClauses(new IClause[]{
-				MATCH.node(jcNode).label(gt.getEntityType()),
-				WHERE.valueOf(jcNode.property(gt.getFieldName())).GT(gt.getValue()),
-				DO.DETACH_DELETE(jcNode)
-		});
-		queryDelete(gt, jcQuery, jcNode);
-	}
-
-	@Override
-	public void executeDelete(Lt lt)
-	{
-		JcNode jcNode = new JcNode(lt.getEntityType());
-		JcQuery jcQuery = new JcQuery();
-		jcQuery.setClauses(new IClause[]{
-				MATCH.node(jcNode).label(lt.getEntityType()),
-				WHERE.valueOf(jcNode.property(lt.getFieldName())).LT(lt.getValue()),
-				DO.DETACH_DELETE(jcNode)
-		});
-		queryDelete(lt, jcQuery, jcNode);
-	}
-
-	@Override
-	public void executeDelete(Gte gte)
-	{
-		JcNode jcNode = new JcNode(gte.getEntityType());
-		JcQuery jcQuery = new JcQuery();
-		jcQuery.setClauses(new IClause[]{
-				MATCH.node(jcNode).label(gte.getEntityType()),
-				WHERE.valueOf(jcNode.property(gte.getFieldName())).GTE(gte.getValue()),
-				DO.DETACH_DELETE(jcNode)
-		});
-		queryDelete(gte, jcQuery, jcNode);
-	}
-
-	@Override
-	public void executeDelete(Lte lte)
-	{
-		JcNode jcNode = new JcNode(lte.getEntityType());
-		JcQuery jcQuery = new JcQuery();
-		jcQuery.setClauses(new IClause[]{
-				MATCH.node(jcNode).label(lte.getEntityType()),
-				WHERE.valueOf(jcNode.property(lte.getFieldName())).LTE(lte.getValue()),
-				DO.DETACH_DELETE(jcNode)
-		});
-		queryDelete(lte, jcQuery, jcNode);
-	}
+//	@Override
+//	public void executeDelete(Eq eq)
+//	{
+//		JcNode jcNode = new JcNode(eq.getEntityType());
+//		JcQuery jcQuery = new JcQuery();
+//		jcQuery.setClauses(new IClause[]{
+//				MATCH.node(jcNode).label(eq.getEntityType()),
+//				WHERE.valueOf(jcNode.property(eq.getFieldName())).EQUALS(eq.getValue()),
+//				DO.DETACH_DELETE(jcNode)
+//		});
+//		queryDelete(eq, jcQuery, jcNode);
+//	}
+//
+//	@Override
+//	public void executeDelete(Ne ne)
+//	{
+//		JcNode jcNode = new JcNode(ne.getEntityType());
+//		JcQuery jcQuery = new JcQuery();
+//		jcQuery.setClauses(new IClause[]{
+//				MATCH.node(jcNode).label(ne.getEntityType()),
+//				WHERE.valueOf(jcNode.property(ne.getFieldName())).NOT_EQUALS(ne.getValue()),
+//				DO.DETACH_DELETE(jcNode)
+//		});
+//		queryDelete(ne, jcQuery, jcNode);
+//	}
+//
+//	@Override
+//	public void executeDelete(Gt gt)
+//	{
+//		JcNode jcNode = new JcNode(gt.getEntityType());
+//		JcQuery jcQuery = new JcQuery();
+//		jcQuery.setClauses(new IClause[]{
+//				MATCH.node(jcNode).label(gt.getEntityType()),
+//				WHERE.valueOf(jcNode.property(gt.getFieldName())).GT(gt.getValue()),
+//				DO.DETACH_DELETE(jcNode)
+//		});
+//		queryDelete(gt, jcQuery, jcNode);
+//	}
+//
+//	@Override
+//	public void executeDelete(Lt lt)
+//	{
+//		JcNode jcNode = new JcNode(lt.getEntityType());
+//		JcQuery jcQuery = new JcQuery();
+//		jcQuery.setClauses(new IClause[]{
+//				MATCH.node(jcNode).label(lt.getEntityType()),
+//				WHERE.valueOf(jcNode.property(lt.getFieldName())).LT(lt.getValue()),
+//				DO.DETACH_DELETE(jcNode)
+//		});
+//		queryDelete(lt, jcQuery, jcNode);
+//	}
+//
+//	@Override
+//	public void executeDelete(Gte gte)
+//	{
+//		JcNode jcNode = new JcNode(gte.getEntityType());
+//		JcQuery jcQuery = new JcQuery();
+//		jcQuery.setClauses(new IClause[]{
+//				MATCH.node(jcNode).label(gte.getEntityType()),
+//				WHERE.valueOf(jcNode.property(gte.getFieldName())).GTE(gte.getValue()),
+//				DO.DETACH_DELETE(jcNode)
+//		});
+//		queryDelete(gte, jcQuery, jcNode);
+//	}
+//
+//	@Override
+//	public void executeDelete(Lte lte)
+//	{
+//		JcNode jcNode = new JcNode(lte.getEntityType());
+//		JcQuery jcQuery = new JcQuery();
+//		jcQuery.setClauses(new IClause[]{
+//				MATCH.node(jcNode).label(lte.getEntityType()),
+//				WHERE.valueOf(jcNode.property(lte.getFieldName())).LTE(lte.getValue()),
+//				DO.DETACH_DELETE(jcNode)
+//		});
+//		queryDelete(lte, jcQuery, jcNode);
+//	}
 
 //	@Override
 //	public void executeDelete(String entityType, UUID uuid, FieldsMapping fieldsMapping)
@@ -340,6 +340,12 @@ public class Neo4jAdapter extends DatabaseAdapter
 		{
 			idbAccess.close();
 		}
+	}
+
+	@Override
+	public void executeUpdate(FieldsMapping fieldsMapping, Map<String, Map<Collection<UUID>, Map<String, Object>>> updates)
+	{
+
 	}
 
 	public IDBAccess getDBAccess(FieldsMapping fieldsMapping){

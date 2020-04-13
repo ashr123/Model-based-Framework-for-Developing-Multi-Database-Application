@@ -24,9 +24,6 @@ public class Ne extends SimpleFilter
 	}
 
 	@Override
-	public void executeDelete(DatabaseAdapter databaseAdapter) { databaseAdapter.executeDelete(this); }
-
-	@Override
 	public String toString()
 	{
 		return "Ne{" + super.toString() + '}';

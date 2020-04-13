@@ -157,41 +157,41 @@ public class MongoDBAdapter extends DatabaseAdapter
 //		deleteEntities(fieldsMapping, entityType, eq("uuid", uuid));
 //	}
 
-	@Override
-	public void executeDelete(Eq eq)
-	{
-		queryDelete(eq, eq(eq.getFieldName(), eq.getValue()));
-	}
-
-	@Override
-	public void executeDelete(Ne ne)
-	{
-		queryDelete(ne, ne(ne.getFieldName(), ne.getValue()));
-	}
-
-	@Override
-	public void executeDelete(Gt gt)
-	{
-		queryDelete(gt, gt(gt.getFieldName(), gt.getValue()));
-	}
-
-	@Override
-	public void executeDelete(Lt lt)
-	{
-		queryDelete(lt, lt(lt.getFieldName(), lt.getValue()));
-	}
-
-	@Override
-	public void executeDelete(Gte gte)
-	{
-		queryDelete(gte, gte(gte.getFieldName(), gte.getValue()));
-	}
-
-	@Override
-	public void executeDelete(Lte lte)
-	{
-		queryDelete(lte, lte(lte.getFieldName(), lte.getValue()));
-	}
+//	@Override
+//	public void executeDelete(Eq eq)
+//	{
+//		queryDelete(eq, eq(eq.getFieldName(), eq.getValue()));
+//	}
+//
+//	@Override
+//	public void executeDelete(Ne ne)
+//	{
+//		queryDelete(ne, ne(ne.getFieldName(), ne.getValue()));
+//	}
+//
+//	@Override
+//	public void executeDelete(Gt gt)
+//	{
+//		queryDelete(gt, gt(gt.getFieldName(), gt.getValue()));
+//	}
+//
+//	@Override
+//	public void executeDelete(Lt lt)
+//	{
+//		queryDelete(lt, lt(lt.getFieldName(), lt.getValue()));
+//	}
+//
+//	@Override
+//	public void executeDelete(Gte gte)
+//	{
+//		queryDelete(gte, gte(gte.getFieldName(), gte.getValue()));
+//	}
+//
+//	@Override
+//	public void executeDelete(Lte lte)
+//	{
+//		queryDelete(lte, lte(lte.getFieldName(), lte.getValue()));
+//	}
 
 //	@Override
 //	public void executeDelete(String entityType, UUID uuid, FieldsMapping fieldsMapping)
@@ -229,44 +229,9 @@ public class MongoDBAdapter extends DatabaseAdapter
 	}
 
 	@Override
-	public void executeUpdate(Eq eq)
+	public void executeUpdate(FieldsMapping fieldsMapping,
+	                          Map<String/*type*/, Map<Collection<UUID>, Map<String/*field*/, Object/*value*/>>> updates)
 	{
-		queryUpdate(eq, eq(eq.getFieldName(), eq.getValue()), Updates.set());
-	}
-
-	@Override
-	public void executeUpdate(Ne ne)
-	{
-
-	}
-
-	@Override
-	public void executeUpdate(Gt gt)
-	{
-
-	}
-
-	@Override
-	public void executeUpdate(Lt lt)
-	{
-
-	}
-
-	@Override
-	public void executeUpdate(Gte gte)
-	{
-
-	}
-
-	@Override
-	public void executeUpdate(Lte lte)
-	{
-
-	}
-
-	@Override
-	public void executeUpdate(FieldsMapping fieldsMapping, Map<String, Collection<UUID>> typesAndUuids)
-	{
-
+		
 	}
 }

@@ -12,6 +12,4 @@ import java.util.stream.Stream;
 public interface Filter
 {
 	Stream<Entity> executeRead(DatabaseAdapter databaseAdapter);
-
-	void executeDelete(DatabaseAdapter databaseAdapter);
 }
