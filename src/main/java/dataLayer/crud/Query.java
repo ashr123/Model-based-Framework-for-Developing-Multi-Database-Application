@@ -56,7 +56,6 @@ public class Query
 
 	public static void update(Stream<Entity> entitiesToUpdate, Stream<Entity> entitiesUpdates)
 	{
-		Map<FieldsMapping, Map<String/*type*/, Pair<Collection<UUID>, Map<String/*field*/, Object/*value*/>>>> result = new HashMap<>();
 		Map<FieldsMapping, Map<String, Collection<UUID>>> temp = new HashMap<>();
 		entitiesToUpdate.forEach(entityToUpdate ->
 				Conf.getConfiguration().getFieldsMappingForEntity(entityToUpdate)
@@ -64,22 +63,24 @@ public class Query
 								temp.computeIfAbsent(fieldsMapping, fieldsMapping1 -> new HashMap<>())
 										.computeIfAbsent(entityToUpdate.getEntityType(), entityType -> new HashSet<>())
 										.add(entityToUpdate.getUuid())));
-		temp.forEach((fieldsMapping, value) ->
-		{
-			Map<String/*type*/, Pair<Collection<UUID>, Map<String/*field*/, Object/*value*/>>> entityMap = new HashMap<>();
-			value.forEach((entityType, value1) ->
-			{
-				Set<String> fields = Conf.getConfiguration().getFieldsFromTypeAndMapping(entityType, fieldsMapping);
-				entityMap.put(entityType, new Pair<>(value1,
-						entitiesUpdates.filter(entity -> entity.getEntityType().equals(entityType))
-								.map(entity -> fields.stream()
-										.filter(field -> entity.getFieldsValues().containsKey(field))
-										.collect(Collectors.toMap(Function.identity(), entity.getFieldsValues()::get, (a, b) -> b)))
-								.findFirst().orElse(Map.of())));
-			});
-			result.put(fieldsMapping, entityMap);
-		});
-		result.forEach((fieldsMapping, update) -> fieldsMapping.getType().getDatabaseAdapter().executeUpdate(fieldsMapping, update));
+
+		temp.entrySet().stream()
+				.map(fieldsMappingAndValue ->
+						Map.entry(fieldsMappingAndValue.getKey(),
+								fieldsMappingAndValue.getValue().entrySet().stream()
+										.map(entityTypeAndUuids ->
+										{
+											Set<String> fields = Conf.getConfiguration().getFieldsFromTypeAndMapping(entityTypeAndUuids.getKey(), fieldsMappingAndValue.getKey());
+											return Map.entry(entityTypeAndUuids.getKey(), new Pair<>(entityTypeAndUuids.getValue(),
+													entitiesUpdates.filter(entity -> entity.getEntityType().equals(entityTypeAndUuids.getKey()))
+															.map(entity ->
+																	fields.stream()
+																			.filter(field -> entity.getFieldsValues().containsKey(field))
+																			.collect(Collectors.toMap(Function.identity(), entity.getFieldsValues()::get)))
+															.findFirst().orElse(Map.of())));
+										})
+										.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))))
+				.forEach(fieldsMappingAndUpdate -> fieldsMappingAndUpdate.getKey().getType().getDatabaseAdapter().executeUpdate(fieldsMappingAndUpdate.getKey(), fieldsMappingAndUpdate.getValue()));
 	}
 
 	private static Set<Entity> makeEntitiesWhole(Stream<Entity> entities)

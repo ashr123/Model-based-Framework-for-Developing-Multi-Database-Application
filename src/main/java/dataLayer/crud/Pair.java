@@ -2,23 +2,23 @@ package dataLayer.crud;
 
 import java.util.Objects;
 
-public class Pair<T, R>
+public class Pair<F, S>
 {
-	private final T first;
-	private final R second;
+	private final F first;
+	private final S second;
 
-	public Pair(T first, R second)
+	public Pair(F first, S second)
 	{
 		this.first = first;
 		this.second = second;
 	}
 
-	public T getFirst()
+	public F getFirst()
 	{
 		return first;
 	}
 
-	public R getSecond()
+	public S getSecond()
 	{
 		return second;
 	}
