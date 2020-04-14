@@ -143,8 +143,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 		try
 		{
 			idbAccess.execute(jcQuery);
-		}
-		finally
+		} finally
 		{
 			idbAccess.close();
 		}
@@ -240,20 +239,18 @@ public class Neo4jAdapter extends DatabaseAdapter
 		IDBAccess idbAccess = getDBAccess(fieldsMapping);
 		try
 		{
-			typesAndUuids.forEach((entityType, uuids) ->
-			{
-				JcNode jcNode = new JcNode(entityType);
-				JcQuery jcQuery = new JcQuery();
-				jcQuery.setClauses(new IClause[]{
-						MATCH.node(jcNode).label(entityType),
-						WHERE.valueOf(jcNode.property("uuid")).IN_list(uuids),
-						DO.DETACH_DELETE(jcNode)
-				});
-
-				idbAccess.execute(jcQuery);
+			JcNode jcNode = new JcNode("n");
+			JcQuery jcQuery = new JcQuery();
+			jcQuery.setClauses(new IClause[]{
+					MATCH.node(jcNode),
+					WHERE.valueOf(jcNode.property("uuid")).IN_list(typesAndUuids.values().stream()
+							.flatMap(Collection::stream)
+							.toArray()),
+					DO.DETACH_DELETE(jcNode)
 			});
-		}
-		finally
+
+			idbAccess.execute(jcQuery);
+		} finally
 		{
 			idbAccess.close();
 		}
@@ -262,29 +259,29 @@ public class Neo4jAdapter extends DatabaseAdapter
 	@Override
 	public void executeUpdate(FieldsMapping fieldsMapping, Map<String, Pair<Collection<UUID>, Map<String, Object>>> updates)
 	{
-//		IDBAccess idbAccess = getDBAccess(fieldsMapping);
-//		try
-//		{
-//			typesAndUuids.forEach((entityType, uuids) ->
-//			{
-//				JcNode jcNode = new JcNode(entityType);
-//				JcQuery jcQuery = new JcQuery();
-//				jcQuery.setClauses(new IClause[]{
-//						MATCH.node(jcNode).label(entityType),
-//						WHERE.valueOf(jcNode.property("uuid")).IN_list(uuids),
-//						DO.DETACH_DELETE(jcNode)
-//				});
-//
-//				idbAccess.execute(jcQuery);
-//			});
-//		}
-//		finally
-//		{
-//			idbAccess.close();
-//		}
+		IDBAccess idbAccess = getDBAccess(fieldsMapping);
+		try
+		{
+			updates.forEach((entityType, uuidsAndUpdates) ->
+			{
+				JcNode jcNode = new JcNode(entityType);
+				JcQuery jcQuery = new JcQuery();
+				List<IClause> clauses = new ArrayList<IClause>();
+				clauses.add(MATCH.node(jcNode).label(entityType));
+				clauses.add(WHERE.valueOf(jcNode.property("uuid")).IN_list(uuidsAndUpdates.getFirst()));
+				uuidsAndUpdates.getSecond().forEach((field, value) ->
+						clauses.add(DO.SET(jcNode.property(field)).to(value)));
+				jcQuery.setClauses(clauses.toArray(IClause[]::new));
+				idbAccess.execute(jcQuery);
+			});
+		} finally
+		{
+			idbAccess.close();
+		}
 	}
 
-	private IDBAccess getDBAccess(FieldsMapping fieldsMapping){
+	private IDBAccess getDBAccess(FieldsMapping fieldsMapping)
+	{
 		Properties props = new Properties();
 		props.setProperty(DBProperties.SERVER_ROOT_URI, fieldsMapping.getConnStr());
 		return DBAccessFactory.createDBAccess(DBType.REMOTE, props, AuthTokens.basic(fieldsMapping.getUsername(), fieldsMapping.getPassword()));

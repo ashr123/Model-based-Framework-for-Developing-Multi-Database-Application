@@ -96,7 +96,7 @@ public class Conf
 
 	public Set<String> getFieldsFromTypeAndMapping(String entityType, FieldsMapping fieldsMapping)
 	{
-		if (fieldsMappingsReverse.isEmpty())
+		if (fieldsMappingsReverse == null)
 			fieldsMappingsReverse = fieldsMappings.entrySet().stream()
 					.collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
 		String nickname = fieldsMappingsReverse.get(fieldsMapping);

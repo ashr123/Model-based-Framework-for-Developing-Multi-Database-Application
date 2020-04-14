@@ -1,9 +1,13 @@
 package dataLayer.crud.dbAdapters;
 
+import com.mongodb.ConnectionString;
+import com.mongodb.MongoClientSettings;
+import com.mongodb.ServerAddress;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.internal.MongoClientImpl;
 import com.mongodb.client.model.Updates;
 import dataLayer.configReader.Conf;
 import dataLayer.configReader.FieldsMapping;
@@ -12,7 +16,11 @@ import dataLayer.crud.Pair;
 import dataLayer.crud.filters.SimpleFilter;
 import dataLayer.crud.filters.*;
 import org.bson.Document;
+import org.bson.UuidRepresentation;
+import org.bson.codecs.UuidCodec;
+import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.conversions.Bson;
+import org.jsonschema2pojo.rules.MinItemsMaxItemsRule;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -29,6 +37,14 @@ public class MongoDBAdapter extends DatabaseAdapter
 {
 	private final static String PREFIX = "mongodb://";
 
+	private static MongoClient createMongoClient(String connectionString)
+	{
+		return MongoClients.create(MongoClientSettings.builder()
+				.uuidRepresentation(UuidRepresentation.STANDARD)
+				.applyConnectionString(new ConnectionString(connectionString))
+				.build());
+	}
+
 	private Set<Map<String, Object>> getStringObjectMap(FindIterable<Document> myDoc)
 	{
 		final Set<Map<String, Object>> output = new HashSet<>();
@@ -40,7 +56,7 @@ public class MongoDBAdapter extends DatabaseAdapter
 
 	private Stream<Entity> makeEntities(FieldsMapping fieldsMapping, String entityType, Bson filter)
 	{
-		try (MongoClient mongoClient = MongoClients.create(PREFIX + fieldsMapping.getConnStr()))
+		try (MongoClient mongoClient = createMongoClient(PREFIX + fieldsMapping.getConnStr()))
 		{
 			return getStringObjectMap(mongoClient.getDatabase(fieldsMapping.getLocation())
 					.getCollection(entityType)
@@ -75,7 +91,7 @@ public class MongoDBAdapter extends DatabaseAdapter
 		groupFieldsByFieldsMapping(createSingle.getEntity())
 				.forEach((fieldsMapping, document) ->
 				{
-					try (MongoClient mongoClient = MongoClients.create(PREFIX + fieldsMapping.getConnStr()))
+					try (MongoClient mongoClient = createMongoClient(PREFIX + fieldsMapping.getConnStr()))
 					{
 						mongoClient.getDatabase(fieldsMapping.getLocation())
 								.getCollection(createSingle.getEntity().getEntityType())
@@ -141,7 +157,7 @@ public class MongoDBAdapter extends DatabaseAdapter
 	@Override
 	public void executeDelete(FieldsMapping fieldsMapping, Map<String, Collection<UUID>> typesAndUuids)
 	{
-		try (MongoClient mongoClient = MongoClients.create(PREFIX + fieldsMapping.getConnStr()))
+		try (MongoClient mongoClient = createMongoClient(PREFIX + fieldsMapping.getConnStr()))
 		{
 			final MongoDatabase database = mongoClient.getDatabase(fieldsMapping.getLocation());
 			typesAndUuids.forEach((entityType, uuids) ->
@@ -156,7 +172,7 @@ public class MongoDBAdapter extends DatabaseAdapter
 	public void executeUpdate(FieldsMapping fieldsMapping,
 	                          Map<String/*type*/, Pair<Collection<UUID>, Map<String/*field*/, Object/*value*/>>> updates)
 	{
-		try (MongoClient mongoClient = MongoClients.create(PREFIX + fieldsMapping.getConnStr()))
+		try (MongoClient mongoClient = createMongoClient(PREFIX + fieldsMapping.getConnStr()))
 		{
 			final MongoDatabase database = mongoClient.getDatabase(fieldsMapping.getLocation());
 			updates.forEach((entityType, uuidsAndUpdates) ->

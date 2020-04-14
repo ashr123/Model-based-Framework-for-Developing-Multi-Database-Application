@@ -46,15 +46,15 @@ public class Query
 
 	public static void update(Filter filter, Set<Entity> entitiesUpdates)
 	{
-		update(simpleRead(filter), entitiesUpdates.stream());
+		update(simpleRead(filter), entitiesUpdates);
 	}
 
 	public static void update(Set<Entity> entitiesToUpdate, Set<Entity> entitiesUpdates)
 	{
-		update(entitiesToUpdate.stream(), entitiesUpdates.stream());
+		update(entitiesToUpdate.stream(), entitiesUpdates);
 	}
 
-	public static void update(Stream<Entity> entitiesToUpdate, Stream<Entity> entitiesUpdates)
+	public static void update(Stream<Entity> entitiesToUpdate, Set<Entity> entitiesUpdates)
 	{
 		Map<FieldsMapping, Map<String, Collection<UUID>>> temp = new HashMap<>();
 		entitiesToUpdate.forEach(entityToUpdate ->
@@ -73,7 +73,8 @@ public class Query
 											Set<String> fields = Conf.getConfiguration().getFieldsFromTypeAndMapping(entityTypeAndUuids.getKey(), fieldsMappingAndValue.getKey());
 											return Map.entry(entityTypeAndUuids.getKey(),
 													new Pair<>(entityTypeAndUuids.getValue(),
-															entitiesUpdates.filter(entity -> entity.getEntityType().equals(entityTypeAndUuids.getKey()))
+															entitiesUpdates.stream()
+																	.filter(entity -> entity.getEntityType().equals(entityTypeAndUuids.getKey()))
 																	.map(entity ->
 																			fields.stream()
 																					.filter(entity.getFieldsValues()::containsKey)

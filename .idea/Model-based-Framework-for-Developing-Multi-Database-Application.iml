@@ -119,9 +119,9 @@
     <orderEntry type="library" scope="TEST" name="Maven: org.opentest4j:opentest4j:1.2.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.junit.platform:junit-platform-commons:1.6.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.junit.jupiter:junit-jupiter-api:5.6.0" level="project" />
-    <orderEntry type="library" name="Maven: org.mongodb:mongodb-driver-sync:3.12.1" level="project" />
-    <orderEntry type="library" name="Maven: org.mongodb:bson:3.12.1" level="project" />
-    <orderEntry type="library" name="Maven: org.mongodb:mongodb-driver-core:3.12.1" level="project" />
+    <orderEntry type="library" name="Maven: org.mongodb:mongodb-driver-sync:4.0.2" level="project" />
+    <orderEntry type="library" name="Maven: org.mongodb:bson:4.0.2" level="project" />
+    <orderEntry type="library" name="Maven: org.mongodb:mongodb-driver-core:4.0.2" level="project" />
     <orderEntry type="library" name="Maven: org.jsonschema2pojo:jsonschema2pojo-core:1.0.2" level="project" />
     <orderEntry type="library" name="Maven: org.jsonschema2pojo:jsonschema2pojo-scalagen:1.0.2" level="project" />
     <orderEntry type="library" name="Maven: net.sourceforge.collections:collections-generic:4.01" level="project" />

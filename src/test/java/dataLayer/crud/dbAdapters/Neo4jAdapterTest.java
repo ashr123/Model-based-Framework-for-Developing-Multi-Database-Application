@@ -18,8 +18,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import static dataLayer.crud.Query.delete;
-import static dataLayer.crud.Query.read;
+import static dataLayer.crud.Query.*;
 import static dataLayer.crud.filters.And.and;
 import static dataLayer.crud.filters.CreateSingle.createSingle;
 import static dataLayer.crud.filters.Eq.eq;
@@ -67,8 +66,7 @@ class Neo4jAdapterTest
 		try
 		{
 			dbAccess.clearDatabase();
-		}
-		finally
+		} finally
 		{
 			dbAccess.close();
 		}
@@ -79,8 +77,7 @@ class Neo4jAdapterTest
 		try
 		{
 			dbAccess.clearDatabase();
-		}
-		finally
+		} finally
 		{
 			dbAccess.close();
 		}
@@ -89,6 +86,37 @@ class Neo4jAdapterTest
 	@Test
 	void testExecuteCreate()
 	{
+	}
+
+	@Test
+	void testExecuteUpdate()
+	{
+		final Entity royForUpdate = Entity.of("Person",
+				Map.of("name", "RoyForUpdate",
+						"age", 27L,
+						"phoneNumber", "0546815181",
+						"emailAddress", "ashr@post.bgu.ac.il"));
+
+		final Set<Entity> updates = Set.of(
+				Entity.of("Person",
+						Map.of("age", 18L,
+								"phoneNumber", "12345")));
+
+		createSingle(royForUpdate).executeAt(dataLayer.crud.dbAdapters.DBType.NEO4J.getDatabaseAdapter());
+
+		assertEquals(Set.of(royForUpdate),
+				read(eq("Person", "name", "RoyForUpdate")),
+				"Should return person named Roy.");
+
+		update(eq("Person", "name", "RoyForUpdate"), updates);
+
+		Entity updatedRoy = read(eq("Person", "name", "RoyForUpdate")).toArray(Entity[]::new)[0];
+
+		assertEquals(updatedRoy.getFieldsValues().get("age"), 18L, "Age should be updated to 18.");
+
+		assertEquals(updatedRoy.getFieldsValues().get("phoneNumber"), "12345", "Age should be updated to 12345.");
+
+		delete(eq("Person", "name", "RoyForUpdate"));
 	}
 
 	@Test

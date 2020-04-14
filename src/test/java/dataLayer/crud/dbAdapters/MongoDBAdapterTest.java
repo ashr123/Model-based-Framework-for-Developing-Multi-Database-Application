@@ -13,8 +13,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
-import static dataLayer.crud.Query.delete;
-import static dataLayer.crud.Query.read;
+import static dataLayer.crud.Query.*;
 import static dataLayer.crud.filters.And.and;
 import static dataLayer.crud.filters.CreateMany.createMany;
 import static dataLayer.crud.filters.CreateSingle.createSingle;
@@ -65,14 +64,39 @@ class MongoDBAdapterTest
 	}
 
 	@Test
-	void executeCreate()
+	void testExecuteCreate()
 	{
-		//mongoDBAdapter.revealQuery(CreateSingle.createSingle());
 	}
 
 	@Test
-	void testExecuteCreate()
+	void testExecuteUpdate()
 	{
+		final Entity royForUpdate = Entity.of("Person",
+				Map.of("name", "RoyForUpdate",
+						"age", 27L,
+						"phoneNumber", "0546815181",
+						"emailAddress", "ashr@post.bgu.ac.il"));
+
+		final Set<Entity> updates = Set.of(
+				Entity.of("Person",
+						Map.of("age", 18L,
+								"phoneNumber", "12345")));
+
+		createSingle(royForUpdate).executeAt(DBType.MONGODB.getDatabaseAdapter());
+
+		assertEquals(Set.of(royForUpdate),
+				read(eq("Person", "name", "RoyForUpdate")),
+				"Should return person named Roy.");
+
+		update(eq("Person", "name", "RoyForUpdate"), updates);
+
+		Entity updatedRoy = read(eq("Person", "name", "RoyForUpdate")).toArray(Entity[]::new)[0];
+
+		assertEquals(updatedRoy.getFieldsValues().get("age"), 18L, "Age should be updated to 18.");
+
+		assertEquals(updatedRoy.getFieldsValues().get("phoneNumber"), "12345", "Age should be updated to 12345.");
+
+		delete(eq("Person", "name", "RoyForUpdate"));
 	}
 
 	@Test
