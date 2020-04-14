@@ -7,7 +7,10 @@ import dataLayer.crud.Entity;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.*;
+import java.util.InputMismatchException;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -26,12 +29,12 @@ public class Conf
 	 */
 	@JsonProperty("fieldsMappings")
 	private final Map<String, FieldsMapping> fieldsMappings = null;
-
 	/**
 	 * Example: {"Person" -> {"name" -> "mongo1", "age" -> "mongo1", ...}, "Address" -> {"city" -> "Be'er Sheva", ...}, ...}
 	 */
 	@JsonProperty("entities")
 	private final Map<String, Map<String, String>> entities = null;
+	private Map<FieldsMapping, String> fieldsMappingsReverse;
 
 	private Conf()
 	{
@@ -93,10 +96,10 @@ public class Conf
 
 	public Set<String> getFieldsFromTypeAndMapping(String entityType, FieldsMapping fieldsMapping)
 	{
-		//noinspection OptionalGetWithoutIsPresent
-		String nickname = fieldsMappings.entrySet().stream()
-				.filter(stringFieldsMappingEntry -> stringFieldsMappingEntry.getValue().equals(fieldsMapping))
-				.findFirst().get().getKey();
+		if (fieldsMappingsReverse.isEmpty())
+			fieldsMappingsReverse = fieldsMappings.entrySet().stream()
+					.collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
+		String nickname = fieldsMappingsReverse.get(fieldsMapping);
 		return entities.get(entityType).entrySet().stream()
 				.filter(mapping -> mapping.getValue().equals(nickname))
 				.map(Map.Entry::getKey)

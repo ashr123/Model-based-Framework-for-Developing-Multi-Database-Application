@@ -52,13 +52,12 @@ public class FieldsMapping
 	{
 		if (this == o)
 			return true;
-		if (o == null || getClass() != o.getClass())
+		if (!(o instanceof FieldsMapping))
 			return false;
 		FieldsMapping that = (FieldsMapping) o;
-		//noinspection ConstantConditions
 		return type == that.type &&
 				connStr.equals(that.connStr) &&
-				location.equals(that.location) &&
+				Objects.equals(location, that.location) &&
 				Objects.equals(username, that.username) &&
 				Objects.equals(password, that.password);
 	}

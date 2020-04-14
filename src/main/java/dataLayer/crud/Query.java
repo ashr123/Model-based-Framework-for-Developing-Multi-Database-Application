@@ -71,13 +71,15 @@ public class Query
 										.map(entityTypeAndUuids ->
 										{
 											Set<String> fields = Conf.getConfiguration().getFieldsFromTypeAndMapping(entityTypeAndUuids.getKey(), fieldsMappingAndValue.getKey());
-											return Map.entry(entityTypeAndUuids.getKey(), new Pair<>(entityTypeAndUuids.getValue(),
-													entitiesUpdates.filter(entity -> entity.getEntityType().equals(entityTypeAndUuids.getKey()))
-															.map(entity ->
-																	fields.stream()
-																			.filter(field -> entity.getFieldsValues().containsKey(field))
-																			.collect(Collectors.toMap(Function.identity(), entity.getFieldsValues()::get)))
-															.findFirst().orElse(Map.of())));
+											return Map.entry(entityTypeAndUuids.getKey(),
+													new Pair<>(entityTypeAndUuids.getValue(),
+															entitiesUpdates.filter(entity -> entity.getEntityType().equals(entityTypeAndUuids.getKey()))
+																	.map(entity ->
+																			fields.stream()
+																					.filter(entity.getFieldsValues()::containsKey)
+																					.collect(Collectors.toMap(Function.identity(), entity.getFieldsValues()::get)))
+																	.findFirst()
+																	.orElse(Map.of())));
 										})
 										.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))))
 				.forEach(fieldsMappingAndUpdate -> fieldsMappingAndUpdate.getKey().getType().getDatabaseAdapter().executeUpdate(fieldsMappingAndUpdate.getKey(), fieldsMappingAndUpdate.getValue()));
