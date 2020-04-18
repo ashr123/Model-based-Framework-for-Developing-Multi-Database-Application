@@ -2,6 +2,7 @@ package dataLayer.readers;
 
 import dataLayer.readers.configReader.Conf;
 import dataLayer.readers.schemaReader.Schema;
+import org.codehaus.jackson.schema.SchemaAware;
 
 import java.io.IOException;
 import java.net.URL;
@@ -17,7 +18,7 @@ public class Reader
 	{
 		Conf.loadConfiguration(confURL);
 		Schema.loadSchema(schemaURL);
-//		checkValidity();
+		checkValidity();
 	}
 
 	// TODO check also coresponding fields in every class/type
@@ -25,5 +26,10 @@ public class Reader
 	{
 		if (!Conf.getConfiguration().getEntitiesType().equals(Schema.getClassesName()))
 			throw new InputMismatchException("Classes in Conf and Schema don't equate!");
+
+		Schema.getClassesName().forEach(className -> {
+			if(!Conf.getConfiguration().getEntityProperties(className).equals(Schema.getClassesFields(className)))
+				throw new InputMismatchException(className + "'s fields in Conf and Schema don't equate!");
+		});
 	}
 }

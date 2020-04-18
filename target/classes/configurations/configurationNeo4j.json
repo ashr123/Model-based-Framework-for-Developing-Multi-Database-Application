@@ -14,12 +14,39 @@
 	}
   },
   "entities": {
+	"City": {
+	  "name": "neo1",
+	  "mayor": "neo1"
+	},
+	"Address": {
+	  "street": "neo1",
+	  "city": "neo2",
+	  "state": "neo1",
+	  "postal-code": "neo2",
+	  "country": "neo1"
+	},
 	"Person": {
 	  "name": "neo1",
 	  "age": "neo1",
 	  "phoneNumber": "neo2",
 	  "emailAddress": "neo2",
 	  "livesAt": "neo2"
+	},
+	"Professor": {
+	  "name": "neo1",
+	  "age": "neo1",
+	  "phoneNumber": "neo2",
+	  "emailAddress": "neo2",
+	  "livesAt": "neo2",
+	  "students": "neo1"
+	},
+	"Student": {
+	  "name": "neo1",
+	  "age": "neo1",
+	  "phoneNumber": "neo2",
+	  "emailAddress": "neo2",
+	  "livesAt": "neo2",
+	  "lecturers": "neo2"
 	}
   }
 }

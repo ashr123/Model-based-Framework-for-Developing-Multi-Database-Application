@@ -12,12 +12,40 @@
 	}
   },
   "entities": {
+	"City": {
+	  "name": "mongo1",
+	  "mayor": "mongo1"
+	},
+	"Address": {
+	  "street": "mongo1",
+	  "city": "mongo2",
+	  "state": "mongo1",
+	  "postal-code": "mongo2",
+	  "country": "mongo1"
+	},
 	"Person": {
 	  "name": "mongo1",
 	  "age": "mongo1",
 	  "phoneNumber": "mongo2",
 	  "emailAddress": "mongo2",
 	  "livesAt": "mongo2"
+	},
+	"Professor": {
+	  "name": "mongo1",
+	  "age": "mongo1",
+	  "phoneNumber": "mongo2",
+	  "emailAddress": "mongo2",
+	  "livesAt": "mongo2",
+	  "students": "mongo1"
+	},
+	"Student": {
+	  "name": "mongo1",
+	  "age": "mongo1",
+	  "phoneNumber": "mongo2",
+	  "emailAddress": "mongo2",
+	  "livesAt": "mongo2",
+	  "lecturers": "mongo2"
 	}
   }
 }
+

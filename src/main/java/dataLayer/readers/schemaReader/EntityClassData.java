@@ -2,6 +2,7 @@ package dataLayer.readers.schemaReader;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
@@ -30,6 +31,12 @@ public class EntityClassData
 			Schema.containsAllClasses(extend);
 		properties.values()
 				.forEach(EntityPropertyData::checkValidity);
+	}
+
+	public Collection<String> getClassProperties()
+	{
+		assert properties != null;
+		return properties.keySet();
 	}
 
 	@Override

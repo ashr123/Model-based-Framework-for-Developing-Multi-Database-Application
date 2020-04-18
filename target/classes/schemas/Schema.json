@@ -1,7 +1,36 @@
 {
   "classes": {
+	"City": {
+	  "properties": {
+		"name": {
+		  "type": "string"
+		},
+		"mayor": {
+		  "relation": "aggregation",
+		  "type": "object",
+		  "javaType": "Person"
+		}
+	  }
+	},
 	"Address": {
 	  "properties": {
+		"street": {
+		  "type": "string"
+		},
+		"city": {
+		  "relation": "aggregation",
+		  "type": "object",
+		  "javaType": "City"
+		},
+		"state": {
+		  "type": "string"
+		},
+		"postal-code": {
+		  "type": "string"
+		},
+		"country": {
+		  "type": "string"
+		}
 	  }
 	},
 	"Person": {
@@ -12,34 +41,49 @@
 		"age": {
 		  "type": "number"
 		},
-		"phone-number": {
+		"phoneNumber": {
 		  "type": "string"
 		},
-		"email-address": {
+		"emailAddress": {
 		  "type": "string"
 		},
-		"lives-at": {
-		  "relation": "composition",
-		  "type": "array",
-		  "items": {
-			"javaType": "Address",
-			"type": "object"
-		  }
-		},
-		"lives-at2": {
+		"livesAt": {
 		  "relation": "aggregation",
 		  "type": "object",
 		  "javaType": "Address"
-		},
-		"father": {
-		  "relation": "aggregation",
-		  "type": "object",
-		  "javaType": "Person"
 		}
 	  }
 	},
 	"Professor": {
+	  "extends": [
+		"Person"
+	  ],
 	  "properties": {
+		"name": {
+		  "type": "string"
+		},
+		"age": {
+		  "type": "number"
+		},
+		"phoneNumber": {
+		  "type": "string"
+		},
+		"emailAddress": {
+		  "type": "string"
+		},
+		"livesAt": {
+		  "relation": "aggregation",
+		  "type": "object",
+		  "javaType": "Address"
+		},
+		"students": {
+		  "relation": "aggregation",
+		  "type": "array",
+		  "items": {
+			"javaType": "Person",
+			"type": "object"
+		  }
+		}
 	  }
 	},
 	"Student": {
@@ -47,7 +91,34 @@
 		"Person"
 	  ],
 	  "properties": {
+		"name": {
+		  "type": "string"
+		},
+		"age": {
+		  "type": "number"
+		},
+		"phoneNumber": {
+		  "type": "string"
+		},
+		"emailAddress": {
+		  "type": "string"
+		},
+		"livesAt": {
+		  "relation": "aggregation",
+		  "type": "object",
+		  "javaType": "Address"
+		},
+		"lecturers": {
+		  "relation": "aggregation",
+		  "type": "array",
+		  "items": {
+			"javaType": "Person",
+			"type": "object"
+		  }
+		}
 	  }
 	}
   }
 }
+
+

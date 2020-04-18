@@ -5,10 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Collection;
-import java.util.InputMismatchException;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class Schema
 {
@@ -55,6 +52,10 @@ public class Schema
 	public static Collection<String> getClassesName()
 	{
 		return schema.classes.keySet();
+	}
+
+	public static Collection<String> getClassesFields(String className) {
+		return schema.classes.get(className).getClassProperties();
 	}
 
 	private void checkValidity()

@@ -103,7 +103,7 @@ public class Conf
 				.collect(Collectors.toSet());
 	}
 
-	public Conf checkValidity()
+	private Conf checkValidity()
 	{
 		final Set<String> keySet = fieldsMappings.keySet();
 		if (entities.values().stream()
@@ -131,5 +131,10 @@ public class Conf
 	public Collection<String> getEntitiesType()
 	{
 		return entities.keySet();
+	}
+
+	public Collection<String> getEntityProperties(String entityName)
+	{
+		return entities.get(entityName).keySet();
 	}
 }
