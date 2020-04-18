@@ -1,4 +1,4 @@
-package dataLayer.configReader;
+package dataLayer.readers.configReader;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -7,10 +7,7 @@ import dataLayer.crud.Entity;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.InputMismatchException;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -129,5 +126,10 @@ public class Conf
 				"fieldsMappings=" + fieldsMappings +
 				", entities=" + entities +
 				'}';
+	}
+
+	public Collection<String> getEntitiesType()
+	{
+		return entities.keySet();
 	}
 }

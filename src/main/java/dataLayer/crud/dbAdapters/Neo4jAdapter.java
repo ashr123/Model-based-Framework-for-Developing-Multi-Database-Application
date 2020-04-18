@@ -1,7 +1,7 @@
 package dataLayer.crud.dbAdapters;
 
-import dataLayer.configReader.Conf;
-import dataLayer.configReader.FieldsMapping;
+import dataLayer.readers.configReader.Conf;
+import dataLayer.readers.configReader.FieldsMapping;
 import dataLayer.crud.Entity;
 import dataLayer.crud.Pair;
 import dataLayer.crud.filters.*;
@@ -14,7 +14,10 @@ import iot.jcypher.graph.GrProperty;
 import iot.jcypher.graph.Graph;
 import iot.jcypher.query.JcQuery;
 import iot.jcypher.query.api.IClause;
-import iot.jcypher.query.factories.clause.*;
+import iot.jcypher.query.factories.clause.DO;
+import iot.jcypher.query.factories.clause.MATCH;
+import iot.jcypher.query.factories.clause.RETURN;
+import iot.jcypher.query.factories.clause.WHERE;
 import iot.jcypher.query.values.JcNode;
 import org.neo4j.driver.v1.AuthTokens;
 
@@ -266,11 +269,12 @@ public class Neo4jAdapter extends DatabaseAdapter
 			{
 				JcNode jcNode = new JcNode(entityType);
 				JcQuery jcQuery = new JcQuery();
-				List<IClause> clauses = new ArrayList<IClause>();
+				List<IClause> clauses = new ArrayList<>(2 + uuidsAndUpdates.getSecond().size());
 				clauses.add(MATCH.node(jcNode).label(entityType));
 				clauses.add(WHERE.valueOf(jcNode.property("uuid")).IN_list(uuidsAndUpdates.getFirst()));
-				uuidsAndUpdates.getSecond().forEach((field, value) ->
-						clauses.add(DO.SET(jcNode.property(field)).to(value)));
+				uuidsAndUpdates.getSecond()
+						.forEach((field, value) ->
+								clauses.add(DO.SET(jcNode.property(field)).to(value)));
 				jcQuery.setClauses(clauses.toArray(IClause[]::new));
 				idbAccess.execute(jcQuery);
 			});

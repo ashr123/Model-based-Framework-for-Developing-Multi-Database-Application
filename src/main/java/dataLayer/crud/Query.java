@@ -1,7 +1,7 @@
 package dataLayer.crud;
 
-import dataLayer.configReader.Conf;
-import dataLayer.configReader.FieldsMapping;
+import dataLayer.readers.configReader.Conf;
+import dataLayer.readers.configReader.FieldsMapping;
 import dataLayer.crud.dbAdapters.DBType;
 import dataLayer.crud.filters.Filter;
 import dataLayer.crud.filters.SimpleFilter;
@@ -11,6 +11,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+// TODO add filter validations
 public class Query
 {
 	public static Set<Entity> read(Filter filter)
@@ -100,10 +101,11 @@ public class Query
 			Conf.getConfiguration().getMissingFields(entityFragment)
 					.forEach(missingFieldsMapping ->
 							// For certain entity fragment add missing field mapping entity.
-							ref.fragments = Stream.concat(ref.fragments, missingFieldsMapping
-									.getType()
-									.getDatabaseAdapter()
-									.executeRead(entityFragment.getEntityType(), entityFragment.getUuid(), missingFieldsMapping)));
+							ref.fragments = Stream.concat(ref.fragments,
+									missingFieldsMapping
+											.getType()
+											.getDatabaseAdapter()
+											.executeRead(entityFragment.getEntityType(), entityFragment.getUuid(), missingFieldsMapping)));
 			//noinspection OptionalGetWithoutIsPresent
 			wholeEntities.add(ref.fragments
 					.reduce(Entity::merge).get());

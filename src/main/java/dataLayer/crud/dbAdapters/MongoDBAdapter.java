@@ -2,25 +2,19 @@ package dataLayer.crud.dbAdapters;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
-import com.mongodb.ServerAddress;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.internal.MongoClientImpl;
-import com.mongodb.client.model.Updates;
-import dataLayer.configReader.Conf;
-import dataLayer.configReader.FieldsMapping;
+import dataLayer.readers.configReader.Conf;
+import dataLayer.readers.configReader.FieldsMapping;
 import dataLayer.crud.Entity;
 import dataLayer.crud.Pair;
 import dataLayer.crud.filters.SimpleFilter;
 import dataLayer.crud.filters.*;
 import org.bson.Document;
 import org.bson.UuidRepresentation;
-import org.bson.codecs.UuidCodec;
-import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.conversions.Bson;
-import org.jsonschema2pojo.rules.MinItemsMaxItemsRule;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -28,6 +22,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.mongodb.client.model.Filters.*;
+import static com.mongodb.client.model.Updates.combine;
+import static com.mongodb.client.model.Updates.set;
 import static dataLayer.crud.filters.CreateSingle.createSingle;
 
 /**
@@ -86,6 +82,7 @@ public class MongoDBAdapter extends DatabaseAdapter
 		return locationDocumentMap;
 	}
 
+	@Override
 	public void executeCreate(CreateSingle createSingle)
 	{
 		groupFieldsByFieldsMapping(createSingle.getEntity())
@@ -100,16 +97,16 @@ public class MongoDBAdapter extends DatabaseAdapter
 				});
 	}
 
-	public Stream<Entity> queryRead(String entityType, UUID uuid, FieldsMapping fieldsMapping)
-	{
-		return makeEntities(fieldsMapping, entityType, eq("uuid", uuid));
-	}
-
 	@Override
 	public void executeCreate(CreateMany createMany)
 	{
 		Stream.of(createMany.getEntities())
 				.forEach(entity -> executeCreate(createSingle(entity)));
+	}
+
+	private Stream<Entity> queryRead(String entityType, UUID uuid, FieldsMapping fieldsMapping)
+	{
+		return makeEntities(fieldsMapping, entityType, eq("uuid", uuid));
 	}
 
 	@Override
@@ -180,8 +177,8 @@ public class MongoDBAdapter extends DatabaseAdapter
 							.updateMany(or(uuidsAndUpdates.getFirst().stream()
 											.map(uuid -> eq("uuid", uuid))
 											.collect(Collectors.toList())),
-									Updates.combine(uuidsAndUpdates.getSecond().entrySet().stream()
-											.map(fieldsAndValues -> Updates.set(fieldsAndValues.getKey(), fieldsAndValues.getValue()))
+									combine(uuidsAndUpdates.getSecond().entrySet().stream()
+											.map(fieldsAndValues -> set(fieldsAndValues.getKey(), fieldsAndValues.getValue()))
 											.collect(Collectors.toList()))));
 		}
 	}

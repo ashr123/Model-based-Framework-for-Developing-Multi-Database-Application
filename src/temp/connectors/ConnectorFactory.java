@@ -1,7 +1,7 @@
 package connectors;
 
-import dataLayer.configReader.Conf;
-import dataLayer.configReader.DBType;
+import dataLayer.readers.configReader.Conf;
+import dataLayer.readers.configReader.DBType;
 
 public class ConnectorFactory
 {

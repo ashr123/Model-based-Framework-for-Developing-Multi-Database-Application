@@ -1,0 +1,53 @@
+{
+  "classes": {
+	"Address": {
+	  "properties": {
+	  }
+	},
+	"Person": {
+	  "properties": {
+		"name": {
+		  "type": "string"
+		},
+		"age": {
+		  "type": "number"
+		},
+		"phone-number": {
+		  "type": "string"
+		},
+		"email-address": {
+		  "type": "string"
+		},
+		"lives-at": {
+		  "relation": "composition",
+		  "type": "array",
+		  "items": {
+			"javaType": "Address",
+			"type": "object"
+		  }
+		},
+		"lives-at2": {
+		  "relation": "aggregation",
+		  "type": "object",
+		  "javaType": "Address"
+		},
+		"father": {
+		  "relation": "aggregation",
+		  "type": "object",
+		  "javaType": "Person"
+		}
+	  }
+	},
+	"Professor": {
+	  "properties": {
+	  }
+	},
+	"Student": {
+	  "extends": [
+		"Person"
+	  ],
+	  "properties": {
+	  }
+	}
+  }
+}

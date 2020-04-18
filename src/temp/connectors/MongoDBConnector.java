@@ -1,7 +1,7 @@
 package connectors;
 
-import dataLayer.configReader.Conf;
-import dataLayer.configReader.DataStore;
+import dataLayer.readers.configReader.Conf;
+import dataLayer.readers.configReader.DataStore;
 
 import java.util.Map;
 

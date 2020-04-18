@@ -1,3 +1,4 @@
+import dataLayer.crud.Entity;
 import iot.jcypher.database.DBAccessFactory;
 import iot.jcypher.database.DBProperties;
 import iot.jcypher.database.DBType;
@@ -5,23 +6,19 @@ import iot.jcypher.database.IDBAccess;
 import iot.jcypher.database.internal.PlannerStrategy;
 import iot.jcypher.database.util.QParamsUtil;
 import iot.jcypher.graph.GrNode;
-import iot.jcypher.graph.GrRelation;
-import iot.jcypher.graph.Graph;
 import iot.jcypher.query.JcQuery;
 import iot.jcypher.query.JcQueryResult;
 import iot.jcypher.query.api.IClause;
 import iot.jcypher.query.factories.clause.MATCH;
 import iot.jcypher.query.factories.clause.RETURN;
-import iot.jcypher.query.result.JcError;
 import iot.jcypher.query.values.JcNode;
-import iot.jcypher.query.values.JcString;
 import iot.jcypher.query.writer.CypherWriter;
 import iot.jcypher.query.writer.QueryParam;
 import iot.jcypher.query.writer.WriterContext;
-import org.neo4j.driver.v1.AuthTokens;
 
 import java.util.List;
 import java.util.Properties;
+import java.util.function.BiPredicate;
 
 public class Temp
 {
@@ -64,6 +61,11 @@ public class Temp
 				RETURN.value(actor),
 				RETURN.value(movie)
 		});
+
+		BiPredicate<Entity, Entity> predicate =
+				(entity, entity2) -> entity.getEntityType().equals("Person") &&
+						entity2.getEntityType().equals("Address") &&
+						entity.getFieldsValues().get("livesAt").equals(entity2.getFieldsValues().get("uuid"));
 
 		printQuery(query);
 		JcQueryResult result = dbAccess.execute(query);

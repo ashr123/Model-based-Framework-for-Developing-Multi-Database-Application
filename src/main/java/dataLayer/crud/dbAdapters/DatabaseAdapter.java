@@ -1,17 +1,18 @@
 package dataLayer.crud.dbAdapters;
 
-import dataLayer.configReader.FieldsMapping;
+import dataLayer.readers.configReader.FieldsMapping;
 import dataLayer.crud.Entity;
 import dataLayer.crud.Pair;
 import dataLayer.crud.Query;
 import dataLayer.crud.filters.*;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static dataLayer.crud.Query.delete;
 
 public abstract class DatabaseAdapter
 {
@@ -32,8 +33,10 @@ public abstract class DatabaseAdapter
 	 */
 	private static Stream<Stream<Entity>> defragEntities(ComplexFilter complexFilter)
 	{
+//		return Stream.of(complexFilter.getComplexQuery())
+//				.map(filter -> groupEntities(Query.simpleRead(filter)));
 		return Stream.of(complexFilter.getComplexQuery())
-				.map(filter -> groupEntities(Query.simpleRead(filter)));
+				.map(Query::simpleRead);
 	}
 
 	private static boolean isEntityInSet(Set<Entity> entities, Entity entityFrag)

@@ -2,7 +2,7 @@ package dataLayer.crud.dbAdapters;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
-import dataLayer.configReader.Conf;
+import dataLayer.readers.configReader.Conf;
 import dataLayer.crud.Entity;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;

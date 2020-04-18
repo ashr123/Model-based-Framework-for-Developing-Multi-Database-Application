@@ -1,6 +1,6 @@
 package connectors;
 
-import dataLayer.configReader.Conf;
+import dataLayer.readers.configReader.Conf;
 
 public class CassandraConnector implements Connector
 {

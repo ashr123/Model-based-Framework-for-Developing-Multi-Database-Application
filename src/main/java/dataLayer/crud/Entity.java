@@ -1,6 +1,8 @@
 package dataLayer.crud;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
 public class Entity
 {
@@ -69,8 +71,8 @@ public class Entity
 		if (!(o instanceof Entity))
 			return false;
 		Entity entity = (Entity) o;
-		return entityType.equals(entity.entityType) &&
-				Objects.equals(uuid, entity.uuid) &&
+		return uuid.equals(entity.uuid) &&
+				entityType.equals(entity.entityType) &&
 				fieldsValues.equals(entity.fieldsValues);
 	}
 
