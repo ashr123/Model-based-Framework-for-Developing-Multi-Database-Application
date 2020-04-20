@@ -5,31 +5,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.InputMismatchException;
 import java.util.Objects;
 
+@SuppressWarnings("ConstantConditions")
 public class EntityPropertyData
 {
 	@JsonProperty("type")
-	private final PropertyType type;
+	private final PropertyType type = null;
 	@JsonProperty("javaType")
-	private final String javaType;
+	private final String javaType = null;
 	@JsonProperty("items")
-	private final EntityPropertyData items;
+	private final EntityPropertyData items = null;
 	@JsonProperty("relation")
-	private final RelationType relation;
+	private final RelationType relation = null;
 
-	public EntityPropertyData()
+	private EntityPropertyData()
 	{
-		type = null;
-		javaType = null;
-		items = null;
-		relation = null;
-	}
-
-	public EntityPropertyData(PropertyType type, String javaType, EntityPropertyData items, RelationType relation)
-	{
-		this.type = type;
-		this.javaType = javaType;
-		this.items = items;
-		this.relation = relation;
 	}
 
 	public PropertyType getType()

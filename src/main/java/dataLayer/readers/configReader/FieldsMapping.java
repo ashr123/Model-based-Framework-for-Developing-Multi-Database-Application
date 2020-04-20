@@ -22,6 +22,10 @@ public class FieldsMapping
 	@JsonProperty("password")
 	private final String password = null;
 
+	private FieldsMapping()
+	{
+	}
+
 	public DBType getType()
 	{
 		return type;

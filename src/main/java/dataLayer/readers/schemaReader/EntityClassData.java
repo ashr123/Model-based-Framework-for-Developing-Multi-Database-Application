@@ -6,23 +6,16 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
+@SuppressWarnings("ConstantConditions")
 public class EntityClassData
 {
 	@JsonProperty("properties")
-	private final Map<String/*property name*/, EntityPropertyData> properties;
+	private final Map<String/*property name*/, EntityPropertyData> properties = null;
 	@JsonProperty("extends")
-	private final Set<String> extend;
+	private final Set<String> extend = null;
 
-	public EntityClassData()
+	private EntityClassData()
 	{
-		properties = null;
-		extend = null;
-	}
-
-	public EntityClassData(Map<String, EntityPropertyData> properties, Set<String> extend)
-	{
-		this.properties = properties;
-		this.extend = extend;
 	}
 
 	void checkValidity()
@@ -35,7 +28,6 @@ public class EntityClassData
 
 	public Collection<String> getClassProperties()
 	{
-		assert properties != null;
 		return properties.keySet();
 	}
 

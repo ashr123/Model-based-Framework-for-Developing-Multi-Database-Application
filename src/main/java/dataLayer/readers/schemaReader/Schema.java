@@ -7,22 +7,17 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
+@SuppressWarnings("ConstantConditions")
 public class Schema
 {
 	private final static ObjectMapper objectMapper = new ObjectMapper();
 
 	private static Schema schema;
 	@JsonProperty("classes")
-	private final Map<String/*class name*/, EntityClassData> classes;
+	private final Map<String/*class name*/, EntityClassData> classes = null;
 
-	public Schema()
+	private Schema()
 	{
-		classes = null;
-	}
-
-	public Schema(Map<String, EntityClassData> classes)
-	{
-		this.classes = classes;
 	}
 
 	public static void loadSchema(URL url) throws IOException
