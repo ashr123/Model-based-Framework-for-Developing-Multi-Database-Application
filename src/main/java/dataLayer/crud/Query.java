@@ -14,6 +14,23 @@ import java.util.stream.Stream;
 // TODO add filter validations
 public class Query
 {
+	public static void create(Entity... entities)
+	{
+//		Arrays.stream(entities).forEach(entity -> {
+//			Map<FieldsMapping, Set<String>> temp = new HashMap<>();
+//			Conf.getConfiguration().getFieldsMappingForEntity(entity)
+//					.forEach(fieldsMapping -> {
+//						temp.computeIfAbsent(fieldsMapping, fieldsMapping1 -> Conf.getConfiguration().getFieldsFromTypeAndMapping(entity.getEntityType(), fieldsMapping1));
+//					});
+//		});
+		Arrays.stream(entities).forEach(entity -> {
+			DBType.MONGODB.getDatabaseAdapter().executeCreate(entity);
+			DBType.NEO4J.getDatabaseAdapter().executeCreate(entity);
+			//TODO: Comment needs to be removed when SQL adapter implemented !
+			//DBType.MYSQL.getDatabaseAdapter().executeCreate(entity);
+		});
+	}
+
 	public static Set<Entity> read(Filter filter)
 	{
 		return makeEntitiesWhole(simpleRead(filter));

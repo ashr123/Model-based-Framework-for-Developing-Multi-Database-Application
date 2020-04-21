@@ -1,8 +1,9 @@
 package dataLayer.crud.dbAdapters;
 
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
 import dataLayer.readers.configReader.Conf;
 import dataLayer.crud.Entity;
-import dataLayer.crud.filters.CreateMany;
 import iot.jcypher.database.DBAccessFactory;
 import iot.jcypher.database.DBProperties;
 import iot.jcypher.database.DBType;
@@ -20,7 +21,6 @@ import java.util.Set;
 
 import static dataLayer.crud.Query.*;
 import static dataLayer.crud.filters.And.and;
-import static dataLayer.crud.filters.CreateSingle.createSingle;
 import static dataLayer.crud.filters.Eq.eq;
 import static dataLayer.crud.filters.Gt.gt;
 import static dataLayer.crud.filters.Gte.gte;
@@ -54,15 +54,21 @@ class Neo4jAdapterTest
 	void setUp() throws IOException
 	{
 		Conf.loadConfiguration(Neo4jAdapter.class.getResource("/configurations/configurationNeo4j.json"));
-		CreateMany.createMany(roy, yossi, karin).executeAt(dataLayer.crud.dbAdapters.DBType.NEO4J.getDatabaseAdapter());
+		create(roy, yossi, karin);
 	}
 
 	@AfterAll
 	void tearDown()
 	{
+		try (MongoClient mongoClient = MongoClients.create())
+		{
+			mongoClient.getDatabase("TestDB").drop();
+			mongoClient.getDatabase("myDB").drop();
+		}
+
 		Properties props = new Properties();
 		props.setProperty(DBProperties.SERVER_ROOT_URI, "bolt://localhost:7687");
-		IDBAccess dbAccess = DBAccessFactory.createDBAccess(DBType.REMOTE, props, AuthTokens.basic("neo4j", "neo4j1"));
+		IDBAccess dbAccess = DBAccessFactory.createDBAccess(iot.jcypher.database.DBType.REMOTE, props, AuthTokens.basic("neo4j", "neo4j1"));
 		try
 		{
 			dbAccess.clearDatabase();
@@ -102,7 +108,7 @@ class Neo4jAdapterTest
 						Map.of("age", 18L,
 								"phoneNumber", "12345")));
 
-		createSingle(royForUpdate).executeAt(dataLayer.crud.dbAdapters.DBType.NEO4J.getDatabaseAdapter());
+		create(royForUpdate);
 
 		assertEquals(Set.of(royForUpdate),
 				read(eq("Person", "name", "RoyForUpdate")),
@@ -128,7 +134,7 @@ class Neo4jAdapterTest
 						"phoneNumber", "0546815181",
 						"emailAddress", "ashr@post.bgu.ac.il"));
 
-		createSingle(royForDelete).executeAt(dataLayer.crud.dbAdapters.DBType.NEO4J.getDatabaseAdapter());
+		create(royForDelete);
 
 		assertEquals(Set.of(royForDelete),
 				read(eq("Person", "name", "RoyForDelete")),

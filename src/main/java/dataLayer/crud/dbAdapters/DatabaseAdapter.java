@@ -56,9 +56,7 @@ public abstract class DatabaseAdapter
 //		return filter.accept(this);
 //	}
 
-	public abstract void executeCreate(CreateSingle createSingle);
-
-	public abstract void executeCreate(CreateMany createMany);
+	public abstract void executeCreate(Entity entity);
 
 	public abstract Stream<Entity> executeRead(Eq eq);
 

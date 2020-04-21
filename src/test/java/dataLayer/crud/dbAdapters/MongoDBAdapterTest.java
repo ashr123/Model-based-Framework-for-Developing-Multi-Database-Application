@@ -4,19 +4,23 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import dataLayer.readers.configReader.Conf;
 import dataLayer.crud.Entity;
+import iot.jcypher.database.DBAccessFactory;
+import iot.jcypher.database.DBProperties;
+import iot.jcypher.database.DBType;
+import iot.jcypher.database.IDBAccess;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.neo4j.driver.v1.AuthTokens;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import static dataLayer.crud.Query.*;
 import static dataLayer.crud.filters.And.and;
-import static dataLayer.crud.filters.CreateMany.createMany;
-import static dataLayer.crud.filters.CreateSingle.createSingle;
 import static dataLayer.crud.filters.Eq.eq;
 import static dataLayer.crud.filters.Gt.gt;
 import static dataLayer.crud.filters.Gte.gte;
@@ -50,7 +54,8 @@ class MongoDBAdapterTest
 	void setUp() throws IOException
 	{
 		Conf.loadConfiguration(MongoDBAdapterTest.class.getResource("/configurations/configurationMongoDB.json"));
-		createMany(roy, yossi, karin).executeAt(DBType.MONGODB.getDatabaseAdapter());
+		create(roy, yossi, karin);
+		//createMany(roy, yossi, karin).executeAt(DBType.MONGODB.getDatabaseAdapter());
 	}
 
 	@AfterAll
@@ -60,6 +65,28 @@ class MongoDBAdapterTest
 		{
 			mongoClient.getDatabase("TestDB").drop();
 			mongoClient.getDatabase("myDB").drop();
+		}
+
+		Properties props = new Properties();
+		props.setProperty(DBProperties.SERVER_ROOT_URI, "bolt://localhost:7687");
+		IDBAccess dbAccess = DBAccessFactory.createDBAccess(iot.jcypher.database.DBType.REMOTE, props, AuthTokens.basic("neo4j", "neo4j1"));
+		try
+		{
+			dbAccess.clearDatabase();
+		} finally
+		{
+			dbAccess.close();
+		}
+
+		props = new Properties();
+		props.setProperty(DBProperties.SERVER_ROOT_URI, "bolt://localhost:11008");
+		dbAccess = DBAccessFactory.createDBAccess(DBType.REMOTE, props, AuthTokens.basic("neo4j", "neo4j1"));
+		try
+		{
+			dbAccess.clearDatabase();
+		} finally
+		{
+			dbAccess.close();
 		}
 	}
 
@@ -82,7 +109,8 @@ class MongoDBAdapterTest
 						Map.of("age", 18L,
 								"phoneNumber", "12345")));
 
-		createSingle(royForUpdate).executeAt(DBType.MONGODB.getDatabaseAdapter());
+		//createSingle(royForUpdate).executeAt(DBType.MONGODB.getDatabaseAdapter());
+		create(royForUpdate);
 
 		assertEquals(Set.of(royForUpdate),
 				read(eq("Person", "name", "RoyForUpdate")),
@@ -108,7 +136,8 @@ class MongoDBAdapterTest
 						"phoneNumber", "0546815181",
 						"emailAddress", "ashr@post.bgu.ac.il"));
 
-		createSingle(royForDelete).executeAt(DBType.MONGODB.getDatabaseAdapter());
+		//createSingle(royForDelete).executeAt(DBType.MONGODB.getDatabaseAdapter());
+		create(royForDelete);
 
 		assertEquals(Set.of(royForDelete),
 				read(eq("Person", "name", "RoyForDelete")),

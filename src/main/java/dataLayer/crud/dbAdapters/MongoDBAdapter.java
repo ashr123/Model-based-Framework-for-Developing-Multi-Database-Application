@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Updates.combine;
 import static com.mongodb.client.model.Updates.set;
-import static dataLayer.crud.filters.CreateSingle.createSingle;
+
 
 /**
  * @author Roy Ash
@@ -74,34 +74,31 @@ public class MongoDBAdapter extends DatabaseAdapter
 				{
 					final FieldsMapping fieldMappingFromEntityFields = Conf.getConfiguration().getFieldsMappingFromEntityField(entity.getEntityType(), field);
 					if (fieldMappingFromEntityFields != null)
-						locationDocumentMap.computeIfAbsent(fieldMappingFromEntityFields, fieldsMapping -> new Document().append("uuid", entity.getUuid()))
-								.append(field, value);
-					else
+					{
+						if (fieldMappingFromEntityFields.getType().equals(DBType.MONGODB))
+						{
+							locationDocumentMap.computeIfAbsent(fieldMappingFromEntityFields, fieldsMapping -> new Document().append("uuid", entity.getUuid()))
+									.append(field, value);
+						}
+					} else
 						throw new NullPointerException("Field " + field + "doesn't exist in entity " + entity.getEntityType());
 				});
 		return locationDocumentMap;
 	}
 
 	@Override
-	public void executeCreate(CreateSingle createSingle)
+	public void executeCreate(Entity entity)
 	{
-		groupFieldsByFieldsMapping(createSingle.getEntity())
+		groupFieldsByFieldsMapping(entity)
 				.forEach((fieldsMapping, document) ->
 				{
 					try (MongoClient mongoClient = createMongoClient(PREFIX + fieldsMapping.getConnStr()))
 					{
 						mongoClient.getDatabase(fieldsMapping.getLocation())
-								.getCollection(createSingle.getEntity().getEntityType())
+								.getCollection(entity.getEntityType())
 								.insertOne(document);
 					}
 				});
-	}
-
-	@Override
-	public void executeCreate(CreateMany createMany)
-	{
-		Stream.of(createMany.getEntities())
-				.forEach(entity -> executeCreate(createSingle(entity)));
 	}
 
 	private Stream<Entity> queryRead(String entityType, UUID uuid, FieldsMapping fieldsMapping)
@@ -172,14 +169,17 @@ public class MongoDBAdapter extends DatabaseAdapter
 		try (MongoClient mongoClient = createMongoClient(PREFIX + fieldsMapping.getConnStr()))
 		{
 			final MongoDatabase database = mongoClient.getDatabase(fieldsMapping.getLocation());
-			updates.forEach((entityType, uuidsAndUpdates) ->
+			updates.forEach((entityType, uuidsAndUpdates) -> {
+				if(!uuidsAndUpdates.getSecond().isEmpty()){
 					database.getCollection(entityType)
 							.updateMany(or(uuidsAndUpdates.getFirst().stream()
 											.map(uuid -> eq("uuid", uuid))
 											.collect(Collectors.toList())),
 									combine(uuidsAndUpdates.getSecond().entrySet().stream()
 											.map(fieldsAndValues -> set(fieldsAndValues.getKey(), fieldsAndValues.getValue()))
-											.collect(Collectors.toList()))));
+											.collect(Collectors.toList())));
+				}
+			});
 		}
 	}
 }

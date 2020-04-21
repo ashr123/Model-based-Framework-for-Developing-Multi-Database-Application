@@ -9,6 +9,12 @@
 	  "type": "mongodb",
 	  "connStr": "localhost",
 	  "location": "TestDB"
+	},
+	"neo1": {
+	  "type": "neo4j",
+	  "connStr": "bolt://localhost:7687",
+	  "username": "neo4j",
+	  "password": "neo4j1"
 	}
   },
   "entities": {
@@ -25,8 +31,8 @@
 	},
 	"Person": {
 	  "name": "mongo1",
-	  "age": "mongo1",
-	  "phoneNumber": "mongo2",
+	  "age": "neo1",
+	  "phoneNumber": "neo1",
 	  "emailAddress": "mongo2",
 	  "livesAt": "mongo2"
 	},

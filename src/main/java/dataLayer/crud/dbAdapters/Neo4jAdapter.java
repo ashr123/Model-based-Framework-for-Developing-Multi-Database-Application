@@ -25,8 +25,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static dataLayer.crud.filters.CreateSingle.createSingle;
-
 /**
  * Concrete element
  */
@@ -40,17 +38,21 @@ public class Neo4jAdapter extends DatabaseAdapter
 				{
 					final FieldsMapping fieldMappingFromEntityFields = Conf.getConfiguration().getFieldsMappingFromEntityField(entity.getEntityType(), field);
 					if (fieldMappingFromEntityFields != null)
-						result.computeIfAbsent(fieldMappingFromEntityFields, fieldsMapping -> new HashMap<>()).put(field, value);
-					else
+					{
+						if (fieldMappingFromEntityFields.getType().equals(dataLayer.crud.dbAdapters.DBType.NEO4J))
+						{
+							result.computeIfAbsent(fieldMappingFromEntityFields, fieldsMapping -> new HashMap<>()).put(field, value);
+						}
+					} else
 						throw new NullPointerException("Field " + field + " doesn't exist in entity " + entity.getEntityType());
 				});
 		return result;
 	}
 
 	@Override
-	public void executeCreate(CreateSingle createSingle)
+	public void executeCreate(Entity entity)
 	{
-		groupFieldsByFieldsMapping(createSingle.getEntity())
+		groupFieldsByFieldsMapping(entity)
 				.forEach((fieldsMapping, fields) ->
 				{
 					final IDBAccess idbAccess = getDBAccess(fieldsMapping);
@@ -58,8 +60,8 @@ public class Neo4jAdapter extends DatabaseAdapter
 					{
 						Graph graph = Graph.create(idbAccess);
 						GrNode node = graph.createNode();
-						node.addLabel(createSingle.getEntity().getEntityType());
-						node.addProperty("uuid", createSingle.getEntity().getUuid());
+						node.addLabel(entity.getEntityType());
+						node.addProperty("uuid", entity.getUuid());
 						fields.forEach(node::addProperty);
 						graph.store();
 					} finally
@@ -67,13 +69,6 @@ public class Neo4jAdapter extends DatabaseAdapter
 						idbAccess.close();
 					}
 				});
-	}
-
-	@Override
-	public void executeCreate(CreateMany createMany)
-	{
-		Stream.of(createMany.getEntities())
-				.forEach(entity -> executeCreate(createSingle(entity)));
 	}
 
 	private Entity getEntityFromNode(GrNode grNode)
