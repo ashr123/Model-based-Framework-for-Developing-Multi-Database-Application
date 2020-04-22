@@ -1,10 +1,10 @@
 package dataLayer.crud;
 
-import dataLayer.readers.configReader.Conf;
-import dataLayer.readers.configReader.FieldsMapping;
 import dataLayer.crud.dbAdapters.DBType;
 import dataLayer.crud.filters.Filter;
 import dataLayer.crud.filters.SimpleFilter;
+import dataLayer.readers.configReader.Conf;
+import dataLayer.readers.configReader.FieldsMapping;
 
 import java.util.*;
 import java.util.function.Function;
@@ -23,12 +23,14 @@ public class Query
 //						temp.computeIfAbsent(fieldsMapping, fieldsMapping1 -> Conf.getConfiguration().getFieldsFromTypeAndMapping(entity.getEntityType(), fieldsMapping1));
 //					});
 //		});
-		Arrays.stream(entities).forEach(entity -> {
-			DBType.MONGODB.getDatabaseAdapter().executeCreate(entity);
-			DBType.NEO4J.getDatabaseAdapter().executeCreate(entity);
-			//TODO: Comment needs to be removed when SQL adapter implemented !
-			//DBType.MYSQL.getDatabaseAdapter().executeCreate(entity);
-		});
+		Arrays.stream(entities)
+				.forEach(entity ->
+				{
+					DBType.MONGODB.getDatabaseAdapter().executeCreate(entity);
+					DBType.NEO4J.getDatabaseAdapter().executeCreate(entity);
+					//TODO: Comment needs to be removed when SQL adapter implemented !
+					//DBType.MYSQL.getDatabaseAdapter().executeCreate(entity);
+				});
 	}
 
 	public static Set<Entity> read(Filter filter)

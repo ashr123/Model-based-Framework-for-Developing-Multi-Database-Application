@@ -6,12 +6,12 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
-import dataLayer.readers.configReader.Conf;
-import dataLayer.readers.configReader.FieldsMapping;
 import dataLayer.crud.Entity;
 import dataLayer.crud.Pair;
 import dataLayer.crud.filters.SimpleFilter;
 import dataLayer.crud.filters.*;
+import dataLayer.readers.configReader.Conf;
+import dataLayer.readers.configReader.FieldsMapping;
 import org.bson.Document;
 import org.bson.UuidRepresentation;
 import org.bson.conversions.Bson;
@@ -41,7 +41,7 @@ public class MongoDBAdapter extends DatabaseAdapter
 				.build());
 	}
 
-	private Set<Map<String, Object>> getStringObjectMap(FindIterable<Document> myDoc)
+	private static Set<Map<String, Object>> getStringObjectMap(FindIterable<Document> myDoc)
 	{
 		final Set<Map<String, Object>> output = new HashSet<>();
 		myDoc.forEach((Consumer<? super Document>) document -> output.add(document.entrySet().stream()
@@ -50,7 +50,7 @@ public class MongoDBAdapter extends DatabaseAdapter
 		return output;
 	}
 
-	private Stream<Entity> makeEntities(FieldsMapping fieldsMapping, String entityType, Bson filter)
+	private static Stream<Entity> makeEntities(FieldsMapping fieldsMapping, String entityType, Bson filter)
 	{
 		try (MongoClient mongoClient = createMongoClient(PREFIX + fieldsMapping.getConnStr()))
 		{
@@ -61,29 +61,28 @@ public class MongoDBAdapter extends DatabaseAdapter
 		}
 	}
 
-	private Stream<Entity> queryRead(SimpleFilter simpleFilter, Bson filter)
+	private static Stream<Entity> queryRead(SimpleFilter simpleFilter, Bson filter)
 	{
 		return makeEntities(Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityType(), simpleFilter.getFieldName()), simpleFilter.getEntityType(), filter);
 	}
 
-	private Map<FieldsMapping, Document> groupFieldsByFieldsMapping(Entity entity)
+	private static Map<FieldsMapping, Document> groupFieldsByFieldsMapping(Entity entity)
 	{
 		final Map<FieldsMapping, Document> locationDocumentMap = new HashMap<>();
 		entity.getFieldsValues()
 				.forEach((field, value) ->
 				{
 					final FieldsMapping fieldMappingFromEntityFields = Conf.getConfiguration().getFieldsMappingFromEntityField(entity.getEntityType(), field);
-					if (fieldMappingFromEntityFields != null)
-					{
-						if (fieldMappingFromEntityFields.getType().equals(DBType.MONGODB))
-						{
-							locationDocumentMap.computeIfAbsent(fieldMappingFromEntityFields, fieldsMapping -> new Document().append("uuid", entity.getUuid()))
-									.append(field, value);
-						}
-					} else
-						throw new NullPointerException("Field " + field + "doesn't exist in entity " + entity.getEntityType());
+					if (fieldMappingFromEntityFields.getType().equals(DBType.MONGODB))
+						locationDocumentMap.computeIfAbsent(fieldMappingFromEntityFields, fieldsMapping -> new Document().append("uuid", entity.getUuid()))
+								.append(field, value);
 				});
 		return locationDocumentMap;
+	}
+
+	private static Stream<Entity> queryRead(String entityType, UUID uuid, FieldsMapping fieldsMapping)
+	{
+		return makeEntities(fieldsMapping, entityType, eq("uuid", uuid));
 	}
 
 	@Override
@@ -99,11 +98,6 @@ public class MongoDBAdapter extends DatabaseAdapter
 								.insertOne(document);
 					}
 				});
-	}
-
-	private Stream<Entity> queryRead(String entityType, UUID uuid, FieldsMapping fieldsMapping)
-	{
-		return makeEntities(fieldsMapping, entityType, eq("uuid", uuid));
 	}
 
 	@Override
@@ -169,8 +163,9 @@ public class MongoDBAdapter extends DatabaseAdapter
 		try (MongoClient mongoClient = createMongoClient(PREFIX + fieldsMapping.getConnStr()))
 		{
 			final MongoDatabase database = mongoClient.getDatabase(fieldsMapping.getLocation());
-			updates.forEach((entityType, uuidsAndUpdates) -> {
-				if(!uuidsAndUpdates.getSecond().isEmpty()){
+			updates.forEach((entityType, uuidsAndUpdates) ->
+			{
+				if (!uuidsAndUpdates.getSecond().isEmpty())
 					database.getCollection(entityType)
 							.updateMany(or(uuidsAndUpdates.getFirst().stream()
 											.map(uuid -> eq("uuid", uuid))
@@ -178,7 +173,6 @@ public class MongoDBAdapter extends DatabaseAdapter
 									combine(uuidsAndUpdates.getSecond().entrySet().stream()
 											.map(fieldsAndValues -> set(fieldsAndValues.getKey(), fieldsAndValues.getValue()))
 											.collect(Collectors.toList())));
-				}
 			});
 		}
 	}

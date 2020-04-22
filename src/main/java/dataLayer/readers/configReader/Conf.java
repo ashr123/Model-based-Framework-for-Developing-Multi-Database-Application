@@ -88,7 +88,10 @@ public class Conf
 
 	public FieldsMapping getFieldsMappingFromEntityField(String entityType, String field)
 	{
-		return fieldsMappings.get(entities.get(entityType).get(field));
+		FieldsMapping output = fieldsMappings.get(entities.get(entityType).get(field));
+		if (output == null)
+			throw new NullPointerException("Field " + field + "doesn't exist in entity " + entityType);
+		return output;
 	}
 
 	public Set<String> getFieldsFromTypeAndMapping(String entityType, FieldsMapping fieldsMapping)

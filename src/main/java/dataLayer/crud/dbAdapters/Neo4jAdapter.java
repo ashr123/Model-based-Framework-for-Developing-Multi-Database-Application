@@ -1,10 +1,10 @@
 package dataLayer.crud.dbAdapters;
 
-import dataLayer.readers.configReader.Conf;
-import dataLayer.readers.configReader.FieldsMapping;
 import dataLayer.crud.Entity;
 import dataLayer.crud.Pair;
 import dataLayer.crud.filters.*;
+import dataLayer.readers.configReader.Conf;
+import dataLayer.readers.configReader.FieldsMapping;
 import iot.jcypher.database.DBAccessFactory;
 import iot.jcypher.database.DBProperties;
 import iot.jcypher.database.DBType;
@@ -30,23 +30,69 @@ import java.util.stream.Stream;
  */
 public class Neo4jAdapter extends DatabaseAdapter
 {
-	private Map<FieldsMapping, Map<String, Object>> groupFieldsByFieldsMapping(Entity entity)
+	private static IDBAccess getDBAccess(FieldsMapping fieldsMapping)
+	{
+		Properties props = new Properties();
+		props.setProperty(DBProperties.SERVER_ROOT_URI, fieldsMapping.getConnStr());
+		return DBAccessFactory.createDBAccess(DBType.REMOTE, props, AuthTokens.basic(fieldsMapping.getUsername(), fieldsMapping.getPassword()));
+	}
+
+	private static Map<FieldsMapping, Map<String, Object>> groupFieldsByFieldsMapping(Entity entity)
 	{
 		Map<FieldsMapping, Map<String, Object>> result = new HashMap<>();
 		entity.getFieldsValues()
 				.forEach((field, value) ->
 				{
 					final FieldsMapping fieldMappingFromEntityFields = Conf.getConfiguration().getFieldsMappingFromEntityField(entity.getEntityType(), field);
-					if (fieldMappingFromEntityFields != null)
-					{
-						if (fieldMappingFromEntityFields.getType().equals(dataLayer.crud.dbAdapters.DBType.NEO4J))
-						{
-							result.computeIfAbsent(fieldMappingFromEntityFields, fieldsMapping -> new HashMap<>()).put(field, value);
-						}
-					} else
-						throw new NullPointerException("Field " + field + " doesn't exist in entity " + entity.getEntityType());
+					if (fieldMappingFromEntityFields.getType().equals(dataLayer.crud.dbAdapters.DBType.NEO4J))
+						result.computeIfAbsent(fieldMappingFromEntityFields, fieldsMapping -> new HashMap<>()).put(field, value);
 				});
 		return result;
+	}
+
+	private static Entity getEntityFromNode(GrNode grNode)
+	{
+		return new Entity((String) grNode.getProperty("uuid").getValue(),
+				grNode.getLabels().get(0).getName(),
+				grNode.getProperties().stream()
+						.filter(grProperty -> !(grProperty.getName().equals("_c_version_") || grProperty.getName().equals("uuid")))
+						.collect(Collectors.toMap(GrProperty::getName, GrProperty::getValue, (a, b) -> b)));
+	}
+
+	private static Stream<Entity> query(SimpleFilter simpleFilter, JcQuery jcQuery, JcNode jcNode)
+	{
+		FieldsMapping fieldsMapping = Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityType(), simpleFilter.getFieldName());
+		IDBAccess idbAccess = getDBAccess(fieldsMapping);
+		try
+		{
+			return idbAccess.execute(jcQuery)
+					.resultOf(jcNode).stream()
+					.map(Neo4jAdapter::getEntityFromNode);
+		} finally
+		{
+			idbAccess.close();
+		}
+	}
+
+	private static Stream<Entity> query(String entityType, UUID uuid, FieldsMapping fieldsMapping)
+	{
+		IDBAccess idbAccess = getDBAccess(fieldsMapping);
+		JcNode jcNode = new JcNode(entityType);
+		JcQuery jcQuery = new JcQuery();
+		jcQuery.setClauses(new IClause[]{
+				MATCH.node(jcNode).label(entityType),
+				WHERE.valueOf(jcNode.property("uuid")).EQUALS(uuid),
+				RETURN.value(jcNode)
+		});
+		try
+		{
+			return idbAccess.execute(jcQuery)
+					.resultOf(jcNode).stream()
+					.map(Neo4jAdapter::getEntityFromNode);
+		} finally
+		{
+			idbAccess.close();
+		}
 	}
 
 	@Override
@@ -69,82 +115,6 @@ public class Neo4jAdapter extends DatabaseAdapter
 						idbAccess.close();
 					}
 				});
-	}
-
-	private Entity getEntityFromNode(GrNode grNode)
-	{
-		return new Entity((String) grNode.getProperty("uuid").getValue(),
-				grNode.getLabels().get(0).getName(),
-				grNode.getProperties().stream()
-						.filter(grProperty -> !(grProperty.getName().equals("_c_version_") || grProperty.getName().equals("uuid")))
-						.collect(Collectors.toMap(GrProperty::getName, GrProperty::getValue, (a, b) -> b)));
-	}
-
-	private Stream<Entity> query(SimpleFilter simpleFilter, JcQuery jcQuery, JcNode jcNode)
-	{
-		FieldsMapping fieldsMapping = Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityType(), simpleFilter.getFieldName());
-		IDBAccess idbAccess = getDBAccess(fieldsMapping);
-		try
-		{
-			return idbAccess.execute(jcQuery)
-					.resultOf(jcNode).stream()
-					.map(this::getEntityFromNode);
-		} finally
-		{
-			idbAccess.close();
-		}
-	}
-
-	private Stream<Entity> query(String entityType, UUID uuid, FieldsMapping fieldsMapping)
-	{
-		IDBAccess idbAccess = getDBAccess(fieldsMapping);
-		JcNode jcNode = new JcNode(entityType);
-		JcQuery jcQuery = new JcQuery();
-		jcQuery.setClauses(new IClause[]{
-				MATCH.node(jcNode).label(entityType),
-				WHERE.valueOf(jcNode.property("uuid")).EQUALS(uuid),
-				RETURN.value(jcNode)
-		});
-		try
-		{
-			return idbAccess.execute(jcQuery)
-					.resultOf(jcNode).stream()
-					.map(this::getEntityFromNode);
-		} finally
-		{
-			idbAccess.close();
-		}
-	}
-
-	private void queryDelete(SimpleFilter simpleFilter, JcQuery jcQuery, JcNode jcNode)
-	{
-		FieldsMapping fieldsMapping = Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityType(), simpleFilter.getFieldName());
-		IDBAccess idbAccess = getDBAccess(fieldsMapping);
-		try
-		{
-			idbAccess.execute(jcQuery);
-		} finally
-		{
-			idbAccess.close();
-		}
-	}
-
-	private void queryDelete(String entityType, UUID uuid, FieldsMapping fieldsMapping)
-	{
-		IDBAccess idbAccess = getDBAccess(fieldsMapping);
-		JcNode jcNode = new JcNode(entityType);
-		JcQuery jcQuery = new JcQuery();
-		jcQuery.setClauses(new IClause[]{
-				MATCH.node(jcNode).label(entityType).property("uuid").value(uuid), // TODO Maybe we need to map uuid to String?
-				DO.DETACH_DELETE(jcNode)
-		});
-		try
-		{
-			idbAccess.execute(jcQuery);
-		} finally
-		{
-			idbAccess.close();
-		}
 	}
 
 	@Override
@@ -277,13 +247,6 @@ public class Neo4jAdapter extends DatabaseAdapter
 		{
 			idbAccess.close();
 		}
-	}
-
-	private IDBAccess getDBAccess(FieldsMapping fieldsMapping)
-	{
-		Properties props = new Properties();
-		props.setProperty(DBProperties.SERVER_ROOT_URI, fieldsMapping.getConnStr());
-		return DBAccessFactory.createDBAccess(DBType.REMOTE, props, AuthTokens.basic(fieldsMapping.getUsername(), fieldsMapping.getPassword()));
 	}
 }
 
