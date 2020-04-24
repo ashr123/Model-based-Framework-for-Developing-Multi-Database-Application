@@ -14,17 +14,17 @@ public class Predicates
 	}
 
 	@SafeVarargs
-	public static <X> Predicate<X> and(Predicate<X>... conds)
+	public static <X> Predicate<X> and(Predicate<X>... predicates)
 	{
-		return Stream.of(conds)
+		return Stream.of(predicates)
 				.reduce(Predicate::and)
 				.orElse(x -> true);
 	}
 
 	@SafeVarargs
-	public static <X> Predicate<X> or(Predicate<X>... conds)
+	public static <X> Predicate<X> or(Predicate<X>... predicates)
 	{
-		return Stream.of(conds)
+		return Stream.of(predicates)
 				.reduce(Predicate::or)
 				.orElse(x -> false);
 	}
