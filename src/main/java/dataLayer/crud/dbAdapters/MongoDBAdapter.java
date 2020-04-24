@@ -25,13 +25,11 @@ import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Updates.combine;
 import static com.mongodb.client.model.Updates.set;
 
-
 /**
  * @author Roy Ash
  */
 public class MongoDBAdapter extends DatabaseAdapter
 {
-	private final static String PREFIX = "mongodb://";
 
 	private static MongoClient createMongoClient(String connectionString)
 	{
@@ -52,7 +50,7 @@ public class MongoDBAdapter extends DatabaseAdapter
 
 	private static Stream<Entity> makeEntities(FieldsMapping fieldsMapping, String entityType, Bson filter)
 	{
-		try (MongoClient mongoClient = createMongoClient(PREFIX + fieldsMapping.getConnStr()))
+		try (MongoClient mongoClient = createMongoClient(fieldsMapping.getConnStr()))
 		{
 			return getStringObjectMap(mongoClient.getDatabase(fieldsMapping.getLocation())
 					.getCollection(entityType)
@@ -91,7 +89,7 @@ public class MongoDBAdapter extends DatabaseAdapter
 		groupFieldsByFieldsMapping(entity)
 				.forEach((fieldsMapping, document) ->
 				{
-					try (MongoClient mongoClient = createMongoClient(PREFIX + fieldsMapping.getConnStr()))
+					try (MongoClient mongoClient = createMongoClient(fieldsMapping.getConnStr()))
 					{
 						mongoClient.getDatabase(fieldsMapping.getLocation())
 								.getCollection(entity.getEntityType())
@@ -145,7 +143,7 @@ public class MongoDBAdapter extends DatabaseAdapter
 	@Override
 	public void executeDelete(FieldsMapping fieldsMapping, Map<String, Collection<UUID>> typesAndUuids)
 	{
-		try (MongoClient mongoClient = createMongoClient(PREFIX + fieldsMapping.getConnStr()))
+		try (MongoClient mongoClient = createMongoClient(fieldsMapping.getConnStr()))
 		{
 			final MongoDatabase database = mongoClient.getDatabase(fieldsMapping.getLocation());
 			typesAndUuids.forEach((entityType, uuids) ->
@@ -160,7 +158,7 @@ public class MongoDBAdapter extends DatabaseAdapter
 	public void executeUpdate(FieldsMapping fieldsMapping,
 	                          Map<String/*type*/, Pair<Collection<UUID>, Map<String/*field*/, Object/*value*/>>> updates)
 	{
-		try (MongoClient mongoClient = createMongoClient(PREFIX + fieldsMapping.getConnStr()))
+		try (MongoClient mongoClient = createMongoClient(fieldsMapping.getConnStr()))
 		{
 			final MongoDatabase database = mongoClient.getDatabase(fieldsMapping.getLocation());
 			updates.forEach((entityType, uuidsAndUpdates) ->

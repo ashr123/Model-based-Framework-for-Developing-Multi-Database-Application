@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Concrete element
+ * @author Yossi Landa
  */
 public class Neo4jAdapter extends DatabaseAdapter
 {

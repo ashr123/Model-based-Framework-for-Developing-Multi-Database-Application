@@ -2,12 +2,12 @@
   "fieldsMappings": {
 	"mongo1": {
 	  "type": "mongodb",
-	  "connStr": "localhost",
+	  "connStr": "mongodb://localhost",
 	  "location": "myDB"
 	},
 	"mongo2": {
 	  "type": "mongodb",
-	  "connStr": "localhost",
+	  "connStr": "mongodb://localhost",
 	  "location": "TestDB"
 	},
 	"neo1": {
