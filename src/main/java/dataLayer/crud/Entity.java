@@ -49,6 +49,11 @@ public class Entity
 		return entityType;
 	}
 
+	public Object get(String field)
+	{
+		return fieldsValues.get(field);
+	}
+
 	public Map<String, Object> getFieldsValues()
 	{
 		return fieldsValues;

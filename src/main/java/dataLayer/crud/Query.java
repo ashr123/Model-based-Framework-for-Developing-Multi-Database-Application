@@ -98,7 +98,7 @@ public class Query
 																	.map(entity ->
 																			fields.stream()
 																					.filter(entity.getFieldsValues()::containsKey)
-																					.collect(Collectors.toMap(Function.identity(), entity.getFieldsValues()::get)))
+																					.collect(Collectors.toMap(Function.identity(), entity::get)))
 																	.findFirst()
 																	.orElse(Map.of())));
 										})

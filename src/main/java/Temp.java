@@ -65,7 +65,7 @@ public class Temp
 		BiPredicate<Entity, Entity> predicate =
 				(entity, entity2) -> entity.getEntityType().equals("Person") &&
 						entity2.getEntityType().equals("Address") &&
-						entity.getFieldsValues().get("livesAt").equals(entity2.getFieldsValues().get("uuid"));
+						entity.get("livesAt").equals(entity2.get("uuid"));
 
 		printQuery(query);
 		JcQueryResult result = dbAccess.execute(query);

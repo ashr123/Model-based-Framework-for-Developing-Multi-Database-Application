@@ -118,9 +118,9 @@ class Neo4jAdapterTest
 
 		Entity updatedRoy = read(eq("Person", "name", "RoyForUpdate")).toArray(Entity[]::new)[0];
 
-		assertEquals(updatedRoy.getFieldsValues().get("age"), 18L, "Age should be updated to 18.");
+		assertEquals(updatedRoy.get("age"), 18L, "Age should be updated to 18.");
 
-		assertEquals(updatedRoy.getFieldsValues().get("phoneNumber"), "12345", "Age should be updated to 12345.");
+		assertEquals(updatedRoy.get("phoneNumber"), "12345", "Age should be updated to 12345.");
 
 		delete(eq("Person", "name", "RoyForUpdate"));
 	}

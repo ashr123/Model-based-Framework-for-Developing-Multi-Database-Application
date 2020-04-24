@@ -36,12 +36,12 @@ public class Predicates
 
 	public static Predicate<Entity> gr(String field, int value)
 	{
-		return entity -> (int) entity.getFieldsValues().get(field) > value;
+		return entity -> (int) entity.get(field) > value;
 	}
 
 	public static Predicate<Entity> gr(String field, double value)
 	{
-		return entity -> (double) entity.getFieldsValues().get(field) > value;
+		return entity -> (double) entity.get(field) > value;
 	}
 
 	/**
@@ -52,17 +52,17 @@ public class Predicates
 	 */
 	public static Predicate<Entity> gr(String field1, String field2)
 	{
-		return entity -> (double) entity.getFieldsValues().get(field1) > (double) entity.getFieldsValues().get(field2);
+		return entity -> (double) entity.get(field1) > (double) entity.get(field2);
 	}
 
 	public static Predicate<Entity> eqExplicit(String field, Object value)
 	{
-		return entity -> entity.getFieldsValues().get(field).equals(value);
+		return entity -> entity.get(field).equals(value);
 	}
 
 	public static Predicate<Entity> eqImplicit(String field1, String field2)
 	{
-		return entity -> entity.getFieldsValues().get(field1).equals(entity.getFieldsValues().get(field2));
+		return entity -> entity.get(field1).equals(entity.get(field2));
 	}
 
 	public Collection<Entity> test(Collection<Entity> collection)
@@ -71,9 +71,9 @@ public class Predicates
 				.filter(
 						and(
 								and(
-										entity -> (Integer) entity.getFieldsValues().get("age") <= 18,
-										entity -> entity.getFieldsValues().get("Person.name").equals(entity.getFieldsValues().get("street"))),
-								entity -> entity.getFieldsValues().get("phoneNumber").equals("0546815181")))
+										entity -> (Integer) entity.get("age") <= 18,
+										entity -> entity.get("Person.name").equals(entity.get("street"))),
+								entity -> entity.get("phoneNumber").equals("0546815181")))
 				.collect(Collectors.toSet());
 	}
 }
