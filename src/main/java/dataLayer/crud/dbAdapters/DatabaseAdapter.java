@@ -1,15 +1,13 @@
 package dataLayer.crud.dbAdapters;
 
+import dataLayer.readers.configReader.Conf;
 import dataLayer.readers.configReader.FieldsMapping;
 import dataLayer.crud.Entity;
 import dataLayer.crud.Pair;
 import dataLayer.crud.Query;
 import dataLayer.crud.filters.*;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -46,15 +44,23 @@ public abstract class DatabaseAdapter
 				.anyMatch(entityFrag.getUuid()::equals);
 	}
 
-//	public void revealQuery(VoidFilter voidFilter)
-//	{
-//		voidFilter.accept(this);
-//	}
-
-//	public Stream<Entity> revealQuery(Filter filter)
-//	{
-//		return filter.accept(this);
-//	}
+	protected static Map<FieldsMapping, Map<String, Object>> groupFieldsByFieldsMapping(Entity entity, DBType dbType)
+	{
+		final Map<FieldsMapping, Map<String, Object>> locationDocumentMap = new HashMap<>();
+		entity.getFieldsValues()
+				.forEach((field, value) ->
+				{
+					final FieldsMapping fieldMappingFromEntityFields = Conf.getConfiguration().getFieldsMappingFromEntityField(entity.getEntityType(), field);
+					if (fieldMappingFromEntityFields.getType().equals(dbType))
+						locationDocumentMap.computeIfAbsent(fieldMappingFromEntityFields, fieldsMapping ->
+						{
+							Map<String, Object> properties = new HashMap<>();
+							properties.put("uuid", entity.getUuid());
+							return properties;
+						}).put(field, value);
+				});
+		return locationDocumentMap;
+	}
 
 	public abstract void executeCreate(Entity entity);
 

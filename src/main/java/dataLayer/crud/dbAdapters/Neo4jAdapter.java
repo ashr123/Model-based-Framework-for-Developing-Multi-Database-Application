@@ -37,19 +37,6 @@ public class Neo4jAdapter extends DatabaseAdapter
 		return DBAccessFactory.createDBAccess(DBType.REMOTE, props, AuthTokens.basic(fieldsMapping.getUsername(), fieldsMapping.getPassword()));
 	}
 
-	private static Map<FieldsMapping, Map<String, Object>> groupFieldsByFieldsMapping(Entity entity)
-	{
-		Map<FieldsMapping, Map<String, Object>> result = new HashMap<>();
-		entity.getFieldsValues()
-				.forEach((field, value) ->
-				{
-					final FieldsMapping fieldMappingFromEntityFields = Conf.getConfiguration().getFieldsMappingFromEntityField(entity.getEntityType(), field);
-					if (fieldMappingFromEntityFields.getType().equals(dataLayer.crud.dbAdapters.DBType.NEO4J))
-						result.computeIfAbsent(fieldMappingFromEntityFields, fieldsMapping -> new HashMap<>()).put(field, value);
-				});
-		return result;
-	}
-
 	private static Entity getEntityFromNode(GrNode grNode)
 	{
 		return new Entity((String) grNode.getProperty("uuid").getValue(),
@@ -98,7 +85,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 	@Override
 	public void executeCreate(Entity entity)
 	{
-		groupFieldsByFieldsMapping(entity)
+		groupFieldsByFieldsMapping(entity, dataLayer.crud.dbAdapters.DBType.NEO4J)
 				.forEach((fieldsMapping, fields) ->
 				{
 					final IDBAccess idbAccess = getDBAccess(fieldsMapping);
@@ -107,7 +94,6 @@ public class Neo4jAdapter extends DatabaseAdapter
 						Graph graph = Graph.create(idbAccess);
 						GrNode node = graph.createNode();
 						node.addLabel(entity.getEntityType());
-						node.addProperty("uuid", entity.getUuid());
 						fields.forEach(node::addProperty);
 						graph.store();
 					} finally

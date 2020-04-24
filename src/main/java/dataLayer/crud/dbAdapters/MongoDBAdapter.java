@@ -30,7 +30,6 @@ import static com.mongodb.client.model.Updates.set;
  */
 public class MongoDBAdapter extends DatabaseAdapter
 {
-
 	private static MongoClient createMongoClient(String connectionString)
 	{
 		return MongoClients.create(MongoClientSettings.builder()
@@ -64,20 +63,6 @@ public class MongoDBAdapter extends DatabaseAdapter
 		return makeEntities(Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityType(), simpleFilter.getFieldName()), simpleFilter.getEntityType(), filter);
 	}
 
-	private static Map<FieldsMapping, Document> groupFieldsByFieldsMapping(Entity entity)
-	{
-		final Map<FieldsMapping, Document> locationDocumentMap = new HashMap<>();
-		entity.getFieldsValues()
-				.forEach((field, value) ->
-				{
-					final FieldsMapping fieldMappingFromEntityFields = Conf.getConfiguration().getFieldsMappingFromEntityField(entity.getEntityType(), field);
-					if (fieldMappingFromEntityFields.getType().equals(DBType.MONGODB))
-						locationDocumentMap.computeIfAbsent(fieldMappingFromEntityFields, fieldsMapping -> new Document().append("uuid", entity.getUuid()))
-								.append(field, value);
-				});
-		return locationDocumentMap;
-	}
-
 	private static Stream<Entity> queryRead(String entityType, UUID uuid, FieldsMapping fieldsMapping)
 	{
 		return makeEntities(fieldsMapping, entityType, eq("uuid", uuid));
@@ -86,14 +71,14 @@ public class MongoDBAdapter extends DatabaseAdapter
 	@Override
 	public void executeCreate(Entity entity)
 	{
-		groupFieldsByFieldsMapping(entity)
-				.forEach((fieldsMapping, document) ->
+		groupFieldsByFieldsMapping(entity, DBType.MONGODB)
+				.forEach((fieldsMapping, fieldsAndValues) ->
 				{
 					try (MongoClient mongoClient = createMongoClient(fieldsMapping.getConnStr()))
 					{
 						mongoClient.getDatabase(fieldsMapping.getLocation())
 								.getCollection(entity.getEntityType())
-								.insertOne(document);
+								.insertOne(new Document(fieldsAndValues));
 					}
 				});
 	}
