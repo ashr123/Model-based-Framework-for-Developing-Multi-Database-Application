@@ -5,6 +5,7 @@ import dataLayer.crud.Entity;
 import java.util.Collection;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Predicates
 {
@@ -12,14 +13,25 @@ public class Predicates
 	{
 	}
 
-	public static <X> Predicate<X> and(Predicate<X> firstCond, Predicate<X> secondCond)
+	@SafeVarargs
+	public static <X> Predicate<X> and(Predicate<X>... conds)
 	{
-		return firstCond.and(secondCond);
+		return Stream.of(conds)
+				.reduce(Predicate::and)
+				.orElse(x -> true);
 	}
 
-	public static <X> Predicate<X> or(Predicate<X> firstCond, Predicate<X> secondCond)
+	@SafeVarargs
+	public static <X> Predicate<X> or(Predicate<X>... conds)
 	{
-		return firstCond.or(secondCond);
+		return Stream.of(conds)
+				.reduce(Predicate::or)
+				.orElse(x -> false);
+	}
+
+	public static <X> Predicate<X> not(Predicate<X> cond)
+	{
+		return cond.negate();
 	}
 
 	public static Predicate<Entity> gr(String field, int value)
