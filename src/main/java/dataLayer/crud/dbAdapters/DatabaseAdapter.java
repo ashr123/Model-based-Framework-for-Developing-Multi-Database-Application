@@ -39,7 +39,7 @@ public abstract class DatabaseAdapter
 				.map(Query::simpleRead);
 	}
 
-	private static boolean isEntityInSet(Set<Entity> entities, Entity entityFrag)
+	private static boolean isEntityInCollection(Collection<Entity> entities, Entity entityFrag)
 	{
 		return entities.stream()
 				.map(Entity::getUuid)
@@ -92,11 +92,11 @@ public abstract class DatabaseAdapter
 		return locationDocumentMap;
 	}
 
-	private static Collection<?> checkArrayWithSchema(Collection<?> list, EntityPropertyData itemsType)
+	private static Collection<?> checkArrayWithSchema(Collection<?> collection, EntityPropertyData itemsType)
 	{
 		return switch (itemsType.getType())
 				{
-					case ARRAY -> list.stream()
+					case ARRAY -> collection.stream()
 							.map(element ->
 							{
 								if (element instanceof Collection<?>)
@@ -104,7 +104,7 @@ public abstract class DatabaseAdapter
 								throw new MissingFormatArgumentException("Element isn't a list");
 							})
 							.collect(Collectors.toList());
-					case OBJECT -> list.stream()
+					case OBJECT -> collection.stream()
 							.map(element ->
 							{
 								if (element instanceof Entity)
@@ -113,18 +113,18 @@ public abstract class DatabaseAdapter
 							})
 							.collect(Collectors.toList());
 					case NUMBER -> {
-						if (list.stream().allMatch(Number.class::isInstance))
-							yield list;
+						if (collection.stream().allMatch(Number.class::isInstance))
+							yield collection;
 						throw new MissingFormatArgumentException("Element isn't a number");
 					}
 					case STRING -> {
-						if (list.stream().allMatch(String.class::isInstance))
-							yield list;
+						if (collection.stream().allMatch(String.class::isInstance))
+							yield collection;
 						throw new MissingFormatArgumentException("Element isn't a string");
 					}
 					case BOOLEAN -> {
-						if (list.stream().allMatch(Boolean.class::isInstance))
-							yield list;
+						if (collection.stream().allMatch(Boolean.class::isInstance))
+							yield collection;
 						throw new MissingFormatArgumentException("Element isn't a boolean");
 					}
 				};
@@ -170,13 +170,13 @@ public abstract class DatabaseAdapter
 		return defragEntities(and)
 				.reduce((set1, set2) ->
 				{
-					final Set<Entity>
+					final Collection<Entity>
 							collected1 = set1.collect(Collectors.toSet()),
 							collected2 = set2.collect(Collectors.toSet());
 					return groupEntities(Stream.concat(collected1.stream(), collected2.stream())
 							.filter(entityFrag ->
-									isEntityInSet(collected1, entityFrag) &&
-									isEntityInSet(collected2, entityFrag)));
+									isEntityInCollection(collected1, entityFrag) &&
+									isEntityInCollection(collected2, entityFrag)));
 				})
 				.orElse(Stream.of());
 	}
