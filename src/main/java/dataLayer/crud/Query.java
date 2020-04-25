@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 // TODO add filter validations
 public class Query
 {
+	// TODO Add Schema checking
 	public static void create(Entity... entities)
 	{
 //		Arrays.stream(entities).forEach(entity -> {

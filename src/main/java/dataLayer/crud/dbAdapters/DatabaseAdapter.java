@@ -1,11 +1,13 @@
 package dataLayer.crud.dbAdapters;
 
-import dataLayer.readers.configReader.Conf;
-import dataLayer.readers.configReader.FieldsMapping;
 import dataLayer.crud.Entity;
 import dataLayer.crud.Pair;
 import dataLayer.crud.Query;
 import dataLayer.crud.filters.*;
+import dataLayer.readers.configReader.Conf;
+import dataLayer.readers.configReader.FieldsMapping;
+import dataLayer.readers.schemaReader.EntityPropertyData;
+import dataLayer.readers.schemaReader.Schema;
 
 import java.util.*;
 import java.util.function.Function;
@@ -50,16 +52,99 @@ public abstract class DatabaseAdapter
 		entity.getFieldsValues()
 				.forEach((field, value) ->
 				{
+					EntityPropertyData propertyType = Schema.getPropertyType(entity.getEntityType(), field);
+					switch (propertyType.getType())
+					{
+						case ARRAY -> {
+							if (!(value instanceof Collection<?>))
+								throw new MissingFormatArgumentException("Value of field " + field + " of entity type " + entity.getEntityType() + " isn't list");
+							value = checkArrayWithSchema((Collection<?>) value, propertyType.getItems());
+						}
+						case OBJECT -> {
+							if (!(value instanceof Entity))
+								throw new MissingFormatArgumentException("Value of field " + field + " of entity, expected to be of type Entity");
+							value = checkObjectWithSchema((Entity) value, Schema.getPropertyType(((Entity) value).getEntityType(), field).getJavaType());
+						}
+						case NUMBER -> {
+							if (!(value instanceof Number))
+								throw new MissingFormatArgumentException("Value of field " + field + " of entity type " + entity.getEntityType() + " isn't number");
+						}
+						case STRING -> {
+							if (!(value instanceof String))
+								throw new MissingFormatArgumentException("Value of field " + field + " of entity type " + entity.getEntityType() + " isn't string");
+						}
+						case BOOLEAN -> {
+							if (!(value instanceof Boolean))
+								throw new MissingFormatArgumentException("Value of field " + field + " of entity type " + entity.getEntityType() + " isn't boolean");
+						}
+					}
 					final FieldsMapping fieldMappingFromEntityFields = Conf.getConfiguration().getFieldsMappingFromEntityField(entity.getEntityType(), field);
 					if (fieldMappingFromEntityFields.getType().equals(dbType))
+					{
 						locationDocumentMap.computeIfAbsent(fieldMappingFromEntityFields, fieldsMapping ->
 						{
 							Map<String, Object> properties = new HashMap<>();
 							properties.put("uuid", entity.getUuid());
 							return properties;
 						}).put(field, value);
+					}
 				});
 		return locationDocumentMap;
+	}
+
+	private static Collection<?> checkArrayWithSchema(Collection<?> list, EntityPropertyData itemsType)
+	{
+		return switch (itemsType.getType())
+				{
+					case ARRAY -> list.stream()
+							.map(element ->
+							{
+								if (!(element instanceof Collection<?>))
+									throw new MissingFormatArgumentException("Element's type isn't list");
+								return checkArrayWithSchema((Collection<?>) element, itemsType.getItems());
+							})
+							.collect(Collectors.toList());
+					case OBJECT -> list.stream()
+							.map(element ->
+							{
+								if (!(element instanceof Entity))
+									throw new MissingFormatArgumentException("Element isn't Entity");
+								return checkObjectWithSchema((Entity) element, itemsType.getJavaType());
+							})
+							.collect(Collectors.toList());
+					case NUMBER -> {
+						if (list.stream().allMatch(Number.class::isInstance))
+							yield list;
+						throw new MissingFormatArgumentException("Element isn't a number");
+					}
+					case STRING -> {
+						if (list.stream().allMatch(String.class::isInstance))
+							yield list;
+						throw new MissingFormatArgumentException("Element isn't a string");
+					}
+					case BOOLEAN -> {
+						if (list.stream().allMatch(Boolean.class::isInstance))
+							yield list;
+						throw new MissingFormatArgumentException("Element isn't a boolean");
+					}
+				};
+	}
+
+	private static UUID checkObjectWithSchema(Entity entity, String entityJavaType)
+	{
+		if (!entity.getEntityType().equals(entityJavaType))
+			throw new MissingFormatArgumentException("javaType of value is " + entity.getEntityType() + ", expected " + entityJavaType);
+
+		//noinspection OptionalGetWithoutIsPresent
+		FieldsMapping fieldsMapping = Conf.getConfiguration().getFieldsMappingFromEntityField(entity.getEntityType(), entity.getFieldsValues().keySet().stream().findAny().get());
+		if (fieldsMapping
+				.getType()
+				.getDatabaseAdapter()
+				.executeRead(entity.getEntityType(), entity.getUuid(), fieldsMapping)
+				.findAny()
+				.isEmpty())
+			Query.create(entity);
+		return entity.getUuid();
 	}
 
 	public abstract void executeCreate(Entity entity);
@@ -91,7 +176,7 @@ public abstract class DatabaseAdapter
 					return groupEntities(Stream.concat(collected1.stream(), collected2.stream())
 							.filter(entityFrag ->
 									isEntityInSet(collected1, entityFrag) &&
-											isEntityInSet(collected2, entityFrag)));
+									isEntityInSet(collected2, entityFrag)));
 				})
 				.orElse(Stream.of());
 	}

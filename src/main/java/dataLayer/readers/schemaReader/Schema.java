@@ -51,6 +51,11 @@ public class Schema
 //		}
 	}
 
+	public static EntityPropertyData getPropertyType(String className, String propertyName)
+	{
+		return schema.classes.get(className).getPropertyData(propertyName);
+	}
+
 	static void containsClass(String className)
 	{
 		if (!schema.classes.containsKey(className))

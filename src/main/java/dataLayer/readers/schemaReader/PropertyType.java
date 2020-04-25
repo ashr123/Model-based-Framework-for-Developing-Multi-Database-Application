@@ -6,10 +6,12 @@ public enum PropertyType
 {
 	@JsonProperty("string")
 	STRING,
-	@JsonProperty("array")
-	ARRAY,
 	@JsonProperty("number")
 	NUMBER,
+	@JsonProperty("boolean")
+	BOOLEAN,
+	@JsonProperty("array")
+	ARRAY,
 	@JsonProperty("object")
 	OBJECT
 }

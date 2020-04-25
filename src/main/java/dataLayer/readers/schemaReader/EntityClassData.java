@@ -30,6 +30,11 @@ public class EntityClassData
 				.collect(Collectors.toMap(Map.Entry::getKey,property -> Schema.getEntityClass(property.getValue().getRelatedClassName())));
 	}
 
+	public EntityPropertyData getPropertyData(String propertyName)
+	{
+		return properties.get(propertyName);
+	}
+
 	public Collection<EntityPropertyData> getClassPropertiesData()
 	{
 		return properties.values();
