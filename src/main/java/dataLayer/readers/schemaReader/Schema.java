@@ -2,10 +2,13 @@ package dataLayer.readers.schemaReader;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jgrapht.Graph;
+import org.jgrapht.graph.DirectedPseudograph;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("ConstantConditions")
 public class Schema
@@ -13,6 +16,9 @@ public class Schema
 	private final static ObjectMapper objectMapper = new ObjectMapper();
 
 	private static Schema schema;
+
+	private static Graph<Map.Entry<String, EntityClassData>, RelationType> schemaGraph;
+
 	@JsonProperty("classes")
 	private final Map<String/*class name*/, EntityClassData> classes = null;
 
@@ -24,6 +30,25 @@ public class Schema
 	{
 		schema = objectMapper.readValue(url, Schema.class);
 		schema.checkValidity();
+
+//		schemaGraph = new DirectedPseudograph<>(RelationType.class);
+//		Deque<String> unvisitedClasses = new LinkedList<>(Schema.getClassesName());
+//		String classToVisit;
+//
+//		while(!unvisitedClasses.isEmpty()){
+//			classToVisit = unvisitedClasses.peekFirst();
+//			Map<String, EntityPropertyData> aggregationRelations = getEntityClass(classToVisit).getRelatedClasses(RelationType.AGGREGATION);
+//			Map<String, EntityPropertyData> compositionRelations = getEntityClass(classToVisit).getRelatedClasses(RelationType.COMPOSITION);
+//
+//			var entry = new Map.Entry<String, EntityPropertyData>(classToVisit,);
+//			aggregationRelations.forEach((key, value) ->
+//			{
+//
+//			});
+////			unvisitedClasses.forEach(unvisitedClass -> {
+////
+////			});
+//		}
 	}
 
 	static void containsClass(String className)
@@ -49,8 +74,9 @@ public class Schema
 		return schema.classes.keySet();
 	}
 
-	public static Collection<String> getClassesFields(String className) {
-		return schema.classes.get(className).getClassProperties();
+	public static Collection<String> getClassesFields(String className)
+	{
+		return schema.classes.get(className).getClassPropertiesNames();
 	}
 
 	private void checkValidity()

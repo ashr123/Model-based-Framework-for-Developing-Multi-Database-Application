@@ -3,6 +3,7 @@ package dataLayer.readers.schemaReader;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.InputMismatchException;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 @SuppressWarnings("ConstantConditions")
@@ -47,16 +48,34 @@ public class EntityPropertyData
 		{
 			case ARRAY:
 				if (items == null)
-					throw new InputMismatchException("when type is '"+ type + "' \"items\" must be defined!");
+					throw new InputMismatchException("when type is '" + type + "' \"items\" must be defined!");
 				else
 					items.checkValidity();
 				break;
 			case OBJECT:
 				if (javaType == null)
-					throw new InputMismatchException("when type is '"+ type + "' \"javaType\" must be defined!");
+					throw new InputMismatchException("when type is '" + type + "' \"javaType\" must be defined!");
 				else
 					Schema.containsClass(javaType);
 		}
+	}
+
+	public String getRelatedClassName()
+	{
+		if (type.equals(PropertyType.OBJECT))
+			return javaType;
+		if (type.equals(PropertyType.ARRAY))
+			return items.getRelatedClassName();
+		throw new NoSuchElementException("The property does not represent a relation.");
+	}
+
+	public boolean isRelationProperty()
+	{
+		if (type.equals(PropertyType.OBJECT))
+			return true;
+		if (type.equals(PropertyType.ARRAY))
+			return items.isRelationProperty();
+		return false;
 	}
 
 	@Override

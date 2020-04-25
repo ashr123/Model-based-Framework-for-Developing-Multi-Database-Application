@@ -19,7 +19,12 @@
 <!--			<artifactId>java-uuid-generator</artifactId>-->
 <!--			<version>4.0.1</version>-->
 <!--		</dependency>-->
-
+		<!-- THIS IS THE RELEVANT PART FOR JGRAPHT -->
+		<dependency>
+			<groupId>org.jgrapht</groupId>
+			<artifactId>jgrapht-core</artifactId>
+			<version>1.4.0</version>
+		</dependency>
 		<!-- THIS IS THE RELEVANT PART OF NEO4J COMPONENT -->
 		<dependency>
 			<groupId>net.iot-solutions.graphdb</groupId>
