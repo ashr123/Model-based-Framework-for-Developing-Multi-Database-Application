@@ -55,9 +55,6 @@
 	  }
 	},
 	"Professor": {
-	  "extends": [
-		"Person"
-	  ],
 	  "properties": {
 		"name": {
 		  "type": "string"
@@ -87,9 +84,6 @@
 	  }
 	},
 	"Student": {
-	  "extends": [
-		"Person"
-	  ],
 	  "properties": {
 		"name": {
 		  "type": "string"
