@@ -46,17 +46,16 @@ public class EntityPropertyData
 	{
 		switch (type)
 		{
-			case ARRAY:
+			case ARRAY -> {
 				if (items == null)
 					throw new InputMismatchException("when type is '" + type + "' \"items\" must be defined!");
-				else
-					items.checkValidity();
-				break;
-			case OBJECT:
+				items.checkValidity();
+			}
+			case OBJECT -> {
 				if (javaType == null)
 					throw new InputMismatchException("when type is '" + type + "' \"javaType\" must be defined!");
-				else
-					Schema.containsClass(javaType);
+				Schema.containsClass(javaType);
+			}
 		}
 	}
 
@@ -87,9 +86,9 @@ public class EntityPropertyData
 			return false;
 		EntityPropertyData that = (EntityPropertyData) o;
 		return type == that.type &&
-				Objects.equals(javaType, that.javaType) &&
-				Objects.equals(items, that.items) &&
-				relation == that.relation;
+		       Objects.equals(javaType, that.javaType) &&
+		       Objects.equals(items, that.items) &&
+		       relation == that.relation;
 	}
 
 	@Override
@@ -102,10 +101,10 @@ public class EntityPropertyData
 	public String toString()
 	{
 		return "EntityPropertyData{" +
-				"type=" + type +
-				", javaType='" + javaType + '\'' +
-				", items=" + items +
-				", relation=" + relation +
-				'}';
+		       "type=" + type +
+		       ", javaType='" + javaType + '\'' +
+		       ", items=" + items +
+		       ", relation=" + relation +
+		       '}';
 	}
 }

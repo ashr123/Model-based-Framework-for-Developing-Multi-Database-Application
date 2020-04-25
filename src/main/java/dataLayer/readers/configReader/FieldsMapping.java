@@ -60,10 +60,10 @@ public class FieldsMapping
 			return false;
 		FieldsMapping that = (FieldsMapping) o;
 		return type == that.type &&
-				connStr.equals(that.connStr) &&
-				Objects.equals(location, that.location) &&
-				Objects.equals(username, that.username) &&
-				Objects.equals(password, that.password);
+		       connStr.equals(that.connStr) &&
+		       Objects.equals(location, that.location) &&
+		       Objects.equals(username, that.username) &&
+		       Objects.equals(password, that.password);
 	}
 
 	@Override
@@ -76,11 +76,11 @@ public class FieldsMapping
 	public String toString()
 	{
 		return "FieldsMapping{" +
-				"type=" + type +
-				", connStr='" + connStr + '\'' +
-				", location='" + location + '\'' +
-				", username='" + username + '\'' +
-				", password='" + password + '\'' +
-				'}';
+		       "type=" + type +
+		       ", connStr='" + connStr + '\'' +
+		       ", location='" + location + '\'' +
+		       ", username='" + username + '\'' +
+		       ", password='" + password + '\'' +
+		       '}';
 	}
 }

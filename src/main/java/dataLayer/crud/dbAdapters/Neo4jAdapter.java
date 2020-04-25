@@ -55,7 +55,8 @@ public class Neo4jAdapter extends DatabaseAdapter
 			return idbAccess.execute(jcQuery)
 					.resultOf(jcNode).stream()
 					.map(Neo4jAdapter::getEntityFromNode);
-		} finally
+		}
+		finally
 		{
 			idbAccess.close();
 		}
@@ -76,7 +77,8 @@ public class Neo4jAdapter extends DatabaseAdapter
 			return idbAccess.execute(jcQuery)
 					.resultOf(jcNode).stream()
 					.map(Neo4jAdapter::getEntityFromNode);
-		} finally
+		}
+		finally
 		{
 			idbAccess.close();
 		}
@@ -96,7 +98,8 @@ public class Neo4jAdapter extends DatabaseAdapter
 						node.addLabel(entity.getEntityType());
 						fields.forEach(node::addProperty);
 						graph.store();
-					} finally
+					}
+					finally
 					{
 						idbAccess.close();
 					}
@@ -204,7 +207,8 @@ public class Neo4jAdapter extends DatabaseAdapter
 			});
 
 			idbAccess.execute(jcQuery);
-		} finally
+		}
+		finally
 		{
 			idbAccess.close();
 		}
@@ -229,7 +233,8 @@ public class Neo4jAdapter extends DatabaseAdapter
 				jcQuery.setClauses(clauses.toArray(IClause[]::new));
 				idbAccess.execute(jcQuery);
 			});
-		} finally
+		}
+		finally
 		{
 			idbAccess.close();
 		}

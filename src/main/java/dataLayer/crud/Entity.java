@@ -77,8 +77,8 @@ public class Entity
 			return false;
 		Entity entity = (Entity) o;
 		return uuid.equals(entity.uuid) &&
-				entityType.equals(entity.entityType) &&
-				fieldsValues.equals(entity.fieldsValues);
+		       entityType.equals(entity.entityType) &&
+		       fieldsValues.equals(entity.fieldsValues);
 	}
 
 	@Override
@@ -91,9 +91,9 @@ public class Entity
 	public String toString()
 	{
 		return "Entity{" +
-				"entityType='" + entityType + '\'' +
-				", uuid=" + uuid +
-				", fieldsValues=" + fieldsValues +
-				'}';
+		       "entityType='" + entityType + '\'' +
+		       ", uuid=" + uuid +
+		       ", fieldsValues=" + fieldsValues +
+		       '}';
 	}
 }

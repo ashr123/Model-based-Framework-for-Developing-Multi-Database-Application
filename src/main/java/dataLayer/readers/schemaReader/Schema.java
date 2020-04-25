@@ -2,13 +2,13 @@ package dataLayer.readers.schemaReader;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.jgrapht.Graph;
-import org.jgrapht.graph.DirectedPseudograph;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Collection;
+import java.util.InputMismatchException;
+import java.util.Map;
+import java.util.Objects;
 
 @SuppressWarnings("ConstantConditions")
 public class Schema
@@ -17,7 +17,7 @@ public class Schema
 
 	private static Schema schema;
 
-	private static Graph<Map.Entry<String, EntityClassData>, RelationType> schemaGraph;
+//	private static Graph<Map.Entry<String, EntityClassData>, RelationType> schemaGraph;
 
 	@JsonProperty("classes")
 	private final Map<String/*class name*/, EntityClassData> classes = null;
@@ -110,7 +110,7 @@ public class Schema
 	public String toString()
 	{
 		return "Schema{" +
-				"classes=" + classes +
-				'}';
+		       "classes=" + classes +
+		       '}';
 	}
 }

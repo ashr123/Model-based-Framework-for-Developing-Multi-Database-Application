@@ -64,22 +64,8 @@
 //}
 
 import dataLayer.readers.Reader;
-import iot.jcypher.database.DBAccessFactory;
-import iot.jcypher.database.DBProperties;
-import iot.jcypher.database.DBType;
-import iot.jcypher.database.IDBAccess;
-import iot.jcypher.query.JcQuery;
-import iot.jcypher.query.JcQueryResult;
-import iot.jcypher.query.api.IClause;
-import iot.jcypher.query.factories.clause.MATCH;
-import iot.jcypher.query.factories.clause.RETURN;
-import iot.jcypher.query.values.JcNode;
-import org.neo4j.driver.v1.AuthTokens;
-import org.neo4j.driver.v1.Driver;
-import org.neo4j.driver.v1.GraphDatabase;
 
 import java.io.IOException;
-import java.util.Properties;
 //import static org.neo4j.driver.Values.parameters;
 
 public class Main

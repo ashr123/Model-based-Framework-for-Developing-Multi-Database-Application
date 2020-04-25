@@ -32,7 +32,7 @@ public class Pair<F, S>
 			return false;
 		Pair<?, ?> pair = (Pair<?, ?>) o;
 		return first.equals(pair.first) &&
-				second.equals(pair.second);
+		       second.equals(pair.second);
 	}
 
 	@Override
@@ -45,8 +45,8 @@ public class Pair<F, S>
 	public String toString()
 	{
 		return "Pair{" +
-				"first=" + first +
-				", second=" + second +
-				'}';
+		       "first=" + first +
+		       ", second=" + second +
+		       '}';
 	}
 }

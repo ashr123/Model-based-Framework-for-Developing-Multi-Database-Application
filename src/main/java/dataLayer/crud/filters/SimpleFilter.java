@@ -31,7 +31,7 @@ public abstract class SimpleFilter implements Filter
 	public String toString()
 	{
 		return "entityType='" + entityType + '\'' +
-				", fieldName='" + fieldName + '\'' +
-				", value=" + value;
+		       ", fieldName='" + fieldName + '\'' +
+		       ", value=" + value;
 	}
 }

@@ -2,7 +2,6 @@ package dataLayer.readers.schemaReader;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.swing.border.EmptyBorder;
 import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -27,7 +26,7 @@ public class EntityClassData
 	{
 		return properties.entrySet().stream()
 				.filter(property -> property.getValue().isRelationProperty() && property.getValue().getRelation().equals(relationType))
-				.collect(Collectors.toMap(Map.Entry::getKey,property -> Schema.getEntityClass(property.getValue().getRelatedClassName())));
+				.collect(Collectors.toMap(Map.Entry::getKey, property -> Schema.getEntityClass(property.getValue().getRelatedClassName())));
 	}
 
 	public EntityPropertyData getPropertyData(String propertyName)
@@ -49,7 +48,7 @@ public class EntityClassData
 	public String toString()
 	{
 		return "EntityClass{" +
-				"properties=" + properties +
-				'}';
+		       "properties=" + properties +
+		       '}';
 	}
 }

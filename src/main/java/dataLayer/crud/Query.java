@@ -42,10 +42,10 @@ public class Query
 	public static Stream<Entity> simpleRead(Filter filter)
 	{
 		return filter instanceof SimpleFilter /*simpleFilter*/ ?
-				filter.executeRead(Conf.getConfiguration().getFieldsMappingFromEntityField(((SimpleFilter) filter).getEntityType(), ((SimpleFilter) filter).getFieldName())
-						.getType()
-						.getDatabaseAdapter()) :
-				filter.executeRead(DBType.MONGODB.getDatabaseAdapter()); // Complex query, the adapter doesn't matter
+		       filter.executeRead(Conf.getConfiguration().getFieldsMappingFromEntityField(((SimpleFilter) filter).getEntityType(), ((SimpleFilter) filter).getFieldName())
+				       .getType()
+				       .getDatabaseAdapter()) :
+		       filter.executeRead(DBType.MONGODB.getDatabaseAdapter()); // Complex query, the adapter doesn't matter
 	}
 
 	public static void delete(Filter filter)

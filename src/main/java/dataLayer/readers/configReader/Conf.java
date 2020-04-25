@@ -126,9 +126,9 @@ public class Conf
 	public String toString()
 	{
 		return "Conf{" +
-				"fieldsMappings=" + fieldsMappings +
-				", entities=" + entities +
-				'}';
+		       "fieldsMappings=" + fieldsMappings +
+		       ", entities=" + entities +
+		       '}';
 	}
 
 	public Collection<String> getEntitiesType()

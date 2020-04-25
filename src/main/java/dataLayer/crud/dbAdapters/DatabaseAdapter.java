@@ -101,7 +101,7 @@ public abstract class DatabaseAdapter
 							{
 								if (element instanceof Collection<?>)
 									return checkArrayWithSchema((Collection<?>) element, itemsType.getItems());
-								throw new MissingFormatArgumentException("Element's type isn't list");
+								throw new MissingFormatArgumentException("Element isn't a list");
 							})
 							.collect(Collectors.toList());
 					case OBJECT -> list.stream()
@@ -109,7 +109,7 @@ public abstract class DatabaseAdapter
 							{
 								if (element instanceof Entity)
 									return checkObjectWithSchema((Entity) element, itemsType.getJavaType());
-								throw new MissingFormatArgumentException("Element isn't Entity");
+								throw new MissingFormatArgumentException("Element isn't an Entity");
 							})
 							.collect(Collectors.toList());
 					case NUMBER -> {
