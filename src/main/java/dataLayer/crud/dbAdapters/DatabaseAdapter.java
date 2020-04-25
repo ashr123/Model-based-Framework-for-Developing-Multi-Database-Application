@@ -99,17 +99,17 @@ public abstract class DatabaseAdapter
 					case ARRAY -> list.stream()
 							.map(element ->
 							{
-								if (!(element instanceof Collection<?>))
-									throw new MissingFormatArgumentException("Element's type isn't list");
-								return checkArrayWithSchema((Collection<?>) element, itemsType.getItems());
+								if (element instanceof Collection<?>)
+									return checkArrayWithSchema((Collection<?>) element, itemsType.getItems());
+								throw new MissingFormatArgumentException("Element's type isn't list");
 							})
 							.collect(Collectors.toList());
 					case OBJECT -> list.stream()
 							.map(element ->
 							{
-								if (!(element instanceof Entity))
-									throw new MissingFormatArgumentException("Element isn't Entity");
-								return checkObjectWithSchema((Entity) element, itemsType.getJavaType());
+								if (element instanceof Entity)
+									return checkObjectWithSchema((Entity) element, itemsType.getJavaType());
+								throw new MissingFormatArgumentException("Element isn't Entity");
 							})
 							.collect(Collectors.toList());
 					case NUMBER -> {
