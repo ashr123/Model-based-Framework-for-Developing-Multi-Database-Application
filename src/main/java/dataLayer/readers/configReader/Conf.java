@@ -1,5 +1,6 @@
 package dataLayer.readers.configReader;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -131,11 +132,13 @@ public class Conf
 		       '}';
 	}
 
+	@JsonIgnore
 	public Collection<String> getEntitiesType()
 	{
 		return entities.keySet();
 	}
 
+	@JsonIgnore
 	public Collection<String> getEntityProperties(String entityName)
 	{
 		return entities.get(entityName).keySet();

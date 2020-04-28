@@ -52,48 +52,56 @@ public abstract class DatabaseAdapter
 		entity.getFieldsValues()
 				.forEach((field, value) ->
 				{
-					EntityPropertyData propertyType = Schema.getPropertyType(entity.getEntityType(), field);
-					switch (propertyType.getType())
-					{
-						case ARRAY -> {
-							if (!(value instanceof Collection<?>))
-								throw new MissingFormatArgumentException("Value of field " + field + " of entity type " + entity.getEntityType() + " isn't list");
-							value = checkArrayWithSchema((Collection<?>) value, propertyType.getItems());
-						}
-						case OBJECT -> {
-							if (!(value instanceof Entity))
-								throw new MissingFormatArgumentException("Value of field " + field + " of entity, expected to be of type Entity");
-							value = checkObjectWithSchema((Entity) value, Schema.getPropertyType(((Entity) value).getEntityType(), field).getJavaType());
-						}
-						case NUMBER -> {
-							if (!(value instanceof Number))
-								throw new MissingFormatArgumentException("Value of field " + field + " of entity type " + entity.getEntityType() + " isn't number");
-						}
-						case STRING -> {
-							if (!(value instanceof String))
-								throw new MissingFormatArgumentException("Value of field " + field + " of entity type " + entity.getEntityType() + " isn't string");
-						}
-						case BOOLEAN -> {
-							if (!(value instanceof Boolean))
-								throw new MissingFormatArgumentException("Value of field " + field + " of entity type " + entity.getEntityType() + " isn't boolean");
-						}
-					}
 					final FieldsMapping fieldMappingFromEntityFields = Conf.getConfiguration().getFieldsMappingFromEntityField(entity.getEntityType(), field);
 					if (fieldMappingFromEntityFields.getType().equals(dbType))
 					{
+						final EntityPropertyData propertyType = Schema.getPropertyType(entity.getEntityType(), field);
+						final String errorMsg = "Value of " + entity.getEntityType() + '.' + field + " isn't a";
+						switch (propertyType.getType())
+						{
+							case ARRAY -> {
+								if (!(value instanceof Collection<?>))
+									throw new MissingFormatArgumentException(errorMsg + " list");
+								value = checkArrayWithSchema((Collection<?>) value, propertyType.getItems());
+							}
+							case OBJECT -> {
+								if (!(value instanceof Entity))
+									throw new MissingFormatArgumentException(errorMsg + "n Entity");
+								value = checkObjectWithSchema((Entity) value, propertyType.getJavaType());
+							}
+							case NUMBER -> {
+								if (!(value instanceof Number))
+									throw new MissingFormatArgumentException(errorMsg + " number");
+							}
+							case STRING -> {
+								if (!(value instanceof String))
+									throw new MissingFormatArgumentException(errorMsg + " string");
+							}
+							case BOOLEAN -> {
+								if (!(value instanceof Boolean))
+									throw new MissingFormatArgumentException(errorMsg + " boolean");
+							}
+						}
 						locationDocumentMap.computeIfAbsent(fieldMappingFromEntityFields, fieldsMapping ->
 						{
-							Map<String, Object> properties = new HashMap<>();
+							final Map<String, Object> properties = new HashMap<>();
 							properties.put("uuid", entity.getUuid());
 							return properties;
 						}).put(field, value);
 					}
+				});
+		entity.getFieldsValues()
+				.forEach((field, value) ->
+				{
+					if (Conf.getConfiguration().getFieldsMappingFromEntityField(entity.getEntityType(), field).getType().equals(dbType))
+						insertValue(value);
 				});
 		return locationDocumentMap;
 	}
 
 	private static Collection<?> checkArrayWithSchema(Collection<?> collection, EntityPropertyData itemsType)
 	{
+		final String errorMsg = "Element in list isn't a";
 		return switch (itemsType.getType())
 				{
 					case ARRAY -> collection.stream()
@@ -101,7 +109,7 @@ public abstract class DatabaseAdapter
 							{
 								if (element instanceof Collection<?>)
 									return checkArrayWithSchema((Collection<?>) element, itemsType.getItems());
-								throw new MissingFormatArgumentException("Element isn't a list");
+								throw new MissingFormatArgumentException(errorMsg + " list");
 							})
 							.collect(Collectors.toList());
 					case OBJECT -> collection.stream()
@@ -109,23 +117,23 @@ public abstract class DatabaseAdapter
 							{
 								if (element instanceof Entity)
 									return checkObjectWithSchema((Entity) element, itemsType.getJavaType());
-								throw new MissingFormatArgumentException("Element isn't an Entity");
+								throw new MissingFormatArgumentException(errorMsg + "n Entity");
 							})
 							.collect(Collectors.toList());
 					case NUMBER -> {
 						if (collection.stream().allMatch(Number.class::isInstance))
 							yield collection;
-						throw new MissingFormatArgumentException("Element isn't a number");
+						throw new MissingFormatArgumentException(errorMsg + " number");
 					}
 					case STRING -> {
 						if (collection.stream().allMatch(String.class::isInstance))
 							yield collection;
-						throw new MissingFormatArgumentException("Element isn't a string");
+						throw new MissingFormatArgumentException(errorMsg + " string");
 					}
 					case BOOLEAN -> {
 						if (collection.stream().allMatch(Boolean.class::isInstance))
 							yield collection;
-						throw new MissingFormatArgumentException("Element isn't a boolean");
+						throw new MissingFormatArgumentException(errorMsg + " boolean");
 					}
 				};
 	}
@@ -135,16 +143,34 @@ public abstract class DatabaseAdapter
 		if (!entity.getEntityType().equals(entityJavaType))
 			throw new MissingFormatArgumentException("javaType of value is " + entity.getEntityType() + ", expected " + entityJavaType);
 
-		//noinspection OptionalGetWithoutIsPresent
-		FieldsMapping fieldsMapping = Conf.getConfiguration().getFieldsMappingFromEntityField(entity.getEntityType(), entity.getFieldsValues().keySet().stream().findAny().get());
-		if (fieldsMapping
-				.getType()
-				.getDatabaseAdapter()
-				.executeRead(entity.getEntityType(), entity.getUuid(), fieldsMapping)
-				.findAny()
-				.isEmpty())
-			Query.create(entity);
+//		final FieldsMapping fieldsMapping = Conf.getConfiguration().getFieldsMappingFromEntityField(entity.getEntityType(), entity.getFieldsValues().keySet().stream().findAny().get());
+//		if (fieldsMapping
+//				.getType()
+//				.getDatabaseAdapter()
+//				.executeRead(entity.getEntityType(), entity.getUuid(), fieldsMapping)
+//				.findAny()
+//				.isEmpty())
+//			Query.create(entity);
 		return entity.getUuid();
+	}
+
+	private static void insertValue(Object value)
+	{
+		if (value instanceof Collection<?>)
+			((Collection<?>) value).forEach(DatabaseAdapter::insertValue);
+		else if (value instanceof Entity)
+		{
+			final Entity entity = (Entity) value;
+			//noinspection OptionalGetWithoutIsPresent
+			final FieldsMapping fieldsMapping = Conf.getConfiguration().getFieldsMappingFromEntityField(entity.getEntityType(), entity.getFieldsValues().keySet().stream().findAny().get());
+			if (fieldsMapping
+					.getType()
+					.getDatabaseAdapter()
+					.executeRead(entity.getEntityType(), entity.getUuid(), fieldsMapping)
+					.findAny()
+					.isEmpty())
+				Query.create(entity);
+		}
 	}
 
 	public abstract void executeCreate(Entity entity);
