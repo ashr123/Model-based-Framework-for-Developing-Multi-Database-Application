@@ -91,7 +91,7 @@ public class Conf
 	{
 		FieldsMapping output = fieldsMappings.get(entities.get(entityType).get(field));
 		if (output == null)
-			throw new NullPointerException("Field " + field + "doesn't exist in entity " + entityType);
+			throw new NullPointerException("Field " + field + " doesn't exist in entity " + entityType);
 		return output;
 	}
 

@@ -33,9 +33,8 @@ public abstract class DatabaseAdapter
 	 */
 	private static Stream<Stream<Entity>> defragEntities(ComplexFilter complexFilter)
 	{
-//		return Stream.of(complexFilter.getComplexQuery())
-//				.map(filter -> groupEntities(Query.simpleRead(filter)));
 		return Stream.of(complexFilter.getComplexQuery())
+//				.map(filter -> groupEntities(Query.simpleRead(filter)));
 				.map(Query::simpleRead);
 	}
 
@@ -56,30 +55,29 @@ public abstract class DatabaseAdapter
 					if (fieldMappingFromEntityFields.getType().equals(dbType))
 					{
 						final EntityPropertyData propertyType = Schema.getPropertyType(entity.getEntityType(), field);
-						final String errorMsg = "Value of " + entity.getEntityType() + '.' + field + " isn't a";
 						switch (propertyType.getType())
 						{
 							case ARRAY -> {
 								if (!(value instanceof Collection<?>))
-									throw new MissingFormatArgumentException(errorMsg + " list");
+									throw new MissingFormatArgumentException("Value of " + entity.getEntityType() + '.' + field + " isn't a list");
 								value = checkArrayWithSchema((Collection<?>) value, propertyType.getItems());
 							}
 							case OBJECT -> {
 								if (!(value instanceof Entity))
-									throw new MissingFormatArgumentException(errorMsg + "n Entity");
+									throw new MissingFormatArgumentException("Value of " + entity.getEntityType() + '.' + field + " isn't an Entity");
 								value = checkObjectWithSchema((Entity) value, propertyType.getJavaType());
 							}
 							case NUMBER -> {
 								if (!(value instanceof Number))
-									throw new MissingFormatArgumentException(errorMsg + " number");
+									throw new MissingFormatArgumentException("Value of " + entity.getEntityType() + '.' + field + " isn't a number");
 							}
 							case STRING -> {
 								if (!(value instanceof String))
-									throw new MissingFormatArgumentException(errorMsg + " string");
+									throw new MissingFormatArgumentException("Value of " + entity.getEntityType() + '.' + field + " isn't a string");
 							}
 							case BOOLEAN -> {
 								if (!(value instanceof Boolean))
-									throw new MissingFormatArgumentException(errorMsg + " boolean");
+									throw new MissingFormatArgumentException("Value of " + entity.getEntityType() + '.' + field + " isn't a boolean");
 							}
 						}
 						locationDocumentMap.computeIfAbsent(fieldMappingFromEntityFields, fieldsMapping ->
@@ -90,12 +88,12 @@ public abstract class DatabaseAdapter
 						}).put(field, value);
 					}
 				});
-		entity.getFieldsValues()
-				.forEach((field, value) ->
-				{
-					if (Conf.getConfiguration().getFieldsMappingFromEntityField(entity.getEntityType(), field).getType().equals(dbType))
-						insertValue(value);
-				});
+//		entity.getFieldsValues()
+//				.forEach((field, value) ->
+//				{
+//					if (Conf.getConfiguration().getFieldsMappingFromEntityField(entity.getEntityType(), field).getType().equals(dbType))
+//						insertValue(value);
+//				});
 		return locationDocumentMap;
 	}
 
@@ -143,35 +141,36 @@ public abstract class DatabaseAdapter
 		if (!entity.getEntityType().equals(entityJavaType))
 			throw new MissingFormatArgumentException("javaType of value is " + entity.getEntityType() + ", expected " + entityJavaType);
 
-//		final FieldsMapping fieldsMapping = Conf.getConfiguration().getFieldsMappingFromEntityField(entity.getEntityType(), entity.getFieldsValues().keySet().stream().findAny().get());
-//		if (fieldsMapping
-//				.getType()
-//				.getDatabaseAdapter()
-//				.executeRead(entity.getEntityType(), entity.getUuid(), fieldsMapping)
-//				.findAny()
-//				.isEmpty())
-//			Query.create(entity);
+		//noinspection OptionalGetWithoutIsPresent
+		final FieldsMapping fieldsMapping = Conf.getConfiguration().getFieldsMappingFromEntityField(entity.getEntityType(), entity.getFieldsValues().keySet().stream().findAny().get());
+		if (fieldsMapping
+				.getType()
+				.getDatabaseAdapter()
+				.executeRead(entity.getEntityType(), entity.getUuid(), fieldsMapping)
+				.findAny()
+				.isEmpty())
+			Query.create(entity);
 		return entity.getUuid();
 	}
 
-	private static void insertValue(Object value)
-	{
-		if (value instanceof Collection<?>)
-			((Collection<?>) value).forEach(DatabaseAdapter::insertValue);
-		else if (value instanceof Entity)
-		{
-			final Entity entity = (Entity) value;
-			//noinspection OptionalGetWithoutIsPresent
-			final FieldsMapping fieldsMapping = Conf.getConfiguration().getFieldsMappingFromEntityField(entity.getEntityType(), entity.getFieldsValues().keySet().stream().findAny().get());
-			if (fieldsMapping
-					.getType()
-					.getDatabaseAdapter()
-					.executeRead(entity.getEntityType(), entity.getUuid(), fieldsMapping)
-					.findAny()
-					.isEmpty())
-				Query.create(entity);
-		}
-	}
+//	private static void insertValue(Object value)
+//	{
+//		if (value instanceof Collection<?>)
+//			((Collection<?>) value).forEach(DatabaseAdapter::insertValue);
+//		else if (value instanceof Entity)
+//		{
+//			final Entity entity = (Entity) value;
+//			//noinspection OptionalGetWithoutIsPresent
+//			final FieldsMapping fieldsMapping = Conf.getConfiguration().getFieldsMappingFromEntityField(entity.getEntityType(), entity.getFieldsValues().keySet().stream().findAny().get());
+//			if (fieldsMapping
+//					.getType()
+//					.getDatabaseAdapter()
+//					.executeRead(entity.getEntityType(), entity.getUuid(), fieldsMapping)
+//					.findAny()
+//					.isEmpty())
+//				Query.create(entity);
+//		}
+//	}
 
 	public abstract void executeCreate(Entity entity);
 

@@ -7,31 +7,31 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class Predicates
+public class Predicates<X>
 {
 	private Predicates()
 	{
 	}
 
 	@SafeVarargs
-	public static <X> Predicate<X> and(Predicate<X>... predicates)
+	public static <T> Predicate<T> and(Predicate<T>... predicates)
 	{
 		return Stream.of(predicates)
 				.reduce(Predicate::and)
-				.orElse(x -> true);
+				.orElse(t -> true);
 	}
 
 	@SafeVarargs
-	public static <X> Predicate<X> or(Predicate<X>... predicates)
+	public static <T> Predicate<T> or(Predicate<T>... predicates)
 	{
 		return Stream.of(predicates)
 				.reduce(Predicate::or)
-				.orElse(x -> false);
+				.orElse(t -> false);
 	}
 
-	public static <X> Predicate<X> not(Predicate<X> cond)
+	public static <T> Predicate<T> not(Predicate<T> predicate)
 	{
-		return cond.negate();
+		return predicate.negate();
 	}
 
 //	public static Predicate<Entity> gt(String field, int value)
