@@ -102,14 +102,15 @@ public abstract class DatabaseAdapter
 		final String errorMsg = "Element in list isn't a";
 		return switch (itemsType.getType())
 				{
-					case ARRAY -> collection.stream()
-							.map(element ->
-							{
-								if (element instanceof Collection<?>)
-									return checkArrayWithSchema((Collection<?>) element, itemsType.getItems());
-								throw new MissingFormatArgumentException(errorMsg + " list");
-							})
-							.collect(Collectors.toList());
+					case ARRAY -> throw new MissingFormatArgumentException("Only 1d array is possible");
+//							collection.stream()
+//							.map(element ->
+//							{
+//								if (element instanceof Collection<?>)
+//									return checkArrayWithSchema((Collection<?>) element, itemsType.getItems());
+//								throw new MissingFormatArgumentException(errorMsg + " list");
+//							})
+//							.collect(Collectors.toList());
 					case OBJECT -> collection.stream()
 							.map(element ->
 							{

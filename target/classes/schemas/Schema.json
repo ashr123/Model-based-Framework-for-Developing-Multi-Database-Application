@@ -77,6 +77,13 @@
 		  "relation": "aggregation",
 		  "type": "array",
 		  "items": {
+			"type": "array",
+			"items": {
+			  "javaType": "Person",
+			  "type": "object"
+			}
+		  },
+		  "items": {
 			"javaType": "Person",
 			"type": "object"
 		  }
