@@ -2,6 +2,7 @@ package dataLayer.crud.dbAdapters;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
+import dataLayer.readers.Reader;
 import dataLayer.readers.configReader.Conf;
 import dataLayer.crud.Entity;
 import iot.jcypher.database.DBAccessFactory;
@@ -15,6 +16,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.neo4j.driver.v1.AuthTokens;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -53,7 +55,8 @@ class MongoDBAdapterTest
 	@BeforeAll
 	void setUp() throws IOException
 	{
-		Conf.loadConfiguration(MongoDBAdapterTest.class.getResource("/configurations/configurationMongoDB.json"));
+		Reader.loadConfAndSchema(MongoDBAdapterTest.class.getResource("/configurations/configurationMongoDB.json"),
+				MongoDBAdapterTest.class.getResource("/schemas/Schema.json"));
 		create(roy, yossi, karin);
 		//createMany(roy, yossi, karin).executeAt(DBType.MONGODB.getDatabaseAdapter());
 	}
@@ -258,5 +261,29 @@ class MongoDBAdapterTest
 								or(
 										eq("Person", "phoneNumber", "0587158627"),
 										eq("Person", "name", "Yossi"))))));
+	}
+
+	@Test
+	void testNestedCreate()
+	{
+		Entity city = Entity.of("City", Map.of("name", "Newark",
+																	"mayor", "Mayor West."));
+		Entity nestedEntity = Entity.of("Person",
+				Map.of("name", "Elmo",
+						"age", 12L,
+						"phoneNumber", "0521212121",
+						"emailAddress", "Elmo@post.bgu.ac.il",
+						"livesAt", Entity.of("Address",
+								Map.of("street", "Sesame street",
+										"state", "New York",
+										"city", city,
+										"postal-code", "757212",
+										"country", "United States"))));
+
+		create(nestedEntity);
+		System.out.println(nestedEntity.toString());
+		assertEquals(Set.of(nestedEntity),
+				read(eq("Person", "name", "Elmo")),
+				"Should return person named Elmo.");
 	}
 }

@@ -6,9 +6,7 @@
 		  "type": "string"
 		},
 		"mayor": {
-		  "relation": "aggregation",
-		  "type": "object",
-		  "javaType": "Person"
+		  "type": "string"
 		}
 	  }
 	},
@@ -17,13 +15,13 @@
 		"street": {
 		  "type": "string"
 		},
+		"state": {
+		  "type": "string"
+		},
 		"city": {
 		  "relation": "aggregation",
 		  "type": "object",
 		  "javaType": "City"
-		},
-		"state": {
-		  "type": "string"
 		},
 		"postal-code": {
 		  "type": "string"
@@ -77,13 +75,6 @@
 		  "relation": "aggregation",
 		  "type": "array",
 		  "items": {
-			"type": "array",
-			"items": {
-			  "javaType": "Person",
-			  "type": "object"
-			}
-		  },
-		  "items": {
 			"javaType": "Person",
 			"type": "object"
 		  }
@@ -108,16 +99,10 @@
 		  "relation": "aggregation",
 		  "type": "object",
 		  "javaType": "Address"
-		},
-		"lecturers": {
-		  "relation": "aggregation",
-		  "type": "array",
-		  "items": {
-			"javaType": "Person",
-			"type": "object"
-		  }
 		}
 	  }
 	}
   }
 }
+
+

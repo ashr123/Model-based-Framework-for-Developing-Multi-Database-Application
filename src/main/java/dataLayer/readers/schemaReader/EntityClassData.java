@@ -22,11 +22,11 @@ public class EntityClassData
 				.forEach(EntityPropertyData::checkValidity);
 	}
 
-	public Map<String, EntityClassData> getRelatedClasses(RelationType relationType)
+	public Map<String, EntityClassData> getRelatedClasses()
 	{
 		return properties.entrySet().stream()
-				.filter(property -> property.getValue().isRelationProperty() && property.getValue().getRelation().equals(relationType))
-				.collect(Collectors.toMap(Map.Entry::getKey, property -> Schema.getEntityClass(property.getValue().getRelatedClassName())));
+				.filter(property -> property.getValue().isRelationProperty() && !property.getValue().getRelation().equals(null))
+				.collect(Collectors.toMap(property -> property.getValue().getRelatedClassName(), property -> Schema.getEntityClass(property.getValue().getRelatedClassName())));
 	}
 
 	public EntityPropertyData getPropertyData(String propertyName)

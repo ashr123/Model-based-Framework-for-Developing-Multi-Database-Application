@@ -5,6 +5,9 @@ import dataLayer.crud.filters.Filter;
 import dataLayer.crud.filters.SimpleFilter;
 import dataLayer.readers.configReader.Conf;
 import dataLayer.readers.configReader.FieldsMapping;
+import dataLayer.readers.schemaReader.Schema;
+import iot.jcypher.domainquery.api.Collect;
+import org.neo4j.storageengine.api.EntityType;
 
 import java.util.*;
 import java.util.function.Function;
@@ -36,7 +39,7 @@ public class Query
 
 	public static Set<Entity> read(Filter filter)
 	{
-		return makeEntitiesWhole(simpleRead(filter));
+		return completeEntitiesReferences(makeEntitiesWhole(simpleRead(filter)));
 	}
 
 	public static Stream<Entity> simpleRead(Filter filter)
@@ -131,5 +134,44 @@ public class Query
 					.reduce(Entity::merge).get());
 		});
 		return wholeEntities;
+	}
+
+	private static Set<Entity> completeEntitiesReferences(Set<Entity> entities)
+	{
+		entities.forEach(entity -> {
+			entity.getFieldsValues().entrySet()
+					.stream()
+					.filter( fieldAndValue -> fieldAndValue.getValue() instanceof UUID || (fieldAndValue.getValue() instanceof Collection<?> && ((Collection<?>) fieldAndValue.getValue()).stream().allMatch(UUID.class::isInstance)))
+					.forEach(fieldAndValue -> {
+						if(fieldAndValue.getValue() instanceof UUID){
+							Entity referencedEntity = getEntitiesFromReference(entity, fieldAndValue.getKey(), fieldAndValue.getValue());
+							String property = fieldAndValue.getKey();
+							entity.getFieldsValues().put(property, completeEntitiesReferences(Set.of(referencedEntity)).toArray(Entity[]::new)[0]);
+						}
+						else{
+							Set<Entity> referencedEntities = ((Collection<?>) fieldAndValue
+																	.getValue())
+																	.stream()
+																	.map(entityReference -> getEntitiesFromReference(entity, fieldAndValue.getKey(), entityReference))
+																	.collect(Collectors.toSet());
+							String property = fieldAndValue.getKey();
+							entity.getFieldsValues().put(property, completeEntitiesReferences(referencedEntities));
+						}
+					});
+		});
+		return entities;
+	}
+
+	private static Entity getEntitiesFromReference(Entity encapsulatingEntity, String propertyName, Object entityReference)
+	{
+		String missingRefType = Schema.getPropertyJavaType(encapsulatingEntity.getEntityType(),propertyName);
+//		FieldsMapping missingRefFieldsMapping = Conf.getConfiguration().getFieldsMappingForEntity(missingRefType).toArray(FieldsMapping[]::new)[0];
+//		Stream<Entity> missingRef = missingRefFieldsMapping
+//					.getType()
+//					.getDatabaseAdapter()
+//					.executeRead(missingRefType, (UUID)entityReference, missingRefFieldsMapping);
+//		return makeEntitiesWhole(missingRef).toArray(Entity[]::new)[0];
+		Entity referenceToBuild = new Entity((UUID)entityReference, missingRefType, new HashMap<>());
+		return makeEntitiesWhole(Set.of(referenceToBuild).stream()).toArray(Entity[]::new)[0];
 	}
 }

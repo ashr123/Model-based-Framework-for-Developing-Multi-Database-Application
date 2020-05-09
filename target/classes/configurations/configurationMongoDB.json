@@ -49,8 +49,7 @@
 	  "age": "mongo1",
 	  "phoneNumber": "mongo2",
 	  "emailAddress": "mongo2",
-	  "livesAt": "mongo2",
-	  "lecturers": "mongo2"
+	  "livesAt": "mongo2"
 	}
   }
 }

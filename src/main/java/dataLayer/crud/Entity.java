@@ -87,6 +87,7 @@ public class Entity
 		return Objects.hash(entityType, uuid, fieldsValues);
 	}
 
+	//TODO: Write a prettier toString.
 	@Override
 	public String toString()
 	{
