@@ -33,7 +33,7 @@ public class Query
 				{
 					DBType.MONGODB.getDatabaseAdapter().executeCreate(entity);
 					DBType.NEO4J.getDatabaseAdapter().executeCreate(entity);
-					//TODO: Comment needs to be removed when SQL adapter implemented !
+					//TODO: Comment needs to be removed when SQL adapter implemented!
 					//DBType.MYSQL.getDatabaseAdapter().executeCreate(entity);
 				});
 	}
@@ -156,7 +156,7 @@ public class Query
 
 	private static boolean isStringUUID(Map.Entry<String, Object> fieldAndValue)
 	{
-		final String UUIDRegex = "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}";
+		final String UUIDRegex = "(?i)[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}";
 		if (fieldAndValue.getValue() instanceof String)
 			return ((String) fieldAndValue.getValue()).matches(UUIDRegex);
 		if (fieldAndValue.getValue() instanceof Collection<?>)
@@ -180,7 +180,9 @@ public class Query
 	{
 		Collection<Set<Entity>> temp = read(filter).stream()
 				.collect(groupingBy(Entity::getEntityType, toSet())).values();
-		Set<Entity> firstSet = temp.stream().findFirst().orElse(Set.of());
+		Set<Entity> firstSet = temp.stream()
+				.findFirst()
+				.orElse(Set.of());
 		return temp.stream()
 				.filter(entitySet -> !firstSet.equals(entitySet))
 				.reduce(transformEntitiesFields(firstSet), (entities1, entities2) -> entities1.stream()
