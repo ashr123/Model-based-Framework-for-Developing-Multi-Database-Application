@@ -1,6 +1,8 @@
 package dataLayer.crud.dbAdapters;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import dataLayer.crud.Entity;
+import dataLayer.readers.configReader.Conf;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -244,8 +246,8 @@ public abstract class DatabaseTest
 	}
 
 	@Test
-	void testJoin()
+	void testJoin() throws JsonProcessingException
 	{
-		System.out.println(join(gt("Person", "age", 18), entity -> true));
+		System.out.println(Conf.toJson(join(gt("Person", "age", 18), entity -> true)));
 	}
 }

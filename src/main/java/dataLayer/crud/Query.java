@@ -28,7 +28,7 @@ public class Query
 //						temp.computeIfAbsent(fieldsMapping, fieldsMapping1 -> Conf.getConfiguration().getFieldsFromTypeAndMapping(entity.getEntityType(), fieldsMapping1));
 //					});
 //		});
-		Arrays.stream(entities)
+		Stream.of(entities)
 				.forEach(entity ->
 				{
 					DBType.MONGODB.getDatabaseAdapter().executeCreate(entity);
@@ -157,30 +157,31 @@ public class Query
 	private static boolean checkIfUUID(Map.Entry<String, Object> fieldAndValue)
 	{
 		final String UUIDRegex = "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}";
-		if(fieldAndValue.getValue() instanceof String)
+		if (fieldAndValue.getValue() instanceof String)
 			return ((String) fieldAndValue.getValue()).matches(UUIDRegex);
-		if(fieldAndValue.getValue() instanceof Collection<?>)
+		if (fieldAndValue.getValue() instanceof Collection<?>)
 			return ((Collection<?>) fieldAndValue.getValue()).stream().allMatch(uuid -> ((String) uuid).matches(UUIDRegex));
 		return false;
 	}
 
+	@SuppressWarnings("OptionalGetWithoutIsPresent")
 	private static Entity getEntitiesFromReference(Entity encapsulatingEntity, String propertyName, Object entityReference)
 	{
-		if(entityReference instanceof String)
-			return makeEntitiesWhole(Set.of(new Entity((String) entityReference, Schema.getPropertyJavaType(encapsulatingEntity.getEntityType(), propertyName), new HashMap<>())).stream())
-					.toArray(Entity[]::new)[0];
+		if (entityReference instanceof String)
+			return makeEntitiesWhole(Set.of(new Entity((String) entityReference, Schema.getPropertyJavaType(encapsulatingEntity.getEntityType(), propertyName), new HashMap<>())).stream()).stream()
+					.findFirst().get();
 		else
-			return makeEntitiesWhole(Set.of(new Entity((UUID) entityReference, Schema.getPropertyJavaType(encapsulatingEntity.getEntityType(), propertyName), new HashMap<>())).stream())
-				.toArray(Entity[]::new)[0];
+			return makeEntitiesWhole(Set.of(new Entity((UUID) entityReference, Schema.getPropertyJavaType(encapsulatingEntity.getEntityType(), propertyName), new HashMap<>())).stream()).stream()
+					.findFirst().get();
 	}
 
 	public static Set<Entity> join(Filter filter, Predicate<Entity> predicate)
 	{
 		Collection<Set<Entity>> temp = read(filter).stream()
 				.collect(groupingBy(Entity::getEntityType, toSet())).values();
-		Set<Entity> firstSet = temp.stream().findAny().orElse(Set.of());
+		Set<Entity> firstSet = temp.stream().findFirst().orElse(Set.of());
 		return temp.stream()
-				.filter(firstSet::equals)
+				.filter(entitySet -> !firstSet.equals(entitySet))
 				.reduce(transformEntitiesFields(firstSet), (entities1, entities2) -> entities1.stream()
 						.flatMap(entity1 -> transformEntitiesFields(entities2).stream()
 								.map(entity2 -> new Entity(entity1.getFieldsValues()).merge(entity2))
@@ -190,10 +191,11 @@ public class Query
 
 	private static Set<Entity> transformEntitiesFields(Set<Entity> entities)
 	{
-		entities.forEach(entity ->
-				entity.setFieldsValues(entity.getFieldsValues().entrySet().stream()
-						.map(fieldAndValue -> Map.entry(entity.getEntityType()+'.'+fieldAndValue.getKey(), fieldAndValue.getValue()))
-						.collect(toMap(Map.Entry::getKey, Map.Entry::getValue))));
-		return entities;
+		return entities.stream()
+				.map(entity ->
+						new Entity(entity.getFieldsValues().entrySet().stream()
+								.map(fieldAndValue -> Map.entry(entity.getEntityType() + '.' + fieldAndValue.getKey(), fieldAndValue.getValue()))
+								.collect(toMap(Map.Entry::getKey, Map.Entry::getValue))))
+				.collect(Collectors.toSet());
 	}
 }

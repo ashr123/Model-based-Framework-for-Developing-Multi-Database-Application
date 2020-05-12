@@ -54,38 +54,12 @@ public abstract class DatabaseAdapter
 					final FieldsMapping fieldMappingFromEntityFields = Conf.getConfiguration().getFieldsMappingFromEntityField(entity.getEntityType(), field);
 					if (fieldMappingFromEntityFields.getType().equals(dbType))
 					{
-						final EntityPropertyData propertyType = Schema.getPropertyType(entity.getEntityType(), field);
-						switch (propertyType.getType())
-						{
-							case ARRAY -> {
-								if (!(value instanceof Collection<?>))
-									throw new MissingFormatArgumentException("Value of " + entity.getEntityType() + '.' + field + " isn't a list");
-								value = checkArrayWithSchema((Collection<?>) value, propertyType.getItems());
-							}
-							case OBJECT -> {
-								if (!(value instanceof Entity))
-									throw new MissingFormatArgumentException("Value of " + entity.getEntityType() + '.' + field + " isn't an Entity");
-								value = checkObjectWithSchema((Entity) value, propertyType.getJavaType());
-							}
-							case NUMBER -> {
-								if (!(value instanceof Number))
-									throw new MissingFormatArgumentException("Value of " + entity.getEntityType() + '.' + field + " isn't a number");
-							}
-							case STRING -> {
-								if (!(value instanceof String))
-									throw new MissingFormatArgumentException("Value of " + entity.getEntityType() + '.' + field + " isn't a string");
-							}
-							case BOOLEAN -> {
-								if (!(value instanceof Boolean))
-									throw new MissingFormatArgumentException("Value of " + entity.getEntityType() + '.' + field + " isn't a boolean");
-							}
-						}
 						locationDocumentMap.computeIfAbsent(fieldMappingFromEntityFields, fieldsMapping ->
 						{
 							final Map<String, Object> properties = new HashMap<>();
 							properties.put("uuid", entity.getUuid());
 							return properties;
-						}).put(field, value);
+						}).put(field, validateAndTransformEntity(entity.getEntityType(), field, value));
 					}
 				});
 //		entity.getFieldsValues()
@@ -95,6 +69,42 @@ public abstract class DatabaseAdapter
 //						insertValue(value);
 //				});
 		return locationDocumentMap;
+	}
+
+	protected static void editFieldValueMap(String entityType, Map<String, Object> fieldsAndValues)
+	{
+		fieldsAndValues.forEach((field, value) -> fieldsAndValues.replace(field, validateAndTransformEntity(entityType, field, value)));
+	}
+
+	private static Object validateAndTransformEntity(String entityType, String field, Object value)
+	{
+		final EntityPropertyData propertyType = Schema.getPropertyType(entityType, field);
+		switch (propertyType.getType())
+		{
+			case ARRAY -> {
+				if (!(value instanceof Collection<?>))
+					throw new MissingFormatArgumentException("Value of " + entityType + '.' + field + " isn't a list");
+				value = checkArrayWithSchema((Collection<?>) value, propertyType.getItems());
+			}
+			case OBJECT -> {
+				if (!(value instanceof Entity))
+					throw new MissingFormatArgumentException("Value of " + entityType + '.' + field + " isn't an Entity");
+				value = checkObjectWithSchema((Entity) value, propertyType.getJavaType());
+			}
+			case NUMBER -> {
+				if (!(value instanceof Number))
+					throw new MissingFormatArgumentException("Value of " + entityType + '.' + field + " isn't a number");
+			}
+			case STRING -> {
+				if (!(value instanceof String))
+					throw new MissingFormatArgumentException("Value of " + entityType + '.' + field + " isn't a string");
+			}
+			case BOOLEAN -> {
+				if (!(value instanceof Boolean))
+					throw new MissingFormatArgumentException("Value of " + entityType + '.' + field + " isn't a boolean");
+			}
+		}
+		return value;
 	}
 
 	private static Collection<?> checkArrayWithSchema(Collection<?> collection, EntityPropertyData itemsType)

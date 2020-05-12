@@ -222,16 +222,20 @@ public class Neo4jAdapter extends DatabaseAdapter
 		{
 			updates.forEach((entityType, uuidsAndUpdates) ->
 			{
-				JcNode jcNode = new JcNode(entityType);
-				JcQuery jcQuery = new JcQuery();
-				List<IClause> clauses = new ArrayList<>(2 + uuidsAndUpdates.getSecond().size());
-				clauses.add(MATCH.node(jcNode).label(entityType));
-				clauses.add(WHERE.valueOf(jcNode.property("uuid")).IN_list(uuidsAndUpdates.getFirst()));
-				uuidsAndUpdates.getSecond()
-						.forEach((field, value) ->
-								clauses.add(DO.SET(jcNode.property(field)).to(value)));
-				jcQuery.setClauses(clauses.toArray(IClause[]::new));
-				idbAccess.execute(jcQuery);
+				if (!uuidsAndUpdates.getSecond().isEmpty())
+				{
+					editFieldValueMap(entityType, uuidsAndUpdates.getSecond());
+					JcNode jcNode = new JcNode(entityType);
+					JcQuery jcQuery = new JcQuery();
+					List<IClause> clauses = new ArrayList<>(2 + uuidsAndUpdates.getSecond().size());
+					clauses.add(MATCH.node(jcNode).label(entityType));
+					clauses.add(WHERE.valueOf(jcNode.property("uuid")).IN_list(uuidsAndUpdates.getFirst()));
+					uuidsAndUpdates.getSecond()
+							.forEach((field, value) ->
+									clauses.add(DO.SET(jcNode.property(field)).to(value)));
+					jcQuery.setClauses(clauses.toArray(IClause[]::new));
+					idbAccess.execute(jcQuery);
+				}
 			});
 		}
 		finally

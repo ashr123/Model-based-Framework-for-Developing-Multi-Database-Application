@@ -149,6 +149,8 @@ public class MongoDBAdapter extends DatabaseAdapter
 			updates.forEach((entityType, uuidsAndUpdates) ->
 			{
 				if (!uuidsAndUpdates.getSecond().isEmpty())
+				{
+					editFieldValueMap(entityType, uuidsAndUpdates.getSecond());
 					database.getCollection(entityType)
 							.updateMany(or(uuidsAndUpdates.getFirst().stream()
 											.map(uuid -> eq("uuid", uuid))
@@ -156,6 +158,7 @@ public class MongoDBAdapter extends DatabaseAdapter
 									combine(uuidsAndUpdates.getSecond().entrySet().stream()
 											.map(fieldsAndValues -> set(fieldsAndValues.getKey(), fieldsAndValues.getValue()))
 											.collect(Collectors.toList())));
+				}
 			});
 		}
 	}
