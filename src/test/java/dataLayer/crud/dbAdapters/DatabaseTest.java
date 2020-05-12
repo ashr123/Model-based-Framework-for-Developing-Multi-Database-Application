@@ -242,4 +242,10 @@ public abstract class DatabaseTest
 				read(eq("Person", "name", "Elmo")),
 				"Should return person named Elmo.");
 	}
+
+	@Test
+	void testJoin()
+	{
+		System.out.println(join(gt("Person", "age", 18), entity -> true));
+	}
 }

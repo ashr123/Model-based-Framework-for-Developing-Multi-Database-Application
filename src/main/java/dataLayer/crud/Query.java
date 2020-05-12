@@ -140,10 +140,10 @@ public class Query
 	private static Set<Entity> completeEntitiesReferences(Set<Entity> entities)
 	{
 		entities.forEach(entity -> entity.getFieldsValues().entrySet().stream()
-				.filter(fieldAndValue -> fieldAndValue.getValue() instanceof UUID || (fieldAndValue.getValue() instanceof Collection<?> && ((Collection<?>) fieldAndValue.getValue()).stream().allMatch(UUID.class::isInstance)))
+				.filter(fieldAndValue -> checkIfUUID(fieldAndValue) || fieldAndValue.getValue() instanceof UUID || (fieldAndValue.getValue() instanceof Collection<?> && ((Collection<?>) fieldAndValue.getValue()).stream().allMatch(UUID.class::isInstance)))
 				.forEach(fieldAndValue ->
 				{
-					if (fieldAndValue.getValue() instanceof UUID)
+					if (fieldAndValue.getValue() instanceof String || fieldAndValue.getValue() instanceof UUID)
 						entity.getFieldsValues().put(fieldAndValue.getKey(), completeEntitiesReferences(Set.of(getEntitiesFromReference(entity, fieldAndValue.getKey(), fieldAndValue.getValue())))
 								.toArray(Entity[]::new)[0]);
 					else
@@ -154,9 +154,23 @@ public class Query
 		return entities;
 	}
 
+	private static boolean checkIfUUID(Map.Entry<String, Object> fieldAndValue)
+	{
+		final String UUIDRegex = "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}";
+		if(fieldAndValue.getValue() instanceof String)
+			return ((String) fieldAndValue.getValue()).matches(UUIDRegex);
+		if(fieldAndValue.getValue() instanceof Collection<?>)
+			return ((Collection<?>) fieldAndValue.getValue()).stream().allMatch(uuid -> ((String) uuid).matches(UUIDRegex));
+		return false;
+	}
+
 	private static Entity getEntitiesFromReference(Entity encapsulatingEntity, String propertyName, Object entityReference)
 	{
-		return makeEntitiesWhole(Set.of(new Entity((UUID) entityReference, Schema.getPropertyJavaType(encapsulatingEntity.getEntityType(), propertyName), new HashMap<>())).stream())
+		if(entityReference instanceof String)
+			return makeEntitiesWhole(Set.of(new Entity((String) entityReference, Schema.getPropertyJavaType(encapsulatingEntity.getEntityType(), propertyName), new HashMap<>())).stream())
+					.toArray(Entity[]::new)[0];
+		else
+			return makeEntitiesWhole(Set.of(new Entity((UUID) entityReference, Schema.getPropertyJavaType(encapsulatingEntity.getEntityType(), propertyName), new HashMap<>())).stream())
 				.toArray(Entity[]::new)[0];
 	}
 
