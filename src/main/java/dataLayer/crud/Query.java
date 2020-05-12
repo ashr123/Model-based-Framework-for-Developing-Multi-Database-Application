@@ -6,13 +6,14 @@ import dataLayer.crud.filters.SimpleFilter;
 import dataLayer.readers.configReader.Conf;
 import dataLayer.readers.configReader.FieldsMapping;
 import dataLayer.readers.schemaReader.Schema;
-import iot.jcypher.domainquery.api.Collect;
-import org.neo4j.storageengine.api.EntityType;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.*;
 
 // TODO add filter validations
 public class Query
@@ -138,40 +139,47 @@ public class Query
 
 	private static Set<Entity> completeEntitiesReferences(Set<Entity> entities)
 	{
-		entities.forEach(entity -> {
-			entity.getFieldsValues().entrySet()
-					.stream()
-					.filter( fieldAndValue -> fieldAndValue.getValue() instanceof UUID || (fieldAndValue.getValue() instanceof Collection<?> && ((Collection<?>) fieldAndValue.getValue()).stream().allMatch(UUID.class::isInstance)))
-					.forEach(fieldAndValue -> {
-						if(fieldAndValue.getValue() instanceof UUID){
-							Entity referencedEntity = getEntitiesFromReference(entity, fieldAndValue.getKey(), fieldAndValue.getValue());
-							String property = fieldAndValue.getKey();
-							entity.getFieldsValues().put(property, completeEntitiesReferences(Set.of(referencedEntity)).toArray(Entity[]::new)[0]);
-						}
-						else{
-							Set<Entity> referencedEntities = ((Collection<?>) fieldAndValue
-																	.getValue())
-																	.stream()
-																	.map(entityReference -> getEntitiesFromReference(entity, fieldAndValue.getKey(), entityReference))
-																	.collect(Collectors.toSet());
-							String property = fieldAndValue.getKey();
-							entity.getFieldsValues().put(property, completeEntitiesReferences(referencedEntities));
-						}
-					});
-		});
+		entities.forEach(entity -> entity.getFieldsValues().entrySet().stream()
+				.filter(fieldAndValue -> fieldAndValue.getValue() instanceof UUID || (fieldAndValue.getValue() instanceof Collection<?> && ((Collection<?>) fieldAndValue.getValue()).stream().allMatch(UUID.class::isInstance)))
+				.forEach(fieldAndValue ->
+				{
+					if (fieldAndValue.getValue() instanceof UUID)
+						entity.getFieldsValues().put(fieldAndValue.getKey(), completeEntitiesReferences(Set.of(getEntitiesFromReference(entity, fieldAndValue.getKey(), fieldAndValue.getValue())))
+								.toArray(Entity[]::new)[0]);
+					else
+						entity.getFieldsValues().put(fieldAndValue.getKey(), completeEntitiesReferences(((Collection<?>) fieldAndValue.getValue()).stream()
+								.map(entityReference -> getEntitiesFromReference(entity, fieldAndValue.getKey(), entityReference))
+								.collect(toSet())));
+				}));
 		return entities;
 	}
 
 	private static Entity getEntitiesFromReference(Entity encapsulatingEntity, String propertyName, Object entityReference)
 	{
-		String missingRefType = Schema.getPropertyJavaType(encapsulatingEntity.getEntityType(),propertyName);
-//		FieldsMapping missingRefFieldsMapping = Conf.getConfiguration().getFieldsMappingForEntity(missingRefType).toArray(FieldsMapping[]::new)[0];
-//		Stream<Entity> missingRef = missingRefFieldsMapping
-//					.getType()
-//					.getDatabaseAdapter()
-//					.executeRead(missingRefType, (UUID)entityReference, missingRefFieldsMapping);
-//		return makeEntitiesWhole(missingRef).toArray(Entity[]::new)[0];
-		Entity referenceToBuild = new Entity((UUID)entityReference, missingRefType, new HashMap<>());
-		return makeEntitiesWhole(Set.of(referenceToBuild).stream()).toArray(Entity[]::new)[0];
+		return makeEntitiesWhole(Set.of(new Entity((UUID) entityReference, Schema.getPropertyJavaType(encapsulatingEntity.getEntityType(), propertyName), new HashMap<>())).stream())
+				.toArray(Entity[]::new)[0];
+	}
+
+	public static Set<Entity> join(Filter filter, Predicate<Entity> predicate)
+	{
+		Collection<Set<Entity>> temp = read(filter).stream()
+				.collect(groupingBy(Entity::getEntityType, toSet())).values();
+		Set<Entity> firstSet = temp.stream().findAny().orElse(Set.of());
+		return temp.stream()
+				.filter(firstSet::equals)
+				.reduce(transformEntitiesFields(firstSet), (entities1, entities2) -> entities1.stream()
+						.flatMap(entity1 -> transformEntitiesFields(entities2).stream()
+								.map(entity2 -> new Entity(entity1.getFieldsValues()).merge(entity2))
+								.filter(predicate))
+						.collect(Collectors.toSet()));
+	}
+
+	private static Set<Entity> transformEntitiesFields(Set<Entity> entities)
+	{
+		entities.forEach(entity ->
+				entity.setFieldsValues(entity.getFieldsValues().entrySet().stream()
+						.map(fieldAndValue -> Map.entry(entity.getEntityType()+'.'+fieldAndValue.getKey(), fieldAndValue.getValue()))
+						.collect(toMap(Map.Entry::getKey, Map.Entry::getValue))));
+		return entities;
 	}
 }

@@ -8,7 +8,12 @@ public class Entity
 {
 	private final UUID uuid;
 	private final String entityType;
-	private final Map<String, Object> fieldsValues;
+	private Map<String, Object> fieldsValues;
+
+	Entity(Map<String, Object> fieldsValues)
+	{
+		this((UUID) null, null, fieldsValues);
+	}
 
 	public Entity(String entityType, Map<String, Object> fieldsValues)
 	{
@@ -68,23 +73,26 @@ public class Entity
 		return this;
 	}
 
+	void setFieldsValues(Map<String, Object> newMap)
+	{
+		fieldsValues = newMap;
+	}
+
 	@Override
 	public boolean equals(Object o)
 	{
-		if (this == o)
-			return true;
-		if (!(o instanceof Entity))
-			return false;
+		if (this == o) return true;
+		if (!(o instanceof Entity)) return false;
 		Entity entity = (Entity) o;
-		return uuid.equals(entity.uuid) &&
-		       entityType.equals(entity.entityType) &&
+		return Objects.equals(uuid, entity.uuid) &&
+		       Objects.equals(entityType, entity.entityType) &&
 		       fieldsValues.equals(entity.fieldsValues);
 	}
 
 	@Override
 	public int hashCode()
 	{
-		return Objects.hash(entityType, uuid, fieldsValues);
+		return Objects.hash(uuid, entityType, fieldsValues);
 	}
 
 	//TODO: Write a prettier toString.

@@ -14,7 +14,7 @@
 	},
 	"mongo1": {
 	  "type": "mongodb",
-	  "connStr": "localhost",
+	  "connStr": "mongodb://localhost",
 	  "location": "myDB"
 	}
   },
