@@ -140,7 +140,7 @@ public class Query
 	private static Set<Entity> completeEntitiesReferences(Set<Entity> entities)
 	{
 		entities.forEach(entity -> entity.getFieldsValues().entrySet().stream()
-				.filter(fieldAndValue -> checkIfUUID(fieldAndValue) || fieldAndValue.getValue() instanceof UUID || (fieldAndValue.getValue() instanceof Collection<?> && ((Collection<?>) fieldAndValue.getValue()).stream().allMatch(UUID.class::isInstance)))
+				.filter(fieldAndValue -> isStringUUID(fieldAndValue) || fieldAndValue.getValue() instanceof UUID || (fieldAndValue.getValue() instanceof Collection<?> && ((Collection<?>) fieldAndValue.getValue()).stream().allMatch(UUID.class::isInstance)))
 				.forEach(fieldAndValue ->
 				{
 					if (fieldAndValue.getValue() instanceof String || fieldAndValue.getValue() instanceof UUID)
@@ -154,13 +154,14 @@ public class Query
 		return entities;
 	}
 
-	private static boolean checkIfUUID(Map.Entry<String, Object> fieldAndValue)
+	private static boolean isStringUUID(Map.Entry<String, Object> fieldAndValue)
 	{
 		final String UUIDRegex = "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}";
 		if (fieldAndValue.getValue() instanceof String)
 			return ((String) fieldAndValue.getValue()).matches(UUIDRegex);
 		if (fieldAndValue.getValue() instanceof Collection<?>)
-			return ((Collection<?>) fieldAndValue.getValue()).stream().allMatch(uuid -> ((String) uuid).matches(UUIDRegex));
+			return ((Collection<?>) fieldAndValue.getValue()).stream()
+					.allMatch(uuid -> ((String) uuid).matches(UUIDRegex));
 		return false;
 	}
 
