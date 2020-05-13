@@ -185,11 +185,13 @@ public class Query
 				.orElse(Set.of());
 		return temp.stream()
 				.filter(entitySet -> !firstSet.equals(entitySet))
-				.reduce(transformEntitiesFields(firstSet), (entities1, entities2) -> entities1.stream()
+				.reduce(transformEntitiesFields(firstSet).stream()
+						.filter(predicate)
+						.collect(toSet()), (entities1, entities2) -> entities1.stream()
 						.flatMap(entity1 -> transformEntitiesFields(entities2).stream()
 								.map(entity2 -> new Entity(entity1.getFieldsValues()).merge(entity2))
 								.filter(predicate))
-						.collect(Collectors.toSet()));
+						.collect(toSet()));
 	}
 
 	private static Set<Entity> transformEntitiesFields(Set<Entity> entities)
