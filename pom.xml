@@ -13,7 +13,13 @@
 	</properties>
 
 	<dependencies>
-<!--		&lt;!&ndash; https://mvnrepository.com/artifact/com.fasterxml.uuid/java-uuid-generator &ndash;&gt;-->
+		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple -->
+<!--		<dependency>-->
+<!--			<groupId>org.slf4j</groupId>-->
+<!--			<artifactId>slf4j-simple</artifactId>-->
+<!--			<version>1.7.30</version>-->
+<!--		</dependency>-->
+		<!--		&lt;!&ndash; https://mvnrepository.com/artifact/com.fasterxml.uuid/java-uuid-generator &ndash;&gt;-->
 <!--		<dependency>-->
 <!--			<groupId>com.fasterxml.uuid</groupId>-->
 <!--			<artifactId>java-uuid-generator</artifactId>-->

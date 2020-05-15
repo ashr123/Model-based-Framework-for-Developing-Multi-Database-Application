@@ -15,10 +15,8 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.*;
 
-// TODO add filter validations
 public class Query
 {
-	// TODO Add Schema checking
 	public static void create(Entity... entities)
 	{
 //		Arrays.stream(entities).forEach(entity -> {
@@ -144,8 +142,8 @@ public class Query
 				.forEach(fieldAndValue ->
 				{
 					if (fieldAndValue.getValue() instanceof String || fieldAndValue.getValue() instanceof UUID)
-						entity.getFieldsValues().put(fieldAndValue.getKey(), completeEntitiesReferences(Set.of(getEntitiesFromReference(entity, fieldAndValue.getKey(), fieldAndValue.getValue())))
-								.toArray(Entity[]::new)[0]);
+						entity.getFieldsValues().put(fieldAndValue.getKey(), completeEntitiesReferences(Set.of(getEntitiesFromReference(entity, fieldAndValue.getKey(), fieldAndValue.getValue()))).stream()
+								.findFirst().get());
 					else
 						entity.getFieldsValues().put(fieldAndValue.getKey(), completeEntitiesReferences(((Collection<?>) fieldAndValue.getValue()).stream()
 								.map(entityReference -> getEntitiesFromReference(entity, fieldAndValue.getKey(), entityReference))
@@ -179,19 +177,19 @@ public class Query
 	public static Set<Entity> join(Filter filter, Predicate<Entity> predicate)
 	{
 		Collection<Set<Entity>> temp = read(filter).stream()
-				.collect(groupingBy(Entity::getEntityType, toSet())).values();
+				.collect(groupingBy(Entity::getEntityType, toSet()))
+				.values();
 		Set<Entity> firstSet = temp.stream()
 				.findFirst()
 				.orElse(Set.of());
 		return temp.stream()
 				.filter(entitySet -> !firstSet.equals(entitySet))
-				.reduce(transformEntitiesFields(firstSet).stream()
-						.filter(predicate)
-						.collect(toSet()), (entities1, entities2) -> entities1.stream()
+				.reduce(transformEntitiesFields(firstSet), (entities1, entities2) -> entities1.stream()
 						.flatMap(entity1 -> transformEntitiesFields(entities2).stream()
-								.map(entity2 -> new Entity(entity1.getFieldsValues()).merge(entity2))
-								.filter(predicate))
-						.collect(toSet()));
+								.map(entity2 -> new Entity(entity1.getFieldsValues()).merge(entity2)))
+						.collect(toSet())).stream()
+				.filter(predicate)
+				.collect(toSet());
 	}
 
 	private static Set<Entity> transformEntitiesFields(Set<Entity> entities)

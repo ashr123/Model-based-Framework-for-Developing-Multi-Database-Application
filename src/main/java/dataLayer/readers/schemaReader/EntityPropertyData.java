@@ -63,18 +63,19 @@ public class EntityPropertyData
 	{
 		if (type.equals(PropertyType.OBJECT))
 			return javaType;
-		if (type.equals(PropertyType.ARRAY))
+		if (type.equals(PropertyType.ARRAY)) // TODO Prevent deep arrays
 			return items.getRelatedClassName();
 		throw new NoSuchElementException("The property does not represent a relation.");
 	}
 
 	public boolean isRelationProperty()
 	{
-		if (type.equals(PropertyType.OBJECT))
-			return true;
-		if (type.equals(PropertyType.ARRAY))
-			return items.isRelationProperty();
-		return false;
+		return type.equals(PropertyType.OBJECT) || (type.equals(PropertyType.ARRAY) && items.isRelationProperty());
+//		if (type.equals(PropertyType.OBJECT))
+//			return true;
+//		if (type.equals(PropertyType.ARRAY))
+//			return items.isRelationProperty();
+//		return false;
 	}
 
 	@Override
