@@ -5,7 +5,7 @@ public abstract class SimpleFilter implements Filter
 	private final String entityType, fieldName;
 	private final Object value;
 
-	public SimpleFilter(String entityType, String fieldName, Object value)
+	protected SimpleFilter(String entityType, String fieldName, Object value)
 	{
 		this.entityType = entityType;
 		this.fieldName = fieldName;

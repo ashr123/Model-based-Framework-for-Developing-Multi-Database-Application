@@ -1,5 +1,7 @@
 package dataLayer.crud;
 
+import dataLayer.crud.dbAdapters.DatabaseAdapter;
+
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -8,7 +10,7 @@ public class Entity
 {
 	private final UUID uuid;
 	private final String entityType;
-	private Map<String, Object> fieldsValues;
+	private final Map<String, Object> fieldsValues;
 
 	Entity(Map<String, Object> fieldsValues)
 	{
@@ -20,12 +22,22 @@ public class Entity
 		this(UUID.randomUUID(), entityType, fieldsValues);
 	}
 
-	public Entity(String uuid, String entityType, Map<String, Object> fieldsValues)
+	public Entity(String uuid, String entityType, Map<String, Object> fieldsValues, DatabaseAdapter.Friend friend)
+	{
+		this(uuid, entityType, fieldsValues);
+	}
+
+	Entity(String uuid, String entityType, Map<String, Object> fieldsValues)
 	{
 		this(UUID.fromString(uuid), entityType, fieldsValues);
 	}
 
-	public Entity(UUID uuid, String entityType, Map<String, Object> fieldsValues)
+	public Entity(UUID uuid, String entityType, Map<String, Object> fieldsValues, DatabaseAdapter.Friend friend)
+	{
+		this(uuid, entityType, fieldsValues);
+	}
+
+	Entity(UUID uuid, String entityType, Map<String, Object> fieldsValues)
 	{
 		this.uuid = uuid;
 		this.entityType = entityType;
@@ -73,16 +85,13 @@ public class Entity
 		return this;
 	}
 
-	void setFieldsValues(Map<String, Object> newMap)
-	{
-		fieldsValues = newMap;
-	}
-
 	@Override
 	public boolean equals(Object o)
 	{
-		if (this == o) return true;
-		if (!(o instanceof Entity)) return false;
+		if (this == o)
+			return true;
+		if (!(o instanceof Entity))
+			return false;
 		Entity entity = (Entity) o;
 		return Objects.equals(uuid, entity.uuid) &&
 		       Objects.equals(entityType, entity.entityType) &&

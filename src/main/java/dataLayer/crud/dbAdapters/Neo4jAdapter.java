@@ -30,6 +30,10 @@ import java.util.stream.Stream;
  */
 public class Neo4jAdapter extends DatabaseAdapter
 {
+	Neo4jAdapter()
+	{
+	}
+
 	private static IDBAccess getDBAccess(FieldsMapping fieldsMapping)
 	{
 		Properties props = new Properties();
@@ -43,7 +47,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 				grNode.getLabels().get(0).getName(),
 				grNode.getProperties().stream()
 						.filter(grProperty -> !(grProperty.getName().equals("_c_version_") || grProperty.getName().equals("uuid")))
-						.collect(Collectors.toMap(GrProperty::getName, GrProperty::getValue, (a, b) -> b)));
+						.collect(Collectors.toMap(GrProperty::getName, GrProperty::getValue, (a, b) -> b)), FRIEND);
 	}
 
 	private static Stream<Entity> query(SimpleFilter simpleFilter, JcQuery jcQuery, JcNode jcNode)

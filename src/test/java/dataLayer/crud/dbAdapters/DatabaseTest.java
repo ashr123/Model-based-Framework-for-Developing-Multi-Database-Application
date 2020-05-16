@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Set;
 
 import static dataLayer.crud.Query.*;
-import static dataLayer.crud.Query.read;
 import static dataLayer.crud.filters.And.and;
 import static dataLayer.crud.filters.Eq.eq;
 import static dataLayer.crud.filters.Gt.gt;
@@ -79,7 +78,10 @@ public abstract class DatabaseTest
 
 		update(eq("Person", "name", "RoyForUpdate"), updates);
 
-		Entity updatedRoy = read(eq("Person", "name", "RoyForUpdate")).toArray(Entity[]::new)[0];
+		//noinspection OptionalGetWithoutIsPresent
+		Entity updatedRoy = read(eq("Person", "name", "RoyForUpdate")).stream()
+				.findFirst()
+				.get();
 
 		assertEquals(updatedRoy.get("age"), 18L, "Age should be updated to 18.");
 
@@ -224,8 +226,6 @@ public abstract class DatabaseTest
 	@Test
 	void testNestedCreate()
 	{
-		Entity city = Entity.of("City", Map.of("name", "Newark",
-				"mayor", "Mayor West."));
 		Entity nestedEntity = Entity.of("Person",
 				Map.of("name", "Elmo",
 						"age", 12L,
@@ -234,12 +234,13 @@ public abstract class DatabaseTest
 						"livesAt", Entity.of("Address",
 								Map.of("street", "Sesame street",
 										"state", "New York",
-										"city", city,
+										"city", Entity.of("City", Map.of("name", "Newark",
+												"mayor", "Mayor West.")),
 										"postal-code", "757212",
 										"country", "United States"))));
 
 		create(nestedEntity);
-		System.out.println(nestedEntity.toString());
+		System.out.println(nestedEntity);
 		assertEquals(Set.of(nestedEntity),
 				read(eq("Person", "name", "Elmo")),
 				"Should return person named Elmo.");

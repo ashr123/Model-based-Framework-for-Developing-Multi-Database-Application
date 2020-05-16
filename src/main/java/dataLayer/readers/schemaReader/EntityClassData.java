@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("ConstantConditions")
@@ -42,6 +43,23 @@ public class EntityClassData
 	public Collection<String> getClassPropertiesNames()
 	{
 		return properties.keySet();
+	}
+
+	@Override
+	public boolean equals(Object o)
+	{
+		return this == o || o instanceof EntityClassData && properties.equals(((EntityClassData) o).properties);
+//		if (this == o)
+//			return true;
+//		if (!(o instanceof EntityClassData))
+//			return false;
+//		return properties.equals(((EntityClassData) o).properties);
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return Objects.hash(properties);
 	}
 
 	@Override

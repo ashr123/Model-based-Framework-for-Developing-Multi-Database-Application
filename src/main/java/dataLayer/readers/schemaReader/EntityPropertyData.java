@@ -87,9 +87,9 @@ public class EntityPropertyData
 			return false;
 		EntityPropertyData that = (EntityPropertyData) o;
 		return type == that.type &&
+		       relation == that.relation &&
 		       Objects.equals(javaType, that.javaType) &&
-		       Objects.equals(items, that.items) &&
-		       relation == that.relation;
+		       Objects.equals(items, that.items);
 	}
 
 	@Override

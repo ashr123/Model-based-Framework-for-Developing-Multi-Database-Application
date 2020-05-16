@@ -30,6 +30,10 @@ import static com.mongodb.client.model.Updates.set;
  */
 public class MongoDBAdapter extends DatabaseAdapter
 {
+	MongoDBAdapter()
+	{
+	}
+
 	private static MongoClient createMongoClient(String connectionString)
 	{
 		return MongoClients.create(MongoClientSettings.builder()
@@ -54,7 +58,7 @@ public class MongoDBAdapter extends DatabaseAdapter
 			return getStringObjectMap(mongoClient.getDatabase(fieldsMapping.getLocation())
 					.getCollection(entityType)
 					.find(filter)).stream()
-					.map(fieldsMap -> new Entity((UUID) fieldsMap.remove("uuid"), entityType, fieldsMap));
+					.map(fieldsMap -> new Entity((UUID) fieldsMap.remove("uuid"), entityType, fieldsMap, FRIEND));
 		}
 	}
 

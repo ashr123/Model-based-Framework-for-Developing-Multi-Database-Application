@@ -155,23 +155,19 @@ public class Query
 	private static boolean isStringUUID(Map.Entry<String, Object> fieldAndValue)
 	{
 		final String UUIDRegex = "(?i)[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}";
-		if (fieldAndValue.getValue() instanceof String)
-			return ((String) fieldAndValue.getValue()).matches(UUIDRegex);
-		if (fieldAndValue.getValue() instanceof Collection<?>)
-			return ((Collection<?>) fieldAndValue.getValue()).stream()
-					.allMatch(uuid -> ((String) uuid).matches(UUIDRegex));
-		return false;
+		return fieldAndValue.getValue() instanceof String ? ((String) fieldAndValue.getValue()).matches(UUIDRegex) :
+		       fieldAndValue.getValue() instanceof Collection<?> && ((Collection<?>) fieldAndValue.getValue()).stream()
+				       .allMatch(uuid -> ((String) uuid).matches(UUIDRegex));
 	}
 
 	@SuppressWarnings("OptionalGetWithoutIsPresent")
 	private static Entity getEntitiesFromReference(Entity encapsulatingEntity, String propertyName, Object entityReference)
 	{
-		if (entityReference instanceof String)
-			return makeEntitiesWhole(Set.of(new Entity((String) entityReference, Schema.getPropertyJavaType(encapsulatingEntity.getEntityType(), propertyName), new HashMap<>())).stream()).stream()
-					.findFirst().get();
-		else
-			return makeEntitiesWhole(Set.of(new Entity((UUID) entityReference, Schema.getPropertyJavaType(encapsulatingEntity.getEntityType(), propertyName), new HashMap<>())).stream()).stream()
-					.findFirst().get();
+		final String propertyJavaType = Schema.getPropertyJavaType(encapsulatingEntity.getEntityType(), propertyName);
+		return makeEntitiesWhole(Stream.of(entityReference instanceof String ?
+		                                   new Entity((String) entityReference, propertyJavaType, new HashMap<>()) :
+		                                   new Entity((UUID) entityReference, propertyJavaType, new HashMap<>()))).stream()
+				.findFirst().get();
 	}
 
 	public static Set<Entity> join(Filter filter, Predicate<Entity> predicate)

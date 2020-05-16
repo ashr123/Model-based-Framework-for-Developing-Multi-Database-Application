@@ -16,6 +16,8 @@ import java.util.stream.Stream;
 
 public abstract class DatabaseAdapter
 {
+	protected static final Friend FRIEND = new Friend();
+
 	private static Stream<Entity> groupEntities(Stream<Entity> entities)
 	{
 		return entities
@@ -164,6 +166,8 @@ public abstract class DatabaseAdapter
 		return entity.getUuid();
 	}
 
+	public abstract void executeCreate(Entity entity);
+
 //	private static void insertValue(Object value)
 //	{
 //		if (value instanceof Collection<?>)
@@ -183,17 +187,15 @@ public abstract class DatabaseAdapter
 //		}
 //	}
 
-	public abstract void executeCreate(Entity entity);
-
 	public abstract Stream<Entity> executeRead(Eq eq);
 
 	public abstract Stream<Entity> executeRead(Ne ne);
 
 	public abstract Stream<Entity> executeRead(Gt gt);
 
-//	abstract Set<Entity> execute(All all);
-
 	public abstract Stream<Entity> executeRead(Lt lt);
+
+//	abstract Set<Entity> execute(All all);
 
 	public abstract Stream<Entity> executeRead(Gte gte);
 
@@ -223,11 +225,18 @@ public abstract class DatabaseAdapter
 				.flatMap(Function.identity()));
 	}
 
-	//------------------------------------------------------------------------------------------------------------------
-
 	public abstract void executeDelete(FieldsMapping fieldsMapping, Map<String, Collection<UUID>> typesAndUuids);
+
+	//------------------------------------------------------------------------------------------------------------------
 
 	//------------------------------------------------------------------------------------------------------------------
 	public abstract void executeUpdate(FieldsMapping fieldsMapping,
 	                                   Map<String/*type*/, Pair<Collection<UUID>, Map<String/*field*/, Object/*value*/>>> updates);
+
+	public static final class Friend
+	{
+		private Friend()
+		{
+		}
+	}
 }

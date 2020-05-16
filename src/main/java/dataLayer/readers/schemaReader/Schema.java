@@ -103,22 +103,6 @@ public class Schema
 	}
 
 	@Override
-	public boolean equals(Object o)
-	{
-		if (this == o)
-			return true;
-		if (!(o instanceof Schema))
-			return false;
-		return classes.equals(((Schema) o).classes);
-	}
-
-	@Override
-	public int hashCode()
-	{
-		return Objects.hash(classes);
-	}
-
-	@Override
 	public String toString()
 	{
 		return "Schema{" +
