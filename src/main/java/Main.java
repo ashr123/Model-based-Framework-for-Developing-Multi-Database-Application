@@ -63,23 +63,18 @@
 //
 //}
 
-import dataLayer.crud.Pair;
 import dataLayer.readers.Reader;
-import dataLayer.readers.schemaReader.Schema;
 
 import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.util.Map;
 //import static org.neo4j.driver.Values.parameters;
 
 public class Main
 {
 	public static void main(String... args) throws IOException, NoSuchMethodException
 	{
-		Constructor<Pair> x = Pair.class.getDeclaredConstructor();
 		Reader.loadConfAndSchema(Main.class.getResource("/configurations/configurationMongoDB.json"),
 				Main.class.getResource("/schemas/Schema.json"));
-		System.out.println(Schema.getClassRelationPath("Person", "City"));
+//		System.out.println(Schema.getClassRelationPath("Person", "City"));
 ////		try (HelloWorldExample greeter = new HelloWorldExample("bolt://localhost:7687", "neo4j", "neo4j1"))
 ////		{
 ////			greeter.printGreeting("hello, world");

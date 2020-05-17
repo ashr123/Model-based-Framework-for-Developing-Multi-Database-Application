@@ -6,7 +6,7 @@
 
 	<groupId>il.co.multiDatabaseFramework</groupId>
 	<artifactId>Model-based-Framework-for-Developing-Multi-Database-Application</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<version>2.0-SNAPSHOT</version>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -19,18 +19,12 @@
 <!--			<artifactId>slf4j-simple</artifactId>-->
 <!--			<version>1.7.30</version>-->
 <!--		</dependency>-->
-		<!--		&lt;!&ndash; https://mvnrepository.com/artifact/com.fasterxml.uuid/java-uuid-generator &ndash;&gt;-->
-<!--		<dependency>-->
-<!--			<groupId>com.fasterxml.uuid</groupId>-->
-<!--			<artifactId>java-uuid-generator</artifactId>-->
-<!--			<version>4.0.1</version>-->
-<!--		</dependency>-->
 		<!-- THIS IS THE RELEVANT PART FOR JGRAPHT -->
-		<dependency>
-			<groupId>org.jgrapht</groupId>
-			<artifactId>jgrapht-core</artifactId>
-			<version>1.4.0</version>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>org.jgrapht</groupId>-->
+<!--			<artifactId>jgrapht-core</artifactId>-->
+<!--			<version>1.4.0</version>-->
+<!--		</dependency>-->
 		<!-- THIS IS THE RELEVANT PART OF NEO4J COMPONENT -->
 		<dependency>
 			<groupId>net.iot-solutions.graphdb</groupId>
@@ -60,28 +54,12 @@
 			<artifactId>commons-lang3</artifactId>
 			<version>3.9</version>
 		</dependency>
-
-		<!--		<dependency>-->
-		<!--			<groupId>commons-lang</groupId>-->
-		<!--			<artifactId>commons-lang</artifactId>-->
-		<!--			<version>2.4</version>-->
-		<!--		</dependency>-->
 		<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 			<version>2.10.2</version>
 		</dependency>
-		<!--		<dependency>-->
-		<!--			<groupId>org.json</groupId>-->
-		<!--			<artifactId>json</artifactId>-->
-		<!--			<version>20190722</version>-->
-		<!--		</dependency>-->
-		<!--		<dependency>-->
-		<!--			<groupId>com.google.code.gson</groupId>-->
-		<!--			<artifactId>gson</artifactId>-->
-		<!--			<version>2.8.6</version>-->
-		<!--		</dependency>-->
 	</dependencies>
 
 	<build>

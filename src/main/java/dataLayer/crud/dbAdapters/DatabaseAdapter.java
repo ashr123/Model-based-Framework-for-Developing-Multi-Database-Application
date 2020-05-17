@@ -16,8 +16,16 @@ import java.util.stream.Stream;
 
 public abstract class DatabaseAdapter
 {
-	protected static final Friend FRIEND = new Friend();
+	static final Friend FRIEND = new Friend();
 
+	/**
+	 * given:<br>
+	 * Entity{"entityType": "person", "fieldsValues": {"uuid": {"value": 1}, "name": "Moshe", "phone": 0546815181}}<br>
+	 * Entity{"entityType": "Person", "fieldsValues": {"uuid": {"value": 1}, "livesAt": {"value": 999}}}
+	 *
+	 * @param entities stream of entities
+	 * @return Entity{"entityType": "person", "fieldsValues": {"uuid": {"value": 1}, "name": "Moshe", "phone": 0546815181, "livesAt": {"value": 999}}}
+	 */
 	private static Stream<Entity> groupEntities(Stream<Entity> entities)
 	{
 		return entities
@@ -25,15 +33,7 @@ public abstract class DatabaseAdapter
 				.values().stream();
 	}
 
-	/**
-	 * given:<br>
-	 * Entity{"entityType": "person", "fieldsValues": {"uuid": {"value": 1}, "name": "Moshe", "phone": 0546815181}}<br>
-	 * Entity{"entityType": "Person", "fieldsValues": {"uuid": {"value": 1}, "livesAt": {"value": 999}}}
-	 *
-	 * @param complexFilter Filter that can get results from multiple filters
-	 * @return Entity{"entityType": "person", "fieldsValues": {"uuid": {"value": 1}, "name": "Moshe", "phone": 0546815181, "livesAt": {"value": 999}}}
-	 */
-	private static Stream<Stream<Entity>> defragEntities(ComplexFilter complexFilter)
+	private static Stream<Stream<Entity>> getResultFromDBs(ComplexFilter complexFilter)
 	{
 		return Stream.of(complexFilter.getComplexQuery())
 //				.map(filter -> groupEntities(Query.simpleRead(filter)));
@@ -205,7 +205,7 @@ public abstract class DatabaseAdapter
 
 	public Stream<Entity> executeRead(And and)
 	{
-		return defragEntities(and)
+		return getResultFromDBs(and)
 				.reduce((set1, set2) ->
 				{
 					final Collection<Entity>
@@ -221,15 +221,12 @@ public abstract class DatabaseAdapter
 
 	public Stream<Entity> executeRead(Or or)
 	{
-		return groupEntities(defragEntities(or)
+		return groupEntities(getResultFromDBs(or)
 				.flatMap(Function.identity()));
 	}
 
 	public abstract void executeDelete(FieldsMapping fieldsMapping, Map<String, Collection<UUID>> typesAndUuids);
 
-	//------------------------------------------------------------------------------------------------------------------
-
-	//------------------------------------------------------------------------------------------------------------------
 	public abstract void executeUpdate(FieldsMapping fieldsMapping,
 	                                   Map<String/*type*/, Pair<Collection<UUID>, Map<String/*field*/, Object/*value*/>>> updates);
 

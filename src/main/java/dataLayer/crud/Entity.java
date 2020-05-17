@@ -17,7 +17,7 @@ public class Entity
 		this((UUID) null, null, fieldsValues);
 	}
 
-	public Entity(String entityType, Map<String, Object> fieldsValues)
+	private Entity(String entityType, Map<String, Object> fieldsValues)
 	{
 		this(UUID.randomUUID(), entityType, fieldsValues);
 	}

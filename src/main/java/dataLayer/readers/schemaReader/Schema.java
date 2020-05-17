@@ -2,15 +2,12 @@ package dataLayer.readers.schemaReader;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dataLayer.crud.Pair;
-import org.jgrapht.Graph;
-import org.jgrapht.GraphPath;
-import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
-import org.jgrapht.graph.DirectedPseudograph;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.*;
+import java.util.Collection;
+import java.util.InputMismatchException;
+import java.util.Map;
 
 @SuppressWarnings("ConstantConditions")
 public class Schema
@@ -19,7 +16,7 @@ public class Schema
 
 	private static Schema schema;
 
-	private static Graph<String, Pair<String, String>> schemaGraph;
+//	private static Graph<String, Pair<String, String>> schemaGraph;
 
 	@JsonProperty("classes")
 	private final Map<String/*class name*/, EntityClassData> classes = null;
@@ -34,30 +31,30 @@ public class Schema
 		schema.checkValidity();
 
 		//noinspection unchecked
-		schemaGraph = new DirectedPseudograph<>((Class<? extends Pair<String, String>>) new Pair<>("", "").getClass());
-		Deque<String> unvisitedClasses = new LinkedList<>(Schema.getClassesName());
-
-		while (!unvisitedClasses.isEmpty())
-		{
-			String classToVisit = unvisitedClasses.poll();
-
-			schemaGraph.addVertex(classToVisit);
-			getEntityClass(classToVisit).getRelatedClasses()
-					.forEach((propertyName, relatedClassName) ->
-					{
-						schemaGraph.addVertex(relatedClassName);
-						schemaGraph.addEdge(classToVisit, relatedClassName, new Pair<>(classToVisit, propertyName));
-					});
-		}
+//		schemaGraph = new DirectedPseudograph<>((Class<? extends Pair<String, String>>) new Pair<>("", "").getClass());
+//		Deque<String> unvisitedClasses = new LinkedList<>(Schema.getClassesName());
+//
+//		while (!unvisitedClasses.isEmpty())
+//		{
+//			String classToVisit = unvisitedClasses.poll();
+//
+//			schemaGraph.addVertex(classToVisit);
+//			getEntityClass(classToVisit).getRelatedClasses()
+//					.forEach((propertyName, relatedClassName) ->
+//					{
+//						schemaGraph.addVertex(relatedClassName);
+//						schemaGraph.addEdge(classToVisit, relatedClassName, new Pair<>(classToVisit, propertyName));
+//					});
+//		}
 
 //		for (Pair<String, String> e : schemaGraph.edgeSet())
 //			System.out.println(schemaGraph.getEdgeSource(e) + " -[" + e + "]-> " + schemaGraph.getEdgeTarget(e));
 	}
 
-	public static GraphPath<String, Pair<String, String>> getClassRelationPath(String srcClass, String destClass)
-	{
-		return new DijkstraShortestPath<>(schemaGraph).getPath(srcClass, destClass);
-	}
+//	public static GraphPath<String, Pair<String, String>> getClassRelationPath(String srcClass, String destClass)
+//	{
+//		return new DijkstraShortestPath<>(schemaGraph).getPath(srcClass, destClass);
+//	}
 
 	public static EntityPropertyData getPropertyType(String className, String propertyName)
 	{
