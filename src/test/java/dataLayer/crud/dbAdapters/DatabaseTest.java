@@ -251,4 +251,48 @@ public abstract class DatabaseTest
 	{
 		System.out.println(Conf.toJson(join(gt("Person", "age", 18), entity -> true)));
 	}
+
+	@Test
+	void testComplexJoin() throws JsonProcessingException
+	{
+		Entity city = Entity.of("City", Map.of("name", "Newark",
+				"mayor", "Mayor West."));
+		Entity nestedEntity1 = Entity.of("Person",
+				Map.of("name", "Elmo",
+						"age", 12L,
+						"phoneNumber", "0521212121",
+						"emailAddress", "Elmo@post.bgu.ac.il",
+						"livesAt", Entity.of("Address",
+								Map.of("street", "Sesame street",
+										"state", "New York",
+										"city", city,
+										"postal-code", "757212",
+										"country", "United States"))));
+		Entity city2 = Entity.of("City", Map.of("name", "Unknown",
+				"mayor", "Some magical wizard"));
+		Entity nestedEntity2 = Entity.of("Person",
+				Map.of("name", "Bilbo",
+						"age", 16L,
+						"phoneNumber", "0531313131",
+						"emailAddress", "Baggins@post.bgu.ac.il",
+						"livesAt", Entity.of("Address",
+								Map.of("street", "Hobbit Street",
+										"state", "Mordor",
+										"city", city2,
+										"postal-code", "123212",
+										"country", "Australia"))));
+		Entity nestedEntity3 = Entity.of("Person",
+				Map.of("name", "Frodo",
+						"age", 18L,
+						"phoneNumber", "0541414141",
+						"emailAddress", "Frodo@post.bgu.ac.il",
+						"livesAt", Entity.of("Address",
+								Map.of("street", "Hobbit Street",
+										"state", "Mordor",
+										"city", city2,
+										"postal-code", "432212",
+										"country", "Australia"))));
+		create(nestedEntity1, nestedEntity2, nestedEntity3);
+		System.out.println(Conf.toJson(join(or(gte("Person", "age", 12), eq("City", "name", "Unknown")), entity -> true)));
+	}
 }
