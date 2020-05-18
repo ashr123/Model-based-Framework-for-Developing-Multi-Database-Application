@@ -30,7 +30,7 @@ public abstract class DatabaseTest
 	protected final Entity
 			roy = Entity.of("Person",
 			Map.of("name", "Roy",
-					"age", 27L,
+					"age", 27.5,
 					"phoneNumber", "0546815181",
 					"emailAddress", "ashr@post.bgu.ac.il")),
 			yossi = Entity.of("Person",

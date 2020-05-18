@@ -2,6 +2,7 @@ package dataLayer.crud;
 
 import dataLayer.crud.dbAdapters.DatabaseAdapter;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -14,12 +15,7 @@ public class Entity
 
 	Entity(Map<String, Object> fieldsValues)
 	{
-		this((UUID) null, null, fieldsValues);
-	}
-
-	private Entity(String entityType, Map<String, Object> fieldsValues)
-	{
-		this(UUID.randomUUID(), entityType, fieldsValues);
+		this((UUID) null, null, new HashMap<>(fieldsValues));
 	}
 
 	public Entity(String uuid, String entityType, Map<String, Object> fieldsValues, DatabaseAdapter.Friend friend)
@@ -46,7 +42,10 @@ public class Entity
 
 	public static Entity of(String entityType, Map<String, Object> fieldsValues)
 	{
-		return new Entity(entityType, fieldsValues);
+//		fieldsValues.entrySet().stream()
+//				.filter(fieldAndValue -> fieldAndValue.getValue() instanceof Number && !(fieldAndValue.getValue() instanceof Long || fieldAndValue.getValue() instanceof Double))
+//				.map(fieldAndValue -> Map.entry(fieldAndValue.getKey(), ((Number) fieldAndValue.getValue()).longValue()));
+		return new Entity(UUID.randomUUID(), entityType, fieldsValues);
 	}
 
 //	public Entity append(String field, Object value)
@@ -104,7 +103,6 @@ public class Entity
 		return Objects.hash(uuid, entityType, fieldsValues);
 	}
 
-	//TODO: Write a prettier toString.
 	@Override
 	public String toString()
 	{
