@@ -1,0 +1,108 @@
+{
+  "classes": {
+	"City": {
+	  "properties": {
+		"name": {
+		  "type": "string"
+		},
+		"mayor": {
+		  "type": "string"
+		}
+	  }
+	},
+	"Address": {
+	  "properties": {
+		"street": {
+		  "type": "string"
+		},
+		"state": {
+		  "type": "string"
+		},
+		"city": {
+		  "relation": "aggregation",
+		  "type": "object",
+		  "javaType": "City"
+		},
+		"postal-code": {
+		  "type": "string"
+		},
+		"country": {
+		  "type": "string"
+		}
+	  }
+	},
+	"Person": {
+	  "properties": {
+		"name": {
+		  "type": "string"
+		},
+		"age": {
+		  "type": "number"
+		},
+		"phoneNumber": {
+		  "type": "string"
+		},
+		"emailAddress": {
+		  "type": "string"
+		},
+		"livesAt": {
+		  "relation": "aggregation",
+		  "type": "object",
+		  "javaType": "Address"
+		}
+	  }
+	},
+	"Professor": {
+	  "properties": {
+		"name": {
+		  "type": "string"
+		},
+		"age": {
+		  "type": "number"
+		},
+		"phoneNumber": {
+		  "type": "string"
+		},
+		"emailAddress": {
+		  "type": "string"
+		},
+		"livesAt": {
+		  "relation": "aggregation",
+		  "type": "object",
+		  "javaType": "Address"
+		},
+		"students": {
+		  "relation": "aggregation",
+		  "type": "array",
+		  "items": {
+			"javaType": "Person",
+			"type": "object"
+		  }
+		}
+	  }
+	},
+	"Student": {
+	  "properties": {
+		"name": {
+		  "type": "string"
+		},
+		"age": {
+		  "type": "number"
+		},
+		"phoneNumber": {
+		  "type": "string"
+		},
+		"emailAddress": {
+		  "type": "string"
+		},
+		"livesAt": {
+		  "relation": "aggregation",
+		  "type": "object",
+		  "javaType": "Address"
+		}
+	  }
+	}
+  }
+}
+
+

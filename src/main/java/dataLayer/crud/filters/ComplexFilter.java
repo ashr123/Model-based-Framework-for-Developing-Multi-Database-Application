@@ -6,7 +6,7 @@ public abstract class ComplexFilter implements Filter
 {
 	private final Filter[] filters;
 
-	ComplexFilter(Filter... filters)
+	protected ComplexFilter(Filter... filters)
 	{
 		this.filters = filters;
 	}

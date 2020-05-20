@@ -2,19 +2,19 @@ package dataLayer.crud.filters;
 
 public abstract class SimpleFilter implements Filter
 {
-	private final String entityName, fieldName;
+	private final String entityType, fieldName;
 	private final Object value;
 
-	public SimpleFilter(String entityName, String fieldName, Object value)
+	protected SimpleFilter(String entityType, String fieldName, Object value)
 	{
-		this.entityName = entityName;
+		this.entityType = entityType;
 		this.fieldName = fieldName;
 		this.value = value;
 	}
 
-	public String getEntityName()
+	public String getEntityType()
 	{
-		return entityName;
+		return entityType;
 	}
 
 	public String getFieldName()
@@ -30,8 +30,8 @@ public abstract class SimpleFilter implements Filter
 	@Override
 	public String toString()
 	{
-		return "entityName='" + entityName + '\'' +
-				", fieldName='" + fieldName + '\'' +
-				", value=" + value;
+		return "entityType='" + entityType + '\'' +
+		       ", fieldName='" + fieldName + '\'' +
+		       ", value=" + value;
 	}
 }

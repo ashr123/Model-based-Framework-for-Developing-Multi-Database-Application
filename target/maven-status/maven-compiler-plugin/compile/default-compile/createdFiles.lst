@@ -1,9 +1,0 @@
-Student.class
-Main.class
-Person.class
-connectors/Connector.class
-connectors/MySQLConnector.class
-ConfigurationLine.class
-Professor.class
-ConfigObj.class
-Address.class

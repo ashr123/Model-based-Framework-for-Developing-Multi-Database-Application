@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "description": "An address class",
+  "type": "object",
+  "properties": {
+	"street": {
+	  "type": "string"
+	},
+	"city": {
+	  "javaType": "City",
+	  "type": "object"
+	},
+	"state": {
+	  "type": "string"
+	},
+	"postal-code": {
+	  "type": "string"
+	},
+	"country": {
+	  "type": "string"
+	}
+  }
+}

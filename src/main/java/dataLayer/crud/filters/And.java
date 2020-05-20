@@ -1,12 +1,9 @@
 package dataLayer.crud.filters;
 
+import dataLayer.crud.Entity;
 import dataLayer.crud.dbAdapters.DatabaseAdapter;
-import iot.jcypher.query.api.IClause;
-import org.bson.conversions.Bson;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Set;
+import java.util.stream.Stream;
 
 public class And extends ComplexFilter
 {
@@ -22,30 +19,14 @@ public class And extends ComplexFilter
 	}
 
 	@Override
-	public Map<String, Set<Map<String, Object>>> accept(DatabaseAdapter databaseAdapter)
+	public Stream<Entity> executeRead(DatabaseAdapter databaseAdapter)
 	{
-		return databaseAdapter.execute(this);
+		return databaseAdapter.executeRead(this);
 	}
 
 	@Override
 	public String toString()
 	{
 		return "And{" + super.toString() + '}';
-	}
-
-	public Bson generateFromMongoDB()
-	{
-		return com.mongodb.client.model.Filters.and((Bson[]) Arrays.stream(getComplexQuery())
-				.map(Filter::generateFromMongoDB)
-				.toArray());
-	}
-
-	@Override
-	public IClause[] generateFromNeo4j()
-	{
-//		return new IClause[]{
-//				WHERE.valueOf(new JcNode())
-//		};
-		return null;
 	}
 }

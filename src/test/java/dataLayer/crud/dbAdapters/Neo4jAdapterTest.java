@@ -16,15 +16,14 @@ import java.util.Properties;
 
 import static dataLayer.crud.Query.create;
 
-class MongoDBAdapterTest extends DatabaseTest
+class Neo4jAdapterTest extends DatabaseTest
 {
 	@BeforeAll
 	@Override
 	protected void setUp() throws IOException
 	{
-		Reader.loadConfAndSchema(MongoDBAdapterTest.class.getResource("/configurations/configurationMongoDB.json"),
+		Reader.loadConfAndSchema(Neo4jAdapter.class.getResource("/configurations/configurationNeo4j.json"),
 				MongoDBAdapterTest.class.getResource("/schemas/Schema.json"));
-		//createMany(roy, yossi, karin).executeAt(DBType.MONGODB.getDatabaseAdapter());
 		create(roy, yossi, karin);
 	}
 

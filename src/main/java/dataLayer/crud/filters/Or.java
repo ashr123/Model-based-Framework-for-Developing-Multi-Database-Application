@@ -1,14 +1,9 @@
 package dataLayer.crud.filters;
 
+import dataLayer.crud.Entity;
 import dataLayer.crud.dbAdapters.DatabaseAdapter;
-import iot.jcypher.query.api.IClause;
-import iot.jcypher.query.api.pattern.Element;
-import iot.jcypher.query.api.predicate.Concatenator;
-import iot.jcypher.query.api.returns.RSortable;
-import iot.jcypher.query.factories.clause.UNION;
-import org.bson.conversions.Bson;
 
-import java.util.*;
+import java.util.stream.Stream;
 
 public class Or extends ComplexFilter
 {
@@ -23,33 +18,14 @@ public class Or extends ComplexFilter
 	}
 
 	@Override
-	public Map<String, Set<Map<String, Object>>> accept(DatabaseAdapter databaseAdapter)
+	public Stream<Entity> executeRead(DatabaseAdapter databaseAdapter)
 	{
-		return databaseAdapter.execute(this);
+		return databaseAdapter.executeRead(this);
 	}
 
 	@Override
 	public String toString()
 	{
 		return "Or{" + super.toString() + '}';
-	}
-
-	public Bson generateFromMongoDB()
-	{
-		return com.mongodb.client.model.Filters.or((Bson[]) Arrays.stream(getComplexQuery())
-				.map(Filter::generateFromMongoDB)
-				.toArray());
-	}
-
-	@Override
-	public IClause[] generateFromNeo4j()
-	{
-		List<Element<?>> matches = new LinkedList<>();
-		List<Concatenator> wheres = new LinkedList<>();
-		List<RSortable> returns = new LinkedList<>();
-//		WHERE.BR_OPEN().valueOf()..EQUALS().
-		return new IClause[]{
-				UNION.all()
-		};
 	}
 }

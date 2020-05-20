@@ -29,18 +29,6 @@
 //    }
 //
 //    @Override
-//    public void execute(CreateSingle createSingle)
-//    {
-//
-//    }
-//
-//    @Override
-//    public void execute(CreateMany createMany)
-//    {
-//
-//    }
-//
-//    @Override
 //    public Map<String, Object> execute(Eq eq)
 //    {
 //
