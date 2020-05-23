@@ -1,8 +1,8 @@
 package dataLayer.crud;
 
 import dataLayer.crud.dbAdapters.DBType;
-import dataLayer.crud.dbAdapters.DatabaseAdapter;
-import dataLayer.crud.filters.*;
+import dataLayer.crud.filters.Filter;
+import dataLayer.crud.filters.SimpleFilter;
 import dataLayer.readers.configReader.Conf;
 import dataLayer.readers.configReader.FieldsMapping;
 import dataLayer.readers.schemaReader.Schema;

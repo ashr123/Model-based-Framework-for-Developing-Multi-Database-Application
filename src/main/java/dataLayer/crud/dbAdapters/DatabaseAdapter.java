@@ -157,15 +157,19 @@ public abstract class DatabaseAdapter
 		//noinspection OptionalGetWithoutIsPresent
 		final FieldsMapping fieldsMapping = Conf.getConfiguration().getFieldsMappingFromEntityField(entity.getEntityType(), entity.getFieldsValues().keySet().stream().findAny().get());
 		if (fieldsMapping
-				.getType()
-				.getDatabaseAdapter()
-				.executeRead(entity.getEntityType(), entity.getUuid(), fieldsMapping)
-				.count() == 0)
+				    .getType()
+				    .getDatabaseAdapter()
+				    .executeRead(entity.getEntityType(), entity.getUuid(), fieldsMapping)
+				    .count() == 0)
 			Query.create(entity);
 		return entity.getUuid();
 	}
 
-	public abstract void executeCreate(Entity entity, Query.Friend friend);
+	public static Stream<Entity> executeRead(All all, Query.Friend friend)
+	{
+		return Conf.getConfiguration().getFieldsMappingForEntity(all.getEntityType())
+				.flatMap(fieldsMapping -> fieldsMapping.getType().getDatabaseAdapter().makeEntities(fieldsMapping, all.getEntityType()));
+	}
 
 //	private static void insertValue(Object value)
 //	{
@@ -185,30 +189,6 @@ public abstract class DatabaseAdapter
 //				Query.create(entity);
 //		}
 //	}
-
-	protected abstract Stream<Entity> makeEntities(FieldsMapping fieldsMapping, String entityType);
-
-	public static Stream<Entity> executeRead(All all, Query.Friend friend)
-	{
-		return Conf.getConfiguration().getFieldsMappingForEntity(all.getEntityType())
-				.flatMap(fieldsMapping -> fieldsMapping.getType().getDatabaseAdapter().makeEntities(fieldsMapping, all.getEntityType()));
-	}
-
-	public abstract Stream<Entity> executeRead(Eq eq, Query.Friend friend);
-
-	public abstract Stream<Entity> executeRead(Ne ne, Query.Friend friend);
-
-	public abstract Stream<Entity> executeRead(Gt gt, Query.Friend friend);
-
-	public abstract Stream<Entity> executeRead(Lt lt, Query.Friend friend);
-
-	public abstract Stream<Entity> executeRead(Gte gte, Query.Friend friend);
-
-	public abstract Stream<Entity> executeRead(Lte lte, Query.Friend friend);
-
-	protected abstract Stream<Entity> executeRead(String entityType, UUID uuid, FieldsMapping fieldsMapping);
-
-	public abstract Stream<Entity> executeRead(String entityType, UUID uuid, FieldsMapping fieldsMapping, Query.Friend friend);
 
 	public static Stream<Entity> executeRead(And and, Query.Friend friend)
 	{
@@ -231,6 +211,26 @@ public abstract class DatabaseAdapter
 		return groupEntities(getResultFromDBs(or)
 				.flatMap(Function.identity()));
 	}
+
+	public abstract void executeCreate(Entity entity, Query.Friend friend);
+
+	protected abstract Stream<Entity> makeEntities(FieldsMapping fieldsMapping, String entityType);
+
+	public abstract Stream<Entity> executeRead(Eq eq, Query.Friend friend);
+
+	public abstract Stream<Entity> executeRead(Ne ne, Query.Friend friend);
+
+	public abstract Stream<Entity> executeRead(Gt gt, Query.Friend friend);
+
+	public abstract Stream<Entity> executeRead(Lt lt, Query.Friend friend);
+
+	public abstract Stream<Entity> executeRead(Gte gte, Query.Friend friend);
+
+	public abstract Stream<Entity> executeRead(Lte lte, Query.Friend friend);
+
+	protected abstract Stream<Entity> executeRead(String entityType, UUID uuid, FieldsMapping fieldsMapping);
+
+	public abstract Stream<Entity> executeRead(String entityType, UUID uuid, FieldsMapping fieldsMapping, Query.Friend friend);
 
 	public abstract void executeDelete(FieldsMapping fieldsMapping, Map<String, Collection<UUID>> typesAndUuids, Query.Friend friend);
 

@@ -63,6 +63,16 @@ public class MongoDBAdapter extends DatabaseAdapter
 		}
 	}
 
+	private static Stream<Entity> queryRead(SimpleFilter simpleFilter, Bson filter)
+	{
+		return makeEntities(Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityType(), simpleFilter.getFieldName()), simpleFilter.getEntityType(), filter);
+	}
+
+	private static Stream<Entity> queryRead(String entityType, UUID uuid, FieldsMapping fieldsMapping)
+	{
+		return makeEntities(fieldsMapping, entityType, eq("uuid", uuid));
+	}
+
 	@Override
 	protected Stream<Entity> makeEntities(FieldsMapping fieldsMapping, String entityType)
 	{
@@ -73,16 +83,6 @@ public class MongoDBAdapter extends DatabaseAdapter
 					.find()).stream()
 					.map(fieldsMap -> new Entity((UUID) fieldsMap.remove("uuid"), entityType, fieldsMap, FRIEND));
 		}
-	}
-
-	private static Stream<Entity> queryRead(SimpleFilter simpleFilter, Bson filter)
-	{
-		return makeEntities(Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityType(), simpleFilter.getFieldName()), simpleFilter.getEntityType(), filter);
-	}
-
-	private static Stream<Entity> queryRead(String entityType, UUID uuid, FieldsMapping fieldsMapping)
-	{
-		return makeEntities(fieldsMapping, entityType, eq("uuid", uuid));
 	}
 
 	@Override

@@ -1,7 +1,9 @@
 {
   "classes": {
 	"City": {
-	  "primaryKey": ["name"],
+	  "primaryKey": [
+		"name"
+	  ],
 	  "properties": {
 		"name": {
 		  "type": "string"
@@ -12,7 +14,9 @@
 	  }
 	},
 	"Address": {
-	  "primaryKey": ["postal-code"],
+	  "primaryKey": [
+		"postal-code"
+	  ],
 	  "properties": {
 		"street": {
 		  "type": "string"
@@ -34,7 +38,9 @@
 	  }
 	},
 	"Person": {
-	  "primaryKey": ["name"],
+	  "primaryKey": [
+		"name"
+	  ],
 	  "properties": {
 		"name": {
 		  "type": "string"
@@ -56,7 +62,9 @@
 	  }
 	},
 	"Professor": {
-	  "primaryKey": ["name"],
+	  "primaryKey": [
+		"name"
+	  ],
 	  "properties": {
 		"name": {
 		  "type": "string"
@@ -86,7 +94,9 @@
 	  }
 	},
 	"Student": {
-	  "primaryKey": ["name"],
+	  "primaryKey": [
+		"name"
+	  ],
 	  "properties": {
 		"name": {
 		  "type": "string"
