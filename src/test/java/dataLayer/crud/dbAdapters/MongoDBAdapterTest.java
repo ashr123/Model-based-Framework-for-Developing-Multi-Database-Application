@@ -24,7 +24,6 @@ class MongoDBAdapterTest extends DatabaseTest
 	{
 		Reader.loadConfAndSchema(MongoDBAdapterTest.class.getResource("/configurations/configurationMongoDB.json"),
 				MongoDBAdapterTest.class.getResource("/schemas/Schema.json"));
-		//createMany(roy, yossi, karin).executeAt(DBType.MONGODB.getDatabaseAdapter());
 		create(roy, yossi, karin);
 	}
 

@@ -2,6 +2,7 @@ package dataLayer.crud.dbAdapters;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import dataLayer.crud.Entity;
+import dataLayer.crud.filters.All;
 import dataLayer.readers.configReader.Conf;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -13,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static dataLayer.crud.Query.*;
+import static dataLayer.crud.filters.All.all;
 import static dataLayer.crud.filters.And.and;
 import static dataLayer.crud.filters.Eq.eq;
 import static dataLayer.crud.filters.Gt.gt;
@@ -22,6 +24,7 @@ import static dataLayer.crud.filters.Lte.lte;
 import static dataLayer.crud.filters.Ne.ne;
 import static dataLayer.crud.filters.Or.or;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public abstract class DatabaseTest
@@ -30,7 +33,7 @@ public abstract class DatabaseTest
 	protected final Entity
 			roy = Entity.of("Person",
 			Map.of("name", "Roy",
-					"age", 27.5,
+					"age", 27L,
 					"phoneNumber", "0546815181",
 					"emailAddress", "ashr@post.bgu.ac.il")),
 			yossi = Entity.of("Person",
@@ -53,6 +56,35 @@ public abstract class DatabaseTest
 	@Test
 	void testExecuteCreate()
 	{
+		Entity luke = Entity.of("Person",
+				Map.of("name", "Luke Skywalker",
+						"age", 24L,
+						"phoneNumber", "0503451221",
+						"emailAddress", "luke@JediOrder.com"));
+
+		create(luke);
+		assertEquals(Set.of(luke),
+				read(eq("Person", "name", "Luke Skywalker")),
+				"Should return Luke Skywalker.");
+		delete(luke);
+	}
+
+	@Test
+	void testExecuteRepetitiveCreate()
+	{
+		Entity luke = Entity.of("Person",
+				Map.of("name", "Luke Skywalker",
+						"age", 24L,
+						"phoneNumber", "0503451221",
+						"emailAddress", "luke@JediOrder.com"));
+		Entity cloneLuke = Entity.of("Person",
+				Map.of("name", "Luke Skywalker",
+						"age", 24L,
+						"phoneNumber", "0503451221",
+						"emailAddress", "luke@SithEmpire.com"));
+
+		assertThrows(IllegalStateException.class, () -> create(luke, cloneLuke));
+		delete(luke, cloneLuke);
 	}
 
 	@Test
@@ -69,7 +101,6 @@ public abstract class DatabaseTest
 						Map.of("age", 18L,
 								"phoneNumber", "12345")));
 
-		//createSingle(royForUpdate).executeAt(DBType.MONGODB.getDatabaseAdapter());
 		create(royForUpdate);
 
 		assertEquals(Set.of(royForUpdate),
@@ -91,6 +122,59 @@ public abstract class DatabaseTest
 	}
 
 	@Test
+	void testRepetitiveUpdate()
+	{
+		Entity anakinSkywalker = Entity.of("Person",
+				Map.of("name", "Anakin Skywalker",
+						"age", 24L,
+						"phoneNumber", "0503451111",
+						"emailAddress", "anakinSkywalker@SithEmpire.com"));
+
+		Set<Entity> nonPrimaryUpdates = Set.of(
+				Entity.of("Person",
+						Map.of("age", 25L,
+								"phoneNumber", "0501111111")));
+
+		Set<Entity> primaryUpdates = Set.of(
+				Entity.of("Person",
+						Map.of("name", "Darth Vader")));
+
+		Set<Entity> existingPrimaryUpdates = Set.of(
+				Entity.of("Person",
+						Map.of("name", "Yossi")));
+
+		create(anakinSkywalker);
+
+		assertEquals(Set.of(anakinSkywalker),
+				read(eq("Person", "name", "Anakin Skywalker")),
+				"Should return Anakin Skywalker.");
+
+		update(Set.of(anakinSkywalker), nonPrimaryUpdates);
+
+		//noinspection OptionalGetWithoutIsPresent
+		Entity updatedAnakin = read(eq("Person", "name", "Anakin Skywalker")).stream()
+				.findFirst()
+				.get();
+
+		assertEquals(updatedAnakin.get("age"), 25L, "Age should be updated to 25.");
+
+		assertEquals(updatedAnakin.get("phoneNumber"), "0501111111", "Age should be updated to 0501111111.");
+
+		update(Set.of(updatedAnakin), primaryUpdates);
+
+		//noinspection OptionalGetWithoutIsPresent
+		Entity darthVader = read(eq("Person", "name", "Darth Vader")).stream()
+				.findFirst()
+				.get();
+
+		assertEquals(darthVader.get("name"), "Darth Vader", "Name should be updated to Darth Vader.");
+
+		assertThrows(IllegalStateException.class, () -> update(Set.of(darthVader), existingPrimaryUpdates));
+
+		delete(darthVader);
+	}
+
+	@Test
 	void testExecuteDelete()
 	{
 		final Entity royForDelete = Entity.of("Person",
@@ -99,7 +183,6 @@ public abstract class DatabaseTest
 						"phoneNumber", "0546815181",
 						"emailAddress", "ashr@post.bgu.ac.il"));
 
-		//createSingle(royForDelete).executeAt(DBType.MONGODB.getDatabaseAdapter());
 		create(royForDelete);
 
 		assertEquals(Set.of(royForDelete),
@@ -111,6 +194,14 @@ public abstract class DatabaseTest
 		assertEquals(Set.of(),
 				read(eq("Person", "name", "RoyForDelete")),
 				"RoyForDelete should have been removed!");
+	}
+
+	@Test
+	void testExecuteAll()
+	{
+		assertEquals(Set.of(roy, yossi, karin),
+				read(all("Person")),
+				"Should return Roy, Yossi and Karin.");
 	}
 
 	@Test
@@ -227,23 +318,24 @@ public abstract class DatabaseTest
 	void testNestedCreate()
 	{
 		Entity nestedEntity = Entity.of("Person",
-				Map.of("name", "Elmo",
+				Map.of("name", "Oscar",
 						"age", 12L,
 						"phoneNumber", "0521212121",
 						"emailAddress", "Elmo@post.bgu.ac.il",
 						"livesAt", Entity.of("Address",
 								Map.of("street", "Sesame street",
 										"state", "New York",
-										"city", Entity.of("City", Map.of("name", "Newark",
-												"mayor", "Mayor West.")),
-										"postal-code", "757212",
+										"city", Entity.of("City", Map.of("name", "California",
+												"mayor", "Arnold")),
+										"postal-code", "777777",
 										"country", "United States"))));
 
 		create(nestedEntity);
 		System.out.println(nestedEntity);
 		assertEquals(Set.of(nestedEntity),
-				read(eq("Person", "name", "Elmo")),
-				"Should return person named Elmo.");
+				read(eq("Person", "name", "Oscar")),
+				"Should return person named Oscar.");
+		delete();
 	}
 
 	@Test
@@ -294,5 +386,6 @@ public abstract class DatabaseTest
 										"country", "Australia"))));
 		create(nestedEntity1, nestedEntity2, nestedEntity3);
 		System.out.println(Conf.toJson(join(or(gte("Person", "age", 12), eq("City", "name", "Unknown")), entity -> true)));
+		delete(nestedEntity1, nestedEntity2, nestedEntity3);
 	}
 }
