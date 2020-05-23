@@ -230,7 +230,10 @@ public abstract class DatabaseAdapter
 
 	protected abstract Stream<Entity> executeRead(String entityType, UUID uuid, FieldsMapping fieldsMapping);
 
-	public abstract Stream<Entity> executeRead(String entityType, UUID uuid, FieldsMapping fieldsMapping, Query.Friend friend);
+	public Stream<Entity> executeRead(String entityType, UUID uuid, FieldsMapping fieldsMapping, Query.Friend friend)
+	{
+		return executeRead(entityType, uuid, fieldsMapping);
+	}
 
 	public abstract void executeDelete(FieldsMapping fieldsMapping, Map<String, Collection<UUID>> typesAndUuids, Query.Friend friend);
 

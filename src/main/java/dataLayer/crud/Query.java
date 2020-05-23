@@ -17,7 +17,6 @@ import static dataLayer.crud.filters.And.and;
 import static dataLayer.crud.filters.Eq.eq;
 import static java.util.stream.Collectors.*;
 
-// TODO add "friend" to Query to be able to access DatabaseAdapter?
 public class Query
 {
 	private static final Friend FRIEND = new Friend();

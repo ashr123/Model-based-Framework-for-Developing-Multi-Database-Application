@@ -219,12 +219,6 @@ public class Neo4jAdapter extends DatabaseAdapter
 	}
 
 	@Override
-	public Stream<Entity> executeRead(String entityType, UUID uuid, FieldsMapping fieldsMapping, Query.Friend friend)
-	{
-		return executeRead(entityType, uuid, fieldsMapping);
-	}
-
-	@Override
 	public void executeDelete(FieldsMapping fieldsMapping, Map<String, Collection<UUID>> typesAndUuids, Query.Friend friend)
 	{
 		IDBAccess idbAccess = getDBAccess(fieldsMapping);
