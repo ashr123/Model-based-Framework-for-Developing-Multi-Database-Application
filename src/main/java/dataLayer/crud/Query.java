@@ -25,19 +25,34 @@ public class Query
 	{
 	}
 
+	/**
+	 * Inserts any number of entities into the appropriate DBs according to loaded configuration file
+	 *
+	 * @param entities the entities to be inserted
+	 */
 	public static void create(Entity... entities)
 	{
 		create(Stream.of(entities));
 	}
 
+	/**
+	 * Inserts any number of entities into the appropriate DBs according to loaded configuration file
+	 *
+	 * @param entities the entities to be inserted
+	 */
 	public static void create(Collection<Entity> entities)
 	{
 		create(entities.stream());
 	}
 
+	/**
+	 * Inserts any number of entities into the appropriate DBs according to loaded configuration file
+	 *
+	 * @param entities the entities to be inserted
+	 */
 	public static void create(Stream<Entity> entities)
 	{
-		entities.filter(Query::isaPresentByPrimaryKey)
+		entities.filter(Query::isPresentByPrimaryKey)
 				.forEach(entity ->
 				{
 					DBType.MONGODB.getDatabaseAdapter().executeCreate(entity, FRIEND);
@@ -47,21 +62,47 @@ public class Query
 				});
 	}
 
-	private static boolean isaPresentByPrimaryKey(Entity entity)
+	private static boolean isPresentByPrimaryKey(Entity entity)
 	{
 		if (simpleRead(and(Schema.getClassPrimaryKey(entity.getEntityType()).stream()
 				.map(field -> eq(entity.getEntityType(), field, entity.get(field)))
 				.toArray(Filter[]::new)))
-				       .count() == 0)
+				    .count() == 0)
 			return true;
 		throw new IllegalStateException(entity + " already exists in DBs.");
 	}
 
+	private static boolean isPresentByPrimaryKey(Entity entityBeforeUpdate, Entity entityToMerge)
+	{
+		if (Schema.getClassPrimaryKey(entityBeforeUpdate.getEntityType()).stream().anyMatch(primaryKey -> entityToMerge.getFieldsValues().containsKey(primaryKey)))
+		{
+			final Entity entityAfterUpdate = new Entity(entityBeforeUpdate).merge(entityToMerge);
+			if (simpleRead(and(Schema.getClassPrimaryKey(entityAfterUpdate.getEntityType()).stream()
+					.map(field -> eq(entityAfterUpdate.getEntityType(), field, entityAfterUpdate.get(field)))
+					.toArray(Filter[]::new)))
+					    .count() == 0)
+				return true;
+			throw new IllegalStateException(entityAfterUpdate + " already exists in DBs.");
+		}
+		return true;
+	}
+
+	/**
+	 * Extracts complete entities from the different DBs according to the given filter and configuration
+	 *
+	 * @param filter the criteria for filtering Entities
+	 * @return the Set of entities (deeply) extracted from the different DBs
+	 */
 	public static Set<Entity> read(Filter filter)
 	{
 		return completeEntitiesReferences(makeEntitiesWhole(simpleRead(filter)));
 	}
 
+	/**
+	 * @param filter the criteria for filtering Entities
+	 * @return stream of partial entities, that means that every entity might not have all it's fields
+	 * @apiNote depends on the given filter and loaded configuration
+	 */
 	public static Stream<Entity> simpleRead(Filter filter)
 	{
 		return filter instanceof SimpleFilter /*simpleFilter*/ ?
@@ -74,16 +115,31 @@ public class Query
                filter.executeRead(DBType.MONGODB.getDatabaseAdapter(), FRIEND); // Complex or All query, the adapter doesn't matter
 	}
 
+	/**
+	 * Deletes entities according to given filter
+	 *
+	 * @param filter the filter that determines which entities to delete
+	 */
 	public static void delete(Filter filter)
 	{
 		delete(simpleRead(filter));
 	}
 
+	/**
+	 * Deletes the given entities from the DBs
+	 *
+	 * @param entities the ones that need to be deleted
+	 */
 	public static void delete(Entity... entities)
 	{
 		delete(Stream.of(entities));
 	}
 
+	/**
+	 * Deletes the given entities from the DBs
+	 *
+	 * @param entities the ones that need to be deleted
+	 */
 	public static void delete(Stream<Entity> entities)
 	{
 		Map<FieldsMapping, Map<String, Collection<UUID>>> temp = new HashMap<>();
@@ -96,6 +152,13 @@ public class Query
 		temp.forEach((fieldsMapping, typesAndUuids) -> fieldsMapping.getType().getDatabaseAdapter().executeDelete(fieldsMapping, typesAndUuids, FRIEND));
 	}
 
+	/**
+	 * Updates all the entities according to given filter
+	 *
+	 * @param filter          given upon entities are updated
+	 * @param entitiesUpdates updated values according to entity's type
+	 * @apiNote in case there are multiple entities with the same type, only one will be chosen, it is undetermined which
+	 */
 	public static void update(Filter filter, Set<Entity> entitiesUpdates)
 	{
 		update(simpleRead(filter), entitiesUpdates);
@@ -110,7 +173,7 @@ public class Query
 	{
 		Map<FieldsMapping, Map<String, Collection<UUID>>> temp = new HashMap<>();
 		//noinspection OptionalGetWithoutIsPresent
-		entitiesToUpdate.filter(entity -> isaPresentByPrimaryKey(new Entity(entity).merge(entitiesUpdates.stream().filter(entity1 -> entity.getEntityType().equals(entity1.getEntityType())).findFirst().get())))
+		entitiesToUpdate.filter(entity -> isPresentByPrimaryKey(entity, entitiesUpdates.stream().filter(entity1 -> entity.getEntityType().equals(entity1.getEntityType())).findFirst().get()))
 				.forEach(entityToUpdate ->
 						Conf.getConfiguration().getFieldsMappingForEntity(entityToUpdate)
 								.forEach(fieldsMapping ->
@@ -140,7 +203,7 @@ public class Query
 				.forEach(fieldsMappingAndUpdate -> fieldsMappingAndUpdate.getKey().getType().getDatabaseAdapter().executeUpdate(fieldsMappingAndUpdate.getKey(), fieldsMappingAndUpdate.getValue(), FRIEND));
 	}
 
-	private static Set<Entity> makeEntitiesWhole(Stream<Entity> entities)
+	public static Set<Entity> makeEntitiesWhole(Stream<Entity> entities)
 	{
 		Set<Entity> wholeEntities = new HashSet<>();
 		entities.forEach(entityFragment ->
@@ -166,7 +229,7 @@ public class Query
 		return wholeEntities;
 	}
 
-	private static Set<Entity> completeEntitiesReferences(Set<Entity> entities)
+	public static Set<Entity> completeEntitiesReferences(Set<Entity> entities)
 	{
 		entities.forEach(entity -> entity.getFieldsValues().entrySet().stream()
 				.filter(fieldAndValue -> isStringUUID(fieldAndValue) || fieldAndValue.getValue() instanceof UUID || (fieldAndValue.getValue() instanceof Collection<?> && ((Collection<?>) fieldAndValue.getValue()).stream().allMatch(UUID.class::isInstance)))
