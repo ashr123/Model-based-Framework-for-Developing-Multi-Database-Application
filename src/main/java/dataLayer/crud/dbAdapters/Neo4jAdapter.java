@@ -90,6 +90,28 @@ public class Neo4jAdapter extends DatabaseAdapter
 	}
 
 	@Override
+	protected Stream<Entity> makeEntities(FieldsMapping fieldsMapping, String entityType)
+	{
+		IDBAccess idbAccess = getDBAccess(fieldsMapping);
+		JcNode jcNode = new JcNode(entityType);
+		JcQuery jcQuery = new JcQuery();
+		jcQuery.setClauses(new IClause[]{
+				MATCH.node(jcNode).label(entityType),
+				RETURN.value(jcNode)
+		});
+		try
+		{
+			return idbAccess.execute(jcQuery)
+					.resultOf(jcNode).stream()
+					.map(Neo4jAdapter::getEntityFromNode);
+		}
+		finally
+		{
+			idbAccess.close();
+		}
+	}
+
+	@Override
 	public void executeCreate(Entity entity)
 	{
 		groupFieldsByFieldsMapping(entity, dataLayer.crud.dbAdapters.DBType.NEO4J)
