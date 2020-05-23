@@ -274,7 +274,7 @@ public class Query
 	/**
 	 * For each given entity, any field that suppose to hold "sub"-entity, this method replaces the field UUID with the appropriate entity (i.e make this entity "deep"). For example:<br>
 	 * from <pre>{@code Entity(UUID("4a464b0f-5e83-40c4-ba89-cfbf435bd0b9"), "Person", {"name": "Elmo", "age": 12, "phoneNumber": "0521212121", "emailAddress": "Elmo@post.bgu.ac.il", "livesAt": UUID("751c7dc1-dbe2-42d6-8d7a-6efecdec1bff")})}</pre>
-	 * to <pre>{@code Entity(UUID("4a464b0f-5e83-40c4-ba89-cfbf435bd0b9"), "Person", {"name": "Elmo", "age": 12, "phoneNumber": "0521212121", "emailAddress": "Elmo@post.bgu.ac.il", "livesAt": Entity(UUID("751c7dc1-dbe2-42d6-8d7a-6efecdec1bff"), "Address", {"street": "Sesame street", "state": "New York", "city": Entity(UUID("308aee6b-b225-41e8-9aec-83206035afdd"), "City", {"name": "newark", "mayor": "Mayor West."})})})}</pre>
+	 * to <pre>{@code Entity(UUID("4a464b0f-5e83-40c4-ba89-cfbf435bd0b9"), "Person", {"name": "Elmo", "age": 12, "phoneNumber": "0521212121", "emailAddress": "Elmo@post.bgu.ac.il", "livesAt": Entity(UUID("751c7dc1-dbe2-42d6-8d7a-6efecdec1bff"), "Address", {"street": "Sesame street", "state": "New York", "city": Entity(UUID("308aee6b-b225-41e8-9aec-83206035afdd"), "City", {"name": "newark", "mayor": "Mayor West"})})})}</pre>
 	 *
 	 * @param entities the (maybe) shallow entities to be made deep
 	 * @return the transformed entities

@@ -20,11 +20,11 @@ public abstract class DatabaseAdapter
 
 	/**
 	 * given:
-	 * <pre>{@code Entity(UUID("751c7dc1-dbe2-42d6-8d7a-6efecdec1bff"), "person", "fieldsValues": {"name": "Moshe", "phone": 0546815181}),
+	 * <pre>{@code Entity(UUID("751c7dc1-dbe2-42d6-8d7a-6efecdec1bff"), "person", "fieldsValues": {"name": "Moshe", "phone": "0546815181"}),
 	 * Entity(UUID("751c7dc1-dbe2-42d6-8d7a-6efecdec1bff"), "Person", "fieldsValues": {"livesAt": UUID("74a464b0f-5e83-40c4-ba89-cfbf435bd0b9")})}</pre>
 	 *
 	 * @param entities stream of entities
-	 * @return {@code Entity(UUID("751c7dc1-dbe2-42d6-8d7a-6efecdec1bff"), "person", "fieldsValues": {"name": "Moshe", "phone": 0546815181, "livesAt": UUID("74a464b0f-5e83-40c4-ba89-cfbf435bd0b9")})}
+	 * @return {@code Entity(UUID("751c7dc1-dbe2-42d6-8d7a-6efecdec1bff"), "person", "fieldsValues": {"name": "Moshe", "phone": "0546815181", "livesAt": UUID("74a464b0f-5e83-40c4-ba89-cfbf435bd0b9")})}
 	 */
 	private static Stream<Entity> groupEntities(Stream<Entity> entities)
 	{
@@ -64,12 +64,6 @@ public abstract class DatabaseAdapter
 						}).put(field, validateAndTransformEntity(entity.getEntityType(), field, value));
 					}
 				});
-//		entity.getFieldsValues()
-//				.forEach((field, value) ->
-//				{
-//					if (Conf.getConfiguration().getFieldsMappingFromEntityField(entity.getEntityType(), field).getType().equals(dbType))
-//						insertValue(value);
-//				});
 		return locationDocumentMap;
 	}
 
@@ -171,25 +165,6 @@ public abstract class DatabaseAdapter
 				.flatMap(fieldsMapping -> fieldsMapping.getType().getDatabaseAdapter().makeEntities(fieldsMapping, all.getEntityType()));
 	}
 
-//	private static void insertValue(Object value)
-//	{
-//		if (value instanceof Collection<?>)
-//			((Collection<?>) value).forEach(DatabaseAdapter::insertValue);
-//		else if (value instanceof Entity)
-//		{
-//			final Entity entity = (Entity) value;
-//			//noinspection OptionalGetWithoutIsPresent
-//			final FieldsMapping fieldsMapping = Conf.getConfiguration().getFieldsMappingFromEntityField(entity.getEntityType(), entity.getFieldsValues().keySet().stream().findAny().get());
-//			if (fieldsMapping
-//					.getType()
-//					.getDatabaseAdapter()
-//					.executeRead(entity.getEntityType(), entity.getUuid(), fieldsMapping)
-//					.findAny()
-//					.isEmpty())
-//				Query.create(entity);
-//		}
-//	}
-
 	public static Stream<Entity> executeRead(And and, Query.Friend friend)
 	{
 		return getResultFromDBs(and)
@@ -238,7 +213,8 @@ public abstract class DatabaseAdapter
 	public abstract void executeDelete(FieldsMapping fieldsMapping, Map<String, Collection<UUID>> typesAndUuids, Query.Friend friend);
 
 	public abstract void executeUpdate(FieldsMapping fieldsMapping,
-	                                   Map<String/*type*/, Pair<Collection<UUID>, Map<String/*field*/, Object/*value*/>>> updates, Query.Friend friend);
+	                                   Map<String/*type*/, Pair<Collection<UUID>, Map<String/*field*/, Object/*value*/>>> updates,
+	                                   Query.Friend friend);
 
 	public static final class Friend
 	{

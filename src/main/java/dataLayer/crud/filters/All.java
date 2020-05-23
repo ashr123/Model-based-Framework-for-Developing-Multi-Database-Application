@@ -35,7 +35,7 @@ public class All implements Filter
 	@Override
 	public boolean equals(Object o)
 	{
-		return this == o || (o instanceof All && entityType.equals(((All) o).entityType));
+		return this == o || o instanceof All && entityType.equals(((All) o).entityType);
 	}
 
 	@Override
