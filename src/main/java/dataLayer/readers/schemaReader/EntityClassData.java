@@ -3,6 +3,7 @@ package dataLayer.readers.schemaReader;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Collection;
+import java.util.InputMismatchException;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -10,6 +11,8 @@ import java.util.stream.Collectors;
 @SuppressWarnings("ConstantConditions")
 public class EntityClassData
 {
+	@JsonProperty("primaryKey")
+	private final Collection<String> primaryKey = null;
 	@JsonProperty("properties")
 	private final Map<String/*property name*/, EntityPropertyData> properties = null;
 
@@ -19,6 +22,8 @@ public class EntityClassData
 
 	void checkValidity()
 	{
+		if (!properties.keySet().containsAll(primaryKey))
+			throw new InputMismatchException("Not all fields in primary key exists in class's properties.");
 		properties.values()
 				.forEach(EntityPropertyData::checkValidity);
 	}
@@ -45,6 +50,11 @@ public class EntityClassData
 		return properties.keySet();
 	}
 
+	public Collection<String> getPrimaryKey()
+	{
+		return primaryKey;
+	}
+
 	@Override
 	public boolean equals(Object o)
 	{
@@ -65,8 +75,9 @@ public class EntityClassData
 	@Override
 	public String toString()
 	{
-		return "EntityClass{" +
-		       "properties=" + properties +
+		return "EntityClassData{" +
+		       "primaryKey=" + primaryKey +
+		       ", properties=" + properties +
 		       '}';
 	}
 }

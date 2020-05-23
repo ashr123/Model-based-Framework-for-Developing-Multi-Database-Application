@@ -1,8 +1,8 @@
 package dataLayer.crud;
 
 import dataLayer.crud.dbAdapters.DBType;
-import dataLayer.crud.filters.Filter;
-import dataLayer.crud.filters.SimpleFilter;
+import dataLayer.crud.dbAdapters.DatabaseAdapter;
+import dataLayer.crud.filters.*;
 import dataLayer.readers.configReader.Conf;
 import dataLayer.readers.configReader.FieldsMapping;
 import dataLayer.readers.schemaReader.Schema;
@@ -13,8 +13,11 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static dataLayer.crud.filters.And.and;
+import static dataLayer.crud.filters.Eq.eq;
 import static java.util.stream.Collectors.*;
 
+// TODO add "friend" to Query to be able to access DatabaseAdapter?
 public class Query
 {
 	public static void create(Entity... entities)
@@ -27,6 +30,11 @@ public class Query
 //					});
 //		});
 		Stream.of(entities)
+				.filter(entity ->
+						simpleRead(and(Schema.getClassPrimaryKey(entity.getEntityType()).stream()
+								.map(field -> eq(entity.getEntityType(), field, entity.get(field)))
+								.toArray(Filter[]::new)))
+								.count() == 0)
 				.forEach(entity ->
 				{
 					DBType.MONGODB.getDatabaseAdapter().executeCreate(entity);
@@ -47,7 +55,10 @@ public class Query
 		       filter.executeRead(Conf.getConfiguration().getFieldsMappingFromEntityField(((SimpleFilter) filter).getEntityType(), ((SimpleFilter) filter).getFieldName())
 				       .getType()
 				       .getDatabaseAdapter()) :
-		       filter.executeRead(DBType.MONGODB.getDatabaseAdapter()); // Complex query, the adapter doesn't matter
+//		       filter instanceof Or ? DatabaseAdapter.executeRead((Or) filter) :
+//		       filter instanceof And ? DatabaseAdapter.executeRead((And) filter) :
+//		       DatabaseAdapter.executeRead((All) filter);
+		       filter.executeRead(DBType.MONGODB.getDatabaseAdapter()); // Complex or All query, the adapter doesn't matter
 	}
 
 	public static void delete(Filter filter)

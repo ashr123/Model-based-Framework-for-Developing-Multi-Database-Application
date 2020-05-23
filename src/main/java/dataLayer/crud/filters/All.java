@@ -1,47 +1,53 @@
-//package dataLayer.crud.filters;
-//
-//import dataLayer.crud.Entity;
-//import dataLayer.crud.dbAdapters.DatabaseAdapter;
-//import iot.jcypher.query.api.IClause;
-//import org.bson.conversions.Bson;
-//
-//import java.util.Set;
-//
-//public class All extends SimpleFilter
-//{
-//	private All(String entityName, Object value)
-//	{
-//		super(entityName, null, value);
-//	}
-//
-//	public static All all(String entityName, Object value)
-//	{
-//		return new All(entityName, value);
-//	}
-//
-//	@Override
-//	public Stream<Entity> accept(DatabaseAdapter databaseAdapter)
-//	{
-//		return databaseAdapter.execute(this);
-//	}
-//
-//	@Override
-//	public String toString()
-//	{
-//		return "All{" +
-//				"entityName='" + getEntityType() + '\'' +
-//				", value=" + getValue()
-//				+ '}';
-//	}
-//
-//	public Bson generateFromMongoDB()
-//	{
-//		throw new UnsupportedOperationException("Not implemented yet.");
-//	}
-//
-//	@Override
-//	public IClause[] generateFromNeo4j()
-//	{
-//		return new IClause[0];
-//	}
-//}
+package dataLayer.crud.filters;
+
+import dataLayer.crud.Entity;
+import dataLayer.crud.dbAdapters.DatabaseAdapter;
+
+import java.util.Objects;
+import java.util.stream.Stream;
+
+public class All implements Filter
+{
+	private final String entityType;
+
+	private All(String entityType)
+	{
+		this.entityType = entityType;
+	}
+
+	public static All all(String entityType)
+	{
+		return new All(entityType);
+	}
+
+	public String getEntityType()
+	{
+		return entityType;
+	}
+
+	@Override
+	public Stream<Entity> executeRead(DatabaseAdapter databaseAdapter)
+	{
+		return DatabaseAdapter.executeRead(this);
+	}
+
+	@Override
+	public boolean equals(Object o)
+	{
+		return this == o || (o instanceof All && entityType.equals(((All) o).entityType));
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return Objects.hash(entityType);
+	}
+
+	@Override
+	public String toString()
+	{
+		return "All{" +
+		       "entityType='" + entityType + '\'' +
+		       '}';
+	}
+}

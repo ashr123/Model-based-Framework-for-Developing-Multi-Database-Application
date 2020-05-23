@@ -187,6 +187,14 @@ public abstract class DatabaseAdapter
 //		}
 //	}
 
+	protected abstract Stream<Entity> makeEntities(FieldsMapping fieldsMapping, String entityType);
+
+	public static Stream<Entity> executeRead(All all)
+	{
+		return Conf.getConfiguration().getFieldsMappingForEntity(all.getEntityType())
+				.flatMap(fieldsMapping -> fieldsMapping.getType().getDatabaseAdapter().makeEntities(fieldsMapping, all.getEntityType()));
+	}
+
 	public abstract Stream<Entity> executeRead(Eq eq);
 
 	public abstract Stream<Entity> executeRead(Ne ne);
@@ -195,15 +203,13 @@ public abstract class DatabaseAdapter
 
 	public abstract Stream<Entity> executeRead(Lt lt);
 
-//	abstract Set<Entity> execute(All all);
-
 	public abstract Stream<Entity> executeRead(Gte gte);
 
 	public abstract Stream<Entity> executeRead(Lte lte);
 
 	public abstract Stream<Entity> executeRead(String entityType, UUID uuid, FieldsMapping fieldsMapping);
 
-	public Stream<Entity> executeRead(And and)
+	public static Stream<Entity> executeRead(And and)
 	{
 		return getResultFromDBs(and)
 				.reduce((set1, set2) ->
@@ -219,7 +225,7 @@ public abstract class DatabaseAdapter
 				.orElse(Stream.of());
 	}
 
-	public Stream<Entity> executeRead(Or or)
+	public static Stream<Entity> executeRead(Or or)
 	{
 		return groupEntities(getResultFromDBs(or)
 				.flatMap(Function.identity()));

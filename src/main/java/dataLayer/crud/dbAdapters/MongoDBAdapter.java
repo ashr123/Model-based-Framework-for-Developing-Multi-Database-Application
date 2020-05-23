@@ -62,6 +62,18 @@ public class MongoDBAdapter extends DatabaseAdapter
 		}
 	}
 
+	@Override
+	protected Stream<Entity> makeEntities(FieldsMapping fieldsMapping, String entityType)
+	{
+		try (MongoClient mongoClient = createMongoClient(fieldsMapping.getConnStr()))
+		{
+			return getStringObjectMap(mongoClient.getDatabase(fieldsMapping.getLocation())
+					.getCollection(entityType)
+					.find()).stream()
+					.map(fieldsMap -> new Entity((UUID) fieldsMap.remove("uuid"), entityType, fieldsMap, FRIEND));
+		}
+	}
+
 	private static Stream<Entity> queryRead(SimpleFilter simpleFilter, Bson filter)
 	{
 		return makeEntities(Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityType(), simpleFilter.getFieldName()), simpleFilter.getEntityType(), filter);

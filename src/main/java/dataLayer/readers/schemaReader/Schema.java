@@ -30,7 +30,7 @@ public class Schema
 		schema = objectMapper.readValue(url, Schema.class);
 		schema.checkValidity();
 
-		//noinspection unchecked
+////		noinspection unchecked
 //		schemaGraph = new DirectedPseudograph<>((Class<? extends Pair<String, String>>) new Pair<>("", "").getClass());
 //		Deque<String> unvisitedClasses = new LinkedList<>(Schema.getClassesName());
 //
@@ -70,6 +70,11 @@ public class Schema
 	{
 		if (!schema.classes.containsKey(className))
 			throw new InputMismatchException("Class '" + className + "' doesn't exist!");
+	}
+
+	public static Collection<String> getClassPrimaryKey(String className)
+	{
+		return schema.classes.get(className).getPrimaryKey();
 	}
 
 	public static void containsAllClasses(Collection<String> classNames)

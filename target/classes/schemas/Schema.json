@@ -1,6 +1,7 @@
 {
   "classes": {
 	"City": {
+	  "primaryKey": ["name"],
 	  "properties": {
 		"name": {
 		  "type": "string"
@@ -11,6 +12,7 @@
 	  }
 	},
 	"Address": {
+	  "primaryKey": ["postal-code"],
 	  "properties": {
 		"street": {
 		  "type": "string"
@@ -32,6 +34,7 @@
 	  }
 	},
 	"Person": {
+	  "primaryKey": ["name"],
 	  "properties": {
 		"name": {
 		  "type": "string"
@@ -53,6 +56,7 @@
 	  }
 	},
 	"Professor": {
+	  "primaryKey": ["name"],
 	  "properties": {
 		"name": {
 		  "type": "string"
@@ -82,6 +86,7 @@
 	  }
 	},
 	"Student": {
+	  "primaryKey": ["name"],
 	  "properties": {
 		"name": {
 		  "type": "string"

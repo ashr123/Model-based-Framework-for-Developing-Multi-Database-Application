@@ -12,4 +12,10 @@ import java.util.stream.Stream;
 public interface Filter
 {
 	Stream<Entity> executeRead(DatabaseAdapter databaseAdapter);
+
+	@Override
+	boolean equals(Object o);
+
+	@Override
+	int hashCode();
 }

@@ -21,7 +21,7 @@ public class And extends ComplexFilter
 	@Override
 	public Stream<Entity> executeRead(DatabaseAdapter databaseAdapter)
 	{
-		return databaseAdapter.executeRead(this);
+		return DatabaseAdapter.executeRead(this);
 	}
 
 	@Override

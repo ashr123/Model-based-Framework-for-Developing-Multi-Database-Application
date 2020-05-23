@@ -107,8 +107,8 @@ public class Entity
 	public String toString()
 	{
 		return "Entity{" +
-		       "entityType='" + entityType + '\'' +
-		       ", uuid=" + uuid +
+		       "uuid=" + uuid +
+		       ", entityType='" + entityType + '\'' +
 		       ", fieldsValues=" + fieldsValues +
 		       '}';
 	}
