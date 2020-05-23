@@ -2,6 +2,7 @@ package dataLayer.crud.dbAdapters;
 
 import dataLayer.crud.Entity;
 import dataLayer.crud.Pair;
+import dataLayer.crud.Query;
 import dataLayer.crud.filters.*;
 import dataLayer.readers.configReader.Conf;
 import dataLayer.readers.configReader.FieldsMapping;
@@ -112,7 +113,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 	}
 
 	@Override
-	public void executeCreate(Entity entity)
+	public void executeCreate(Entity entity, Query.Friend friend)
 	{
 		groupFieldsByFieldsMapping(entity, dataLayer.crud.dbAdapters.DBType.NEO4J)
 				.forEach((fieldsMapping, fields) ->
@@ -134,7 +135,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 	}
 
 	@Override
-	public Stream<Entity> executeRead(Eq eq)
+	public Stream<Entity> executeRead(Eq eq, Query.Friend friend)
 	{
 		JcNode jcNode = new JcNode(eq.getEntityType());
 		JcQuery jcQuery = new JcQuery();
@@ -147,7 +148,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 	}
 
 	@Override
-	public Stream<Entity> executeRead(Ne ne)
+	public Stream<Entity> executeRead(Ne ne, Query.Friend friend)
 	{
 		JcNode jcNode = new JcNode(ne.getEntityType());
 		JcQuery jcQuery = new JcQuery();
@@ -160,7 +161,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 	}
 
 	@Override
-	public Stream<Entity> executeRead(Gt gt)
+	public Stream<Entity> executeRead(Gt gt, Query.Friend friend)
 	{
 		JcNode jcNode = new JcNode(gt.getEntityType());
 		JcQuery jcQuery = new JcQuery();
@@ -173,7 +174,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 	}
 
 	@Override
-	public Stream<Entity> executeRead(Lt lt)
+	public Stream<Entity> executeRead(Lt lt, Query.Friend friend)
 	{
 		JcNode jcNode = new JcNode(lt.getEntityType());
 		JcQuery jcQuery = new JcQuery();
@@ -186,7 +187,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 	}
 
 	@Override
-	public Stream<Entity> executeRead(Gte gte)
+	public Stream<Entity> executeRead(Gte gte, Query.Friend friend)
 	{
 		JcNode jcNode = new JcNode(gte.getEntityType());
 		JcQuery jcQuery = new JcQuery();
@@ -199,7 +200,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 	}
 
 	@Override
-	public Stream<Entity> executeRead(Lte lte)
+	public Stream<Entity> executeRead(Lte lte, Query.Friend friend)
 	{
 		JcNode jcNode = new JcNode(lte.getEntityType());
 		JcQuery jcQuery = new JcQuery();
@@ -212,13 +213,19 @@ public class Neo4jAdapter extends DatabaseAdapter
 	}
 
 	@Override
-	public Stream<Entity> executeRead(String entityType, UUID uuid, FieldsMapping fieldsMapping)
+	protected Stream<Entity> executeRead(String entityType, UUID uuid, FieldsMapping fieldsMapping)
 	{
 		return query(entityType, uuid, fieldsMapping);
 	}
 
 	@Override
-	public void executeDelete(FieldsMapping fieldsMapping, Map<String, Collection<UUID>> typesAndUuids)
+	public Stream<Entity> executeRead(String entityType, UUID uuid, FieldsMapping fieldsMapping, Query.Friend friend)
+	{
+		return executeRead(entityType, uuid, fieldsMapping);
+	}
+
+	@Override
+	public void executeDelete(FieldsMapping fieldsMapping, Map<String, Collection<UUID>> typesAndUuids, Query.Friend friend)
 	{
 		IDBAccess idbAccess = getDBAccess(fieldsMapping);
 		try
@@ -242,7 +249,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 	}
 
 	@Override
-	public void executeUpdate(FieldsMapping fieldsMapping, Map<String, Pair<Collection<UUID>, Map<String, Object>>> updates)
+	public void executeUpdate(FieldsMapping fieldsMapping, Map<String, Pair<Collection<UUID>, Map<String, Object>>> updates, Query.Friend friend)
 	{
 		IDBAccess idbAccess = getDBAccess(fieldsMapping);
 		try

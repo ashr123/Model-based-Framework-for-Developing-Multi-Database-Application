@@ -18,6 +18,12 @@ public class Entity
 		this((UUID) null, null, new HashMap<>(fieldsValues));
 	}
 
+	@SuppressWarnings("CopyConstructorMissesField")
+	public Entity(Entity entity)
+	{
+		this(entity.uuid, entity.entityType, new HashMap<>(entity.fieldsValues));
+	}
+
 	public Entity(String uuid, String entityType, Map<String, Object> fieldsValues, DatabaseAdapter.Friend friend)
 	{
 		this(uuid, entityType, fieldsValues);
@@ -78,7 +84,7 @@ public class Entity
 	public Entity merge(Entity entity)
 	{
 		entity.fieldsValues
-				.forEach((field, value) -> fieldsValues.merge(field, value, (value1, value2) -> value1));
+				.forEach((field, value) -> fieldsValues.merge(field, value, (value1, value2) -> value2));
 //		entity.fieldsValues
 //				.forEach((field, value) -> fieldsValues.computeIfAbsent(field, field1 -> fieldsValues.put(field1, value)));
 		return this;

@@ -20,6 +20,8 @@ import static java.util.stream.Collectors.*;
 // TODO add "friend" to Query to be able to access DatabaseAdapter?
 public class Query
 {
+	private static final Friend FRIEND = new Friend();
+
 	public static void create(Entity... entities)
 	{
 //		Arrays.stream(entities).forEach(entity -> {
@@ -30,18 +32,22 @@ public class Query
 //					});
 //		});
 		Stream.of(entities)
-				.filter(entity ->
-						simpleRead(and(Schema.getClassPrimaryKey(entity.getEntityType()).stream()
-								.map(field -> eq(entity.getEntityType(), field, entity.get(field)))
-								.toArray(Filter[]::new)))
-								.count() == 0)
+				.filter(Query::isaPresent)
 				.forEach(entity ->
 				{
-					DBType.MONGODB.getDatabaseAdapter().executeCreate(entity);
-					DBType.NEO4J.getDatabaseAdapter().executeCreate(entity);
+					DBType.MONGODB.getDatabaseAdapter().executeCreate(entity, FRIEND);
+					DBType.NEO4J.getDatabaseAdapter().executeCreate(entity, FRIEND);
 					//TODO: Comment needs to be removed when SQL adapter implemented!
 					//DBType.MYSQL.getDatabaseAdapter().executeCreate(entity);
 				});
+	}
+
+	private static boolean isaPresent(Entity entity)
+	{
+		return simpleRead(and(Schema.getClassPrimaryKey(entity.getEntityType()).stream()
+				.map(field -> eq(entity.getEntityType(), field, entity.get(field)))
+				.toArray(Filter[]::new)))
+				       .count() == 0;
 	}
 
 	public static Set<Entity> read(Filter filter)
@@ -54,11 +60,11 @@ public class Query
 		return filter instanceof SimpleFilter /*simpleFilter*/ ?
 		       filter.executeRead(Conf.getConfiguration().getFieldsMappingFromEntityField(((SimpleFilter) filter).getEntityType(), ((SimpleFilter) filter).getFieldName())
 				       .getType()
-				       .getDatabaseAdapter()) :
+				       .getDatabaseAdapter(), FRIEND) :
 //		       filter instanceof Or ? DatabaseAdapter.executeRead((Or) filter) :
 //		       filter instanceof And ? DatabaseAdapter.executeRead((And) filter) :
 //		       DatabaseAdapter.executeRead((All) filter);
-		       filter.executeRead(DBType.MONGODB.getDatabaseAdapter()); // Complex or All query, the adapter doesn't matter
+               filter.executeRead(DBType.MONGODB.getDatabaseAdapter(), FRIEND); // Complex or All query, the adapter doesn't matter
 	}
 
 	public static void delete(Filter filter)
@@ -75,7 +81,7 @@ public class Query
 								temp.computeIfAbsent(fieldsMapping, fieldsMapping1 -> new HashMap<>())
 										.computeIfAbsent(entity.getEntityType(), entityType -> new HashSet<>())
 										.add(entity.getUuid())));
-		temp.forEach((fieldsMapping, typesAndUuids) -> fieldsMapping.getType().getDatabaseAdapter().executeDelete(fieldsMapping, typesAndUuids));
+		temp.forEach((fieldsMapping, typesAndUuids) -> fieldsMapping.getType().getDatabaseAdapter().executeDelete(fieldsMapping, typesAndUuids, FRIEND));
 	}
 
 	public static void update(Filter filter, Set<Entity> entitiesUpdates)
@@ -91,12 +97,14 @@ public class Query
 	public static void update(Stream<Entity> entitiesToUpdate, Set<Entity> entitiesUpdates)
 	{
 		Map<FieldsMapping, Map<String, Collection<UUID>>> temp = new HashMap<>();
-		entitiesToUpdate.forEach(entityToUpdate ->
-				Conf.getConfiguration().getFieldsMappingForEntity(entityToUpdate)
-						.forEach(fieldsMapping ->
-								temp.computeIfAbsent(fieldsMapping, fieldsMapping1 -> new HashMap<>())
-										.computeIfAbsent(entityToUpdate.getEntityType(), entityType -> new HashSet<>())
-										.add(entityToUpdate.getUuid())));
+		//noinspection OptionalGetWithoutIsPresent
+		entitiesToUpdate.filter(entity -> isaPresent(new Entity(entity).merge(entitiesUpdates.stream().filter(entity1 -> entity.getEntityType().equals(entity1.getEntityType())).findFirst().get())))
+				.forEach(entityToUpdate ->
+						Conf.getConfiguration().getFieldsMappingForEntity(entityToUpdate)
+								.forEach(fieldsMapping ->
+										temp.computeIfAbsent(fieldsMapping, fieldsMapping1 -> new HashMap<>())
+												.computeIfAbsent(entityToUpdate.getEntityType(), entityType -> new HashSet<>())
+												.add(entityToUpdate.getUuid())));
 
 		temp.entrySet().stream()
 				.map(fieldsMappingAndValue ->
@@ -117,7 +125,7 @@ public class Query
 																	.orElse(Map.of())));
 										})
 										.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))))
-				.forEach(fieldsMappingAndUpdate -> fieldsMappingAndUpdate.getKey().getType().getDatabaseAdapter().executeUpdate(fieldsMappingAndUpdate.getKey(), fieldsMappingAndUpdate.getValue()));
+				.forEach(fieldsMappingAndUpdate -> fieldsMappingAndUpdate.getKey().getType().getDatabaseAdapter().executeUpdate(fieldsMappingAndUpdate.getKey(), fieldsMappingAndUpdate.getValue(), FRIEND));
 	}
 
 	private static Set<Entity> makeEntitiesWhole(Stream<Entity> entities)
@@ -138,7 +146,7 @@ public class Query
 									missingFieldsMapping
 											.getType()
 											.getDatabaseAdapter()
-											.executeRead(entityFragment.getEntityType(), entityFragment.getUuid(), missingFieldsMapping)));
+											.executeRead(entityFragment.getEntityType(), entityFragment.getUuid(), missingFieldsMapping, FRIEND)));
 			//noinspection OptionalGetWithoutIsPresent
 			wholeEntities.add(ref.fragments
 					.reduce(Entity::merge).get());
@@ -207,5 +215,12 @@ public class Query
 								.map(fieldAndValue -> Map.entry(entity.getEntityType() + '.' + fieldAndValue.getKey(), fieldAndValue.getValue()))
 								.collect(toMap(Map.Entry::getKey, Map.Entry::getValue))))
 				.collect(Collectors.toSet());
+	}
+
+	public static final class Friend
+	{
+		private Friend()
+		{
+		}
 	}
 }

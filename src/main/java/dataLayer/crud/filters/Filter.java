@@ -2,6 +2,7 @@ package dataLayer.crud.filters;
 
 
 import dataLayer.crud.Entity;
+import dataLayer.crud.Query;
 import dataLayer.crud.dbAdapters.DatabaseAdapter;
 
 import java.util.stream.Stream;
@@ -11,7 +12,7 @@ import java.util.stream.Stream;
  */
 public interface Filter
 {
-	Stream<Entity> executeRead(DatabaseAdapter databaseAdapter);
+	Stream<Entity> executeRead(DatabaseAdapter databaseAdapter, Query.Friend friend);
 
 	@Override
 	boolean equals(Object o);

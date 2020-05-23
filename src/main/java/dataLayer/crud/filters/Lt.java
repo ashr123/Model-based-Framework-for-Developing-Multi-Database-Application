@@ -1,6 +1,7 @@
 package dataLayer.crud.filters;
 
 import dataLayer.crud.Entity;
+import dataLayer.crud.Query;
 import dataLayer.crud.dbAdapters.DatabaseAdapter;
 
 import java.util.stream.Stream;
@@ -18,9 +19,9 @@ public class Lt extends SimpleFilter
 	}
 
 	@Override
-	public Stream<Entity> executeRead(DatabaseAdapter databaseAdapter)
+	public Stream<Entity> executeRead(DatabaseAdapter databaseAdapter, Query.Friend friend)
 	{
-		return databaseAdapter.executeRead(this);
+		return databaseAdapter.executeRead(this, friend);
 	}
 
 	@Override

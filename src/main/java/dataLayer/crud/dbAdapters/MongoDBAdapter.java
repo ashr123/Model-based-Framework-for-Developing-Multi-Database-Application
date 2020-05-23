@@ -8,6 +8,7 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 import dataLayer.crud.Entity;
 import dataLayer.crud.Pair;
+import dataLayer.crud.Query;
 import dataLayer.crud.filters.SimpleFilter;
 import dataLayer.crud.filters.*;
 import dataLayer.readers.configReader.Conf;
@@ -85,7 +86,7 @@ public class MongoDBAdapter extends DatabaseAdapter
 	}
 
 	@Override
-	public void executeCreate(Entity entity)
+	public void executeCreate(Entity entity, Query.Friend friend)
 	{
 		groupFieldsByFieldsMapping(entity, DBType.MONGODB)
 				.forEach((fieldsMapping, fieldsAndValues) ->
@@ -100,49 +101,55 @@ public class MongoDBAdapter extends DatabaseAdapter
 	}
 
 	@Override
-	public Stream<Entity> executeRead(Eq eq)
+	public Stream<Entity> executeRead(Eq eq, Query.Friend friend)
 	{
 		return queryRead(eq, eq(eq.getFieldName(), eq.getValue()));
 	}
 
 	@Override
-	public Stream<Entity> executeRead(Ne ne)
+	public Stream<Entity> executeRead(Ne ne, Query.Friend friend)
 	{
 		return queryRead(ne, ne(ne.getFieldName(), ne.getValue()));
 	}
 
 	@Override
-	public Stream<Entity> executeRead(Gt gt)
+	public Stream<Entity> executeRead(Gt gt, Query.Friend friend)
 	{
 		return queryRead(gt, gt(gt.getFieldName(), gt.getValue()));
 	}
 
 	@Override
-	public Stream<Entity> executeRead(Lt lt)
+	public Stream<Entity> executeRead(Lt lt, Query.Friend friend)
 	{
 		return queryRead(lt, lt(lt.getFieldName(), lt.getValue()));
 	}
 
 	@Override
-	public Stream<Entity> executeRead(Gte gte)
+	public Stream<Entity> executeRead(Gte gte, Query.Friend friend)
 	{
 		return queryRead(gte, gte(gte.getFieldName(), gte.getValue()));
 	}
 
 	@Override
-	public Stream<Entity> executeRead(Lte lte)
+	public Stream<Entity> executeRead(Lte lte, Query.Friend friend)
 	{
 		return queryRead(lte, lte(lte.getFieldName(), lte.getValue()));
 	}
 
 	@Override
-	public Stream<Entity> executeRead(String entityType, UUID uuid, FieldsMapping fieldsMapping)
+	protected Stream<Entity> executeRead(String entityType, UUID uuid, FieldsMapping fieldsMapping)
 	{
 		return queryRead(entityType, uuid, fieldsMapping);
 	}
 
 	@Override
-	public void executeDelete(FieldsMapping fieldsMapping, Map<String, Collection<UUID>> typesAndUuids)
+	public Stream<Entity> executeRead(String entityType, UUID uuid, FieldsMapping fieldsMapping, Query.Friend friend)
+	{
+		return executeRead(entityType, uuid, fieldsMapping);
+	}
+
+	@Override
+	public void executeDelete(FieldsMapping fieldsMapping, Map<String, Collection<UUID>> typesAndUuids, Query.Friend friend)
 	{
 		try (MongoClient mongoClient = createMongoClient(fieldsMapping.getConnStr()))
 		{
@@ -157,7 +164,8 @@ public class MongoDBAdapter extends DatabaseAdapter
 
 	@Override
 	public void executeUpdate(FieldsMapping fieldsMapping,
-	                          Map<String/*type*/, Pair<Collection<UUID>, Map<String/*field*/, Object/*value*/>>> updates)
+	                          Map<String/*type*/, Pair<Collection<UUID>, Map<String/*field*/, Object/*value*/>>> updates,
+	                          Query.Friend friend)
 	{
 		try (MongoClient mongoClient = createMongoClient(fieldsMapping.getConnStr()))
 		{
