@@ -27,8 +27,17 @@ public class Query
 
 	public static void create(Entity... entities)
 	{
-		Stream.of(entities)
-				.filter(Query::isaPresentByPrimaryKey)
+		create(Stream.of(entities));
+	}
+
+	public static void create(Collection<Entity> entities)
+	{
+		create(entities.stream());
+	}
+
+	public static void create(Stream<Entity> entities)
+	{
+		entities.filter(Query::isaPresentByPrimaryKey)
 				.forEach(entity ->
 				{
 					DBType.MONGODB.getDatabaseAdapter().executeCreate(entity, FRIEND);
@@ -68,6 +77,11 @@ public class Query
 	public static void delete(Filter filter)
 	{
 		delete(simpleRead(filter));
+	}
+
+	public static void delete(Entity... entities)
+	{
+		delete(Stream.of(entities));
 	}
 
 	public static void delete(Stream<Entity> entities)
