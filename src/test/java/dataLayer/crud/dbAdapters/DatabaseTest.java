@@ -2,7 +2,6 @@ package dataLayer.crud.dbAdapters;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import dataLayer.crud.Entity;
-import dataLayer.crud.filters.All;
 import dataLayer.readers.configReader.Conf;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;

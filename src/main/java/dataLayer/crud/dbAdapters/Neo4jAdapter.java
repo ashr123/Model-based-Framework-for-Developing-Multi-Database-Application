@@ -37,8 +37,9 @@ public class Neo4jAdapter extends DatabaseAdapter
 
 	/**
 	 * This function retrieves a neo4j database connection object from specific fieldMapping.
+	 *
 	 * @param fieldsMapping a fieldsMapping that represent database location of entity properties.
-	 * @return Neo4j IDBAccess database connection object.
+	 * @return Neo4j {@link IDBAccess} database connection object.
 	 */
 	private static IDBAccess getDBAccess(FieldsMapping fieldsMapping)
 	{
@@ -49,6 +50,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 
 	/**
 	 * Build an Entity from {@link GrNode}.
+	 *
 	 * @param grNode the graph node that represent the Entity to be built.
 	 * @return an Entity represented by the grNode.
 	 */
@@ -64,9 +66,10 @@ public class Neo4jAdapter extends DatabaseAdapter
 
 	/**
 	 * Perform a {@link JcQuery} that represents {@link SimpleFilter} regarding data that is existent in the Neo4j database.
+	 *
 	 * @param simpleFilter a given filter to perform in the query.
-	 * @param jcQuery a jcypher query, fitting to the given {@link SimpleFilter}.
-	 * @param jcNode a jcypher node.
+	 * @param jcQuery      a jcypher query, fitting to the given {@link SimpleFilter}.
+	 * @param jcNode       a jcypher node.
 	 * @return Stream of entities that fit the given filter.
 	 */
 	private static Stream<Entity> query(SimpleFilter simpleFilter, JcQuery jcQuery, JcNode jcNode)
@@ -87,8 +90,9 @@ public class Neo4jAdapter extends DatabaseAdapter
 
 	/**
 	 * Reading a stream of entities parts from given {@param entityType} and {@param fieldsMapping} that share the same {@link UUID}, that is existent in the Neo4j database.
-	 * @param entityType entity type of wanted result.
-	 * @param uuid the wanted uuid to read by.
+	 *
+	 * @param entityType    entity type of wanted result.
+	 * @param uuid          the wanted uuid to read by.
 	 * @param fieldsMapping a fieldsMapping that represent database location of entity properties.
 	 * @return Stream of entities from the given type and mapping that have the given uuid.
 	 */

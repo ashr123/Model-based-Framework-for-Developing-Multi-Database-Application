@@ -19,12 +19,12 @@ public abstract class DatabaseAdapter
 	static final Friend FRIEND = new Friend();
 
 	/**
-	 * given:<br>
-	 * Entity{"entityType": "person", "fieldsValues": {"uuid": {"value": 1}, "name": "Moshe", "phone": 0546815181}}<br>
-	 * Entity{"entityType": "Person", "fieldsValues": {"uuid": {"value": 1}, "livesAt": {"value": 999}}}
+	 * given:
+	 * <pre>{@code Entity(UUID("751c7dc1-dbe2-42d6-8d7a-6efecdec1bff"), "person", "fieldsValues": {"name": "Moshe", "phone": 0546815181}),
+	 * Entity(UUID("751c7dc1-dbe2-42d6-8d7a-6efecdec1bff"), "Person", "fieldsValues": {"livesAt": UUID("74a464b0f-5e83-40c4-ba89-cfbf435bd0b9")})}</pre>
 	 *
 	 * @param entities stream of entities
-	 * @return Entity{"entityType": "person", "fieldsValues": {"uuid": {"value": 1}, "name": "Moshe", "phone": 0546815181, "livesAt": {"value": 999}}}
+	 * @return {@code Entity(UUID("751c7dc1-dbe2-42d6-8d7a-6efecdec1bff"), "person", "fieldsValues": {"name": "Moshe", "phone": 0546815181, "livesAt": UUID("74a464b0f-5e83-40c4-ba89-cfbf435bd0b9")})}
 	 */
 	private static Stream<Entity> groupEntities(Stream<Entity> entities)
 	{
