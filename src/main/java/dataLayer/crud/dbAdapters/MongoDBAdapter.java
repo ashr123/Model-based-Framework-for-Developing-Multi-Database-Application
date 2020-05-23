@@ -27,8 +27,11 @@ import static com.mongodb.client.model.Updates.combine;
 import static com.mongodb.client.model.Updates.set;
 
 /**
+ * This class deals with CRUD operations on "mongoDB" DB
+ *
  * @author Roy Ash
  */
+@SuppressWarnings("JavadocReference")
 public class MongoDBAdapter extends DatabaseAdapter
 {
 	MongoDBAdapter()
@@ -43,6 +46,14 @@ public class MongoDBAdapter extends DatabaseAdapter
 				.build());
 	}
 
+	/**
+	 * Traverse on the result given by MongoDB driver and transforms it to {@link Map} of fields and values to be inserted into {@link Entity}
+	 *
+	 * @param myDoc the result given by MongoDB driver
+	 * @return {@link Set} of {@link Map}s
+	 * @see MongoDBAdapter#makeEntities(FieldsMapping, String)
+	 * @see MongoDBAdapter#makeEntities(FieldsMapping, String, Bson)
+	 */
 	private static Set<Map<String, Object>> getStringObjectMap(FindIterable<Document> myDoc)
 	{
 		final Set<Map<String, Object>> output = new HashSet<>();
@@ -52,6 +63,16 @@ public class MongoDBAdapter extends DatabaseAdapter
 		return output;
 	}
 
+	/**
+	 * Queries MongoDB client with given {@link Entity#entityType} as collection name
+	 *
+	 * @param fieldsMapping gives the necessary details about the connection such as {@link FieldsMapping#connStr} and {@link FieldsMapping#location}
+	 * @param entityType    is practically {@link Entity#entityType}
+	 * @param filter        upon which MongoDB returns the relevant results
+	 * @return flat, partial entities according to the given parameters
+	 * @see MongoDBAdapter#queryRead(SimpleFilter, Bson)
+	 * @see MongoDBAdapter#queryRead(FieldsMapping, String, UUID)
+	 */
 	private static Stream<Entity> makeEntities(FieldsMapping fieldsMapping, String entityType, Bson filter)
 	{
 		try (MongoClient mongoClient = createMongoClient(fieldsMapping.getConnStr()))
@@ -63,12 +84,34 @@ public class MongoDBAdapter extends DatabaseAdapter
 		}
 	}
 
+	/**
+	 * General adapter for all {@link SimpleFilter}s
+	 *
+	 * @param simpleFilter which gives us the relevant {@link FieldsMapping} for the given {@link Entity#entityType} and it's field
+	 * @param filter       the filter upon MongoDB will filter its result
+	 * @return flat, partial entities according to the given parameters
+	 * @see MongoDBAdapter#executeRead(Eq, Query.Friend)
+	 * @see MongoDBAdapter#executeRead(Gt, Query.Friend)
+	 * @see MongoDBAdapter#executeRead(Gte, Query.Friend)
+	 * @see MongoDBAdapter#executeRead(Lt, Query.Friend)
+	 * @see MongoDBAdapter#executeRead(Ne, Query.Friend)
+	 * @see MongoDBAdapter#executeRead(Lte, Query.Friend)
+	 */
 	private static Stream<Entity> queryRead(SimpleFilter simpleFilter, Bson filter)
 	{
 		return makeEntities(Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityType(), simpleFilter.getFieldName()), simpleFilter.getEntityType(), filter);
 	}
 
-	private static Stream<Entity> queryRead(String entityType, UUID uuid, FieldsMapping fieldsMapping)
+	/**
+	 * Special case of {@link MongoDBAdapter#queryRead(SimpleFilter, Bson)} that suitable for getting result by {@link Entity#uuid} for internal purposes
+	 *
+	 * @param fieldsMapping contains the necessary information to map {@link Entity}'s field to the appropriate DB location
+	 * @param entityType    the type of the requested {@link Entity}
+	 * @param uuid          the {@link UUID} of the requested
+	 * @return 0 or single {@link Entity} that matched the given {@link UUID}
+	 * @see MongoDBAdapter#executeRead(FieldsMapping, String, UUID)
+	 */
+	private static Stream<Entity> queryRead(FieldsMapping fieldsMapping, String entityType, UUID uuid)
 	{
 		return makeEntities(fieldsMapping, entityType, eq("uuid", uuid));
 	}
@@ -137,9 +180,9 @@ public class MongoDBAdapter extends DatabaseAdapter
 	}
 
 	@Override
-	protected Stream<Entity> executeRead(String entityType, UUID uuid, FieldsMapping fieldsMapping)
+	protected Stream<Entity> executeRead(FieldsMapping fieldsMapping, String entityType, UUID uuid)
 	{
-		return queryRead(entityType, uuid, fieldsMapping);
+		return queryRead(fieldsMapping, entityType, uuid);
 	}
 
 	@Override

@@ -213,7 +213,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 	}
 
 	@Override
-	protected Stream<Entity> executeRead(String entityType, UUID uuid, FieldsMapping fieldsMapping)
+	protected Stream<Entity> executeRead(FieldsMapping fieldsMapping, String entityType, UUID uuid)
 	{
 		return query(entityType, uuid, fieldsMapping);
 	}

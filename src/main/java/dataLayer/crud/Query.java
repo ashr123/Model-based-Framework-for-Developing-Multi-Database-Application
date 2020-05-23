@@ -32,6 +32,8 @@ public class Query
 	 * Inserts any number of entities into the appropriate DBs according to loaded configuration file
 	 *
 	 * @param entities the entities to be inserted
+	 * @see Query#create(Collection)
+	 * @see Query#create(Stream)
 	 */
 	public static void create(Entity... entities)
 	{
@@ -42,6 +44,8 @@ public class Query
 	 * Inserts any number of entities into the appropriate DBs according to loaded configuration file
 	 *
 	 * @param entities the entities to be inserted
+	 * @see Query#create(Entity...)
+	 * @see Query#create(Stream)
 	 */
 	public static void create(Collection<Entity> entities)
 	{
@@ -52,6 +56,8 @@ public class Query
 	 * Inserts any number of entities into the appropriate DBs according to loaded configuration file
 	 *
 	 * @param entities the entities to be inserted
+	 * @see Query#create(Collection)
+	 * @see Query#create(Entity...)
 	 */
 	public static void create(Stream<Entity> entities)
 	{
@@ -123,6 +129,8 @@ public class Query
 	 * Deletes entities according to given filter
 	 *
 	 * @param filter the filter that determines which entities to delete
+	 * @see Query#delete(Entity...)
+	 * @see Query#delete(Stream)
 	 */
 	public static void delete(Filter filter)
 	{
@@ -133,6 +141,8 @@ public class Query
 	 * Deletes the given entities from the DBs
 	 *
 	 * @param entities the ones that need to be deleted
+	 * @see Query#delete(Filter)
+	 * @see Query#delete(Stream)
 	 */
 	public static void delete(Entity... entities)
 	{
@@ -143,6 +153,8 @@ public class Query
 	 * Deletes the given entities from the DBs
 	 *
 	 * @param entities the ones that need to be deleted
+	 * @see Query#delete(Entity...)
+	 * @see Query#delete(Filter)
 	 */
 	public static void delete(Stream<Entity> entities)
 	{
@@ -162,6 +174,8 @@ public class Query
 	 * @param filter          given upon entities are updated
 	 * @param entitiesUpdates updated values according to entity's type
 	 * @apiNote in case there are multiple entities with the same type, only one will be chosen, it is undetermined which
+	 * @see Query#update(Set, Set)
+	 * @see Query#update(Stream, Set)
 	 */
 	public static void update(Filter filter, Set<Entity> entitiesUpdates)
 	{
@@ -174,6 +188,8 @@ public class Query
 	 * @param entitiesToUpdate the given entities to be updated
 	 * @param entitiesUpdates  updated values according to entity's type
 	 * @apiNote in case there are multiple entities with the same type, only one will be chosen, it is undetermined which
+	 * @see Query#update(Filter, Set)
+	 * @see Query#update(Stream, Set)
 	 */
 	public static void update(Set<Entity> entitiesToUpdate, Set<Entity> entitiesUpdates)
 	{
@@ -186,6 +202,8 @@ public class Query
 	 * @param entitiesToUpdate the given entities to be updated
 	 * @param entitiesUpdates  updated values according to entity's type
 	 * @apiNote in case there are multiple entities with the same type, only one will be chosen, it is undetermined which
+	 * @see Query#update(Filter, Set)
+	 * @see Query#update(Set, Set)
 	 */
 	public static void update(Stream<Entity> entitiesToUpdate, Set<Entity> entitiesUpdates)
 	{

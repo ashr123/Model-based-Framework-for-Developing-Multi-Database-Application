@@ -159,7 +159,7 @@ public abstract class DatabaseAdapter
 		if (fieldsMapping
 				    .getType()
 				    .getDatabaseAdapter()
-				    .executeRead(entity.getEntityType(), entity.getUuid(), fieldsMapping)
+				    .executeRead(fieldsMapping, entity.getEntityType(), entity.getUuid())
 				    .count() == 0)
 			Query.create(entity);
 		return entity.getUuid();
@@ -228,11 +228,11 @@ public abstract class DatabaseAdapter
 
 	public abstract Stream<Entity> executeRead(Lte lte, Query.Friend friend);
 
-	protected abstract Stream<Entity> executeRead(String entityType, UUID uuid, FieldsMapping fieldsMapping);
+	protected abstract Stream<Entity> executeRead(FieldsMapping fieldsMapping, String entityType, UUID uuid);
 
 	public Stream<Entity> executeRead(String entityType, UUID uuid, FieldsMapping fieldsMapping, Query.Friend friend)
 	{
-		return executeRead(entityType, uuid, fieldsMapping);
+		return executeRead(fieldsMapping, entityType, uuid);
 	}
 
 	public abstract void executeDelete(FieldsMapping fieldsMapping, Map<String, Collection<UUID>> typesAndUuids, Query.Friend friend);
