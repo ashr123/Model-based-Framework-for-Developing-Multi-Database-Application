@@ -272,7 +272,7 @@ public class Query
 	}
 
 	/**
-	 * For each given entity, any field that suppose to hold "sub"-entity, this mrthod replaces the field UUID with the appropriate entity (i.e make this entity "deep")
+	 * For each given entity, any field that suppose to hold "sub"-entity, this method replaces the field UUID with the appropriate entity (i.e make this entity "deep")
 	 *
 	 * @param entities the (maybe) shallow entities to be made deep
 	 * @return the transformed entities
