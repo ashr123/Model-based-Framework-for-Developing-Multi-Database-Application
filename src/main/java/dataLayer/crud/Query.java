@@ -17,6 +17,9 @@ import static dataLayer.crud.filters.And.and;
 import static dataLayer.crud.filters.Eq.eq;
 import static java.util.stream.Collectors.*;
 
+/**
+ * This class is the gateway for all user's operations on the DBs, it can perform basic CRUD operation and "join" operation
+ */
 public class Query
 {
 	private static final Friend FRIEND = new Friend();
@@ -74,7 +77,8 @@ public class Query
 
 	private static boolean isPresentByPrimaryKey(Entity entityBeforeUpdate, Entity entityToMerge)
 	{
-		if (Schema.getClassPrimaryKey(entityBeforeUpdate.getEntityType()).stream().anyMatch(primaryKey -> entityToMerge.getFieldsValues().containsKey(primaryKey)))
+		if (Schema.getClassPrimaryKey(entityBeforeUpdate.getEntityType()).stream()
+				.anyMatch(primaryKey -> entityToMerge.getFieldsValues().containsKey(primaryKey)))
 		{
 			final Entity entityAfterUpdate = new Entity(entityBeforeUpdate).merge(entityToMerge);
 			if (simpleRead(and(Schema.getClassPrimaryKey(entityAfterUpdate.getEntityType()).stream()
@@ -164,11 +168,25 @@ public class Query
 		update(simpleRead(filter), entitiesUpdates);
 	}
 
+	/**
+	 * Updates all given entities
+	 *
+	 * @param entitiesToUpdate the given entities to be updated
+	 * @param entitiesUpdates  updated values according to entity's type
+	 * @apiNote in case there are multiple entities with the same type, only one will be chosen, it is undetermined which
+	 */
 	public static void update(Set<Entity> entitiesToUpdate, Set<Entity> entitiesUpdates)
 	{
 		update(entitiesToUpdate.stream(), entitiesUpdates);
 	}
 
+	/**
+	 * Updates all given entities
+	 *
+	 * @param entitiesToUpdate the given entities to be updated
+	 * @param entitiesUpdates  updated values according to entity's type
+	 * @apiNote in case there are multiple entities with the same type, only one will be chosen, it is undetermined which
+	 */
 	public static void update(Stream<Entity> entitiesToUpdate, Set<Entity> entitiesUpdates)
 	{
 		Map<FieldsMapping, Map<String, Collection<UUID>>> temp = new HashMap<>();
@@ -203,6 +221,12 @@ public class Query
 				.forEach(fieldsMappingAndUpdate -> fieldsMappingAndUpdate.getKey().getType().getDatabaseAdapter().executeUpdate(fieldsMappingAndUpdate.getKey(), fieldsMappingAndUpdate.getValue(), FRIEND));
 	}
 
+	/**
+	 * For each entity given, this method finds out if there are more fields that didn't extract (i.e the entity is partial entity) and extract them
+	 *
+	 * @param entities the (maybe) partial entities
+	 * @return the entities with their missing fields
+	 */
 	public static Set<Entity> makeEntitiesWhole(Stream<Entity> entities)
 	{
 		Set<Entity> wholeEntities = new HashSet<>();
@@ -229,20 +253,31 @@ public class Query
 		return wholeEntities;
 	}
 
+	/**
+	 * For each given entity, any field that suppose to hold "sub"-entity, this mrthod replaces the field UUID with the appropriate entity (i.e make this entity "deep")
+	 *
+	 * @param entities the (maybe) shallow entities to be made deep
+	 * @return the transformed entities
+	 */
 	public static Set<Entity> completeEntitiesReferences(Set<Entity> entities)
 	{
-		entities.forEach(entity -> entity.getFieldsValues().entrySet().stream()
-				.filter(fieldAndValue -> isStringUUID(fieldAndValue) || fieldAndValue.getValue() instanceof UUID || (fieldAndValue.getValue() instanceof Collection<?> && ((Collection<?>) fieldAndValue.getValue()).stream().allMatch(UUID.class::isInstance)))
-				.forEach(fieldAndValue ->
-				{
-					if (fieldAndValue.getValue() instanceof String || fieldAndValue.getValue() instanceof UUID)
-						entity.getFieldsValues().put(fieldAndValue.getKey(), completeEntitiesReferences(Set.of(getEntitiesFromReference(entity, fieldAndValue.getKey(), fieldAndValue.getValue()))).stream()
-								.findFirst().get());
-					else
-						entity.getFieldsValues().put(fieldAndValue.getKey(), completeEntitiesReferences(((Collection<?>) fieldAndValue.getValue()).stream()
-								.map(entityReference -> getEntitiesFromReference(entity, fieldAndValue.getKey(), entityReference))
-								.collect(toSet())));
-				}));
+		entities.forEach(entity ->
+				entity.getFieldsValues().entrySet().stream()
+						.filter(fieldAndValue -> isStringUUID(fieldAndValue) ||
+						                         fieldAndValue.getValue() instanceof UUID ||
+						                         fieldAndValue.getValue() instanceof Collection<?> &&
+						                         ((Collection<?>) fieldAndValue.getValue()).stream()
+								                         .allMatch(UUID.class::isInstance))
+						.forEach(fieldAndValue ->
+						{
+							if (fieldAndValue.getValue() instanceof String || fieldAndValue.getValue() instanceof UUID)
+								entity.getFieldsValues().put(fieldAndValue.getKey(), completeEntitiesReferences(Set.of(getEntitiesFromReference(entity, fieldAndValue.getKey(), fieldAndValue.getValue()))).stream()
+										.findFirst().get());
+							else
+								entity.getFieldsValues().put(fieldAndValue.getKey(), completeEntitiesReferences(((Collection<?>) fieldAndValue.getValue()).stream()
+										.map(entityReference -> getEntitiesFromReference(entity, fieldAndValue.getKey(), entityReference))
+										.collect(toSet())));
+						}));
 		return entities;
 	}
 
@@ -264,6 +299,14 @@ public class Query
 				.findFirst().get();
 	}
 
+	/**
+	 * A JOIN operation groups entities from two or more types, based on a related fields between them.
+	 *
+	 * @param filter    performs initial filtering on the DBs, determines the fields to be combined by the returned entities's type
+	 * @param predicate filters the combined entities based on related fields determined by the user
+	 * @return set of entities with no UUID, type and with the combined fields
+	 * @apiNote the returned entities won't comply with any given schema, that means that those entities cannot be used with {@link Query#create(Entity...)}, {@link Query#create(Stream)} or {@link Query#create(Collection)}.
+	 */
 	public static Set<Entity> join(Filter filter, Predicate<Entity> predicate)
 	{
 		Collection<Set<Entity>> temp = read(filter).stream()
@@ -282,6 +325,12 @@ public class Query
 				.collect(toSet());
 	}
 
+	/**
+	 * for every entity, its fields names transform to the following template: {@code <entityType>.<field name>}
+	 *
+	 * @param entities the entities whose field need to be transformed
+	 * @return the transformed entities
+	 */
 	private static Set<Entity> transformEntitiesFields(Set<Entity> entities)
 	{
 		return entities.stream()
