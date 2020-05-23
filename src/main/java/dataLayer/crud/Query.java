@@ -27,15 +27,8 @@ public class Query
 
 	public static void create(Entity... entities)
 	{
-//		Arrays.stream(entities).forEach(entity -> {
-//			Map<FieldsMapping, Set<String>> temp = new HashMap<>();
-//			Conf.getConfiguration().getFieldsMappingForEntity(entity)
-//					.forEach(fieldsMapping -> {
-//						temp.computeIfAbsent(fieldsMapping, fieldsMapping1 -> Conf.getConfiguration().getFieldsFromTypeAndMapping(entity.getEntityType(), fieldsMapping1));
-//					});
-//		});
 		Stream.of(entities)
-				.filter(Query::isaPresent)
+				.filter(Query::isaPresentByPrimaryKey)
 				.forEach(entity ->
 				{
 					DBType.MONGODB.getDatabaseAdapter().executeCreate(entity, FRIEND);
@@ -45,12 +38,14 @@ public class Query
 				});
 	}
 
-	private static boolean isaPresent(Entity entity)
+	private static boolean isaPresentByPrimaryKey(Entity entity)
 	{
-		return simpleRead(and(Schema.getClassPrimaryKey(entity.getEntityType()).stream()
+		if (simpleRead(and(Schema.getClassPrimaryKey(entity.getEntityType()).stream()
 				.map(field -> eq(entity.getEntityType(), field, entity.get(field)))
 				.toArray(Filter[]::new)))
-				       .count() == 0;
+				       .count() == 0)
+			return true;
+		throw new IllegalStateException(entity + " already exists in DBs.");
 	}
 
 	public static Set<Entity> read(Filter filter)
@@ -101,7 +96,7 @@ public class Query
 	{
 		Map<FieldsMapping, Map<String, Collection<UUID>>> temp = new HashMap<>();
 		//noinspection OptionalGetWithoutIsPresent
-		entitiesToUpdate.filter(entity -> isaPresent(new Entity(entity).merge(entitiesUpdates.stream().filter(entity1 -> entity.getEntityType().equals(entity1.getEntityType())).findFirst().get())))
+		entitiesToUpdate.filter(entity -> isaPresentByPrimaryKey(new Entity(entity).merge(entitiesUpdates.stream().filter(entity1 -> entity.getEntityType().equals(entity1.getEntityType())).findFirst().get())))
 				.forEach(entityToUpdate ->
 						Conf.getConfiguration().getFieldsMappingForEntity(entityToUpdate)
 								.forEach(fieldsMapping ->
