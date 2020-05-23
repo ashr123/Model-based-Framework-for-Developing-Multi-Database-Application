@@ -21,6 +21,10 @@ public class Query
 {
 	private static final Friend FRIEND = new Friend();
 
+	private Query()
+	{
+	}
+
 	public static void create(Entity... entities)
 	{
 //		Arrays.stream(entities).forEach(entity -> {
