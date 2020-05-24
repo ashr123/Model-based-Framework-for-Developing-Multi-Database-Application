@@ -1,6 +1,7 @@
 package dataLayer.crud;
 
 import dataLayer.crud.dbAdapters.DBType;
+import dataLayer.crud.dbAdapters.DatabaseAdapter;
 import dataLayer.crud.filters.Filter;
 import dataLayer.crud.filters.SimpleFilter;
 import dataLayer.readers.configReader.Conf;
@@ -18,7 +19,7 @@ import static dataLayer.crud.filters.Eq.eq;
 import static java.util.stream.Collectors.*;
 
 /**
- * This class is the gateway for all user's operations on the DBs, it can perform basic CRUD operation and "join" operation
+ * This class is the gateway for all user's operations on the DBs, it can perform basic CRUD operation and “join” operation
  */
 public class Query
 {
@@ -26,6 +27,27 @@ public class Query
 
 	private Query()
 	{
+	}
+
+	/**
+	 * Checks if certain entity doesn't exists already in the DBs by its primary key
+	 *
+	 * @param entity an entity to be checked
+	 * @return {@code true} if the entity doesn't exists in the DBs, {@code false} otherwise
+	 */
+	public static boolean isNotPresentByPrimaryKey(Entity entity)
+	{
+		return simpleRead(and(Schema.getClassPrimaryKey(entity.getEntityType()).stream()
+				.map(field -> eq(entity.getEntityType(), field, entity.get(field)))
+				.toArray(Filter[]::new)))
+				       .count() == 0;
+	}
+
+	private static boolean ifExistsThrow(Entity entity)
+	{
+		if (isNotPresentByPrimaryKey(entity))
+			return true;
+		throw new IllegalStateException(entity + " already exists in DBs.");
 	}
 
 	/**
@@ -61,41 +83,10 @@ public class Query
 	 */
 	public static void create(Stream<Entity> entities)
 	{
-		entities.filter(Query::isPresentByPrimaryKey)
-				.forEach(entity ->
-				{
-					DBType.MONGODB.getDatabaseAdapter().executeCreate(entity, FRIEND);
-					DBType.NEO4J.getDatabaseAdapter().executeCreate(entity, FRIEND);
-					//TODO: Comment needs to be removed when SQL adapter implemented!
-					//DBType.MYSQL.getDatabaseAdapter().executeCreate(entity);
-				});
+		entities.filter(Query::ifExistsThrow)
+				.forEach(entity -> DatabaseAdapter.create(entity, FRIEND));
 	}
 
-	private static boolean isPresentByPrimaryKey(Entity entity)
-	{
-		if (simpleRead(and(Schema.getClassPrimaryKey(entity.getEntityType()).stream()
-				.map(field -> eq(entity.getEntityType(), field, entity.get(field)))
-				.toArray(Filter[]::new)))
-				    .count() == 0)
-			return true;
-		throw new IllegalStateException(entity + " already exists in DBs.");
-	}
-
-	private static boolean isPresentByPrimaryKey(Entity entityBeforeUpdate, Entity entityToMerge)
-	{
-		if (Schema.getClassPrimaryKey(entityBeforeUpdate.getEntityType()).stream()
-				.anyMatch(primaryKey -> entityToMerge.getFieldsValues().containsKey(primaryKey)))
-		{
-			final Entity entityAfterUpdate = new Entity(entityBeforeUpdate).merge(entityToMerge);
-			if (simpleRead(and(Schema.getClassPrimaryKey(entityAfterUpdate.getEntityType()).stream()
-					.map(field -> eq(entityAfterUpdate.getEntityType(), field, entityAfterUpdate.get(field)))
-					.toArray(Filter[]::new)))
-					    .count() == 0)
-				return true;
-			throw new IllegalStateException(entityAfterUpdate + " already exists in DBs.");
-		}
-		return true;
-	}
 
 	/**
 	 * Extracts complete entities from the different DBs according to the given filter and configuration
@@ -173,7 +164,7 @@ public class Query
 	 *
 	 * @param filter          given upon entities are updated
 	 * @param entitiesUpdates updated values according to entity's type
-	 * @apiNote in case there are multiple entities with the same type, only one will be chosen, it is undetermined which
+	 * @apiNote in case there are multiple entities with the same type in {@code entitiesUpdates}, only one will be chosen for each type, it is undetermined which
 	 * @see Query#update(Set, Set)
 	 * @see Query#update(Stream, Set)
 	 */
@@ -208,8 +199,17 @@ public class Query
 	public static void update(Stream<Entity> entitiesToUpdate, Set<Entity> entitiesUpdates)
 	{
 		Map<FieldsMapping, Map<String, Collection<UUID>>> temp = new HashMap<>();
-		//noinspection OptionalGetWithoutIsPresent
-		entitiesToUpdate.filter(entity -> isPresentByPrimaryKey(entity, entitiesUpdates.stream().filter(entity1 -> entity.getEntityType().equals(entity1.getEntityType())).findFirst().get()))
+		entitiesToUpdate
+				.filter(entity ->
+				{
+					//noinspection OptionalGetWithoutIsPresent
+					Entity entityToMerge = entitiesUpdates.stream()
+							.filter(entity1 -> entity.getEntityType().equals(entity1.getEntityType())).findFirst().get();
+					if (Schema.getClassPrimaryKey(entity.getEntityType()).stream()
+							.anyMatch(primaryKey -> entityToMerge.getFieldsValues().containsKey(primaryKey)))
+						return ifExistsThrow(new Entity(entity).merge(entityToMerge));
+					return true;
+				})
 				.forEach(entityToUpdate ->
 						Conf.getConfiguration().getFieldsMappingForEntity(entityToUpdate)
 								.forEach(fieldsMapping ->
@@ -239,6 +239,8 @@ public class Query
 				.forEach(fieldsMappingAndUpdate -> fieldsMappingAndUpdate.getKey().getType().getDatabaseAdapter().executeUpdate(fieldsMappingAndUpdate.getKey(), fieldsMappingAndUpdate.getValue(), FRIEND));
 	}
 
+	//TODO add example
+
 	/**
 	 * For each entity given, this method finds out if there are more fields that didn't extract (i.e the entity is partial entity) and extract them
 	 *
@@ -263,7 +265,7 @@ public class Query
 									missingFieldsMapping
 											.getType()
 											.getDatabaseAdapter()
-											.executeRead(entityFragment.getEntityType(), entityFragment.getUuid(), missingFieldsMapping, FRIEND)));
+											.executeRead(missingFieldsMapping, entityFragment.getUuid(), entityFragment.getEntityType(), FRIEND)));
 			//noinspection OptionalGetWithoutIsPresent
 			wholeEntities.add(ref.fragments
 					.reduce(Entity::merge).get());

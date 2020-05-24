@@ -141,25 +141,21 @@ public class Neo4jAdapter extends DatabaseAdapter
 	}
 
 	@Override
-	public void executeCreate(Entity entity, Query.Friend friend)
+	public void executeCreate(FieldsMapping fieldsMapping, String entityType, Map<String, Object> fieldsAndValues)
 	{
-		groupFieldsByFieldsMapping(entity, dataLayer.crud.dbAdapters.DBType.NEO4J)
-				.forEach((fieldsMapping, fields) ->
-				{
-					final IDBAccess idbAccess = getDBAccess(fieldsMapping);
-					try
-					{
-						Graph graph = Graph.create(idbAccess);
-						GrNode node = graph.createNode();
-						node.addLabel(entity.getEntityType());
-						fields.forEach(node::addProperty);
-						graph.store();
-					}
-					finally
-					{
-						idbAccess.close();
-					}
-				});
+		final IDBAccess idbAccess = getDBAccess(fieldsMapping);
+		try
+		{
+			Graph graph = Graph.create(idbAccess);
+			GrNode node = graph.createNode();
+			node.addLabel(entityType);
+			fieldsAndValues.forEach(node::addProperty);
+			graph.store();
+		}
+		finally
+		{
+			idbAccess.close();
+		}
 	}
 
 	@Override
@@ -241,7 +237,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 	}
 
 	@Override
-	protected Stream<Entity> executeRead(FieldsMapping fieldsMapping, String entityType, UUID uuid)
+	protected Stream<Entity> executeRead(FieldsMapping fieldsMapping, UUID uuid, String entityType)
 	{
 		return query(entityType, uuid, fieldsMapping);
 	}

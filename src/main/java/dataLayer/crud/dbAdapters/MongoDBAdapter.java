@@ -109,7 +109,7 @@ public class MongoDBAdapter extends DatabaseAdapter
 	 * @param entityType    the type of the requested {@link Entity}
 	 * @param uuid          the {@link UUID} of the requested
 	 * @return 0 or single {@link Entity} that matched the given {@link UUID}
-	 * @see MongoDBAdapter#executeRead(FieldsMapping, String, UUID)
+	 * @see DatabaseAdapter#executeRead(FieldsMapping, UUID, String)
 	 */
 	private static Stream<Entity> queryRead(FieldsMapping fieldsMapping, String entityType, UUID uuid)
 	{
@@ -129,18 +129,14 @@ public class MongoDBAdapter extends DatabaseAdapter
 	}
 
 	@Override
-	public void executeCreate(Entity entity, Query.Friend friend)
+	protected void executeCreate(FieldsMapping fieldsMapping, String entityType, Map<String, Object> fieldsAndValues)
 	{
-		groupFieldsByFieldsMapping(entity, DBType.MONGODB)
-				.forEach((fieldsMapping, fieldsAndValues) ->
-				{
-					try (MongoClient mongoClient = createMongoClient(fieldsMapping.getConnStr()))
-					{
-						mongoClient.getDatabase(fieldsMapping.getLocation())
-								.getCollection(entity.getEntityType())
-								.insertOne(new Document(fieldsAndValues));
-					}
-				});
+		try (MongoClient mongoClient = createMongoClient(fieldsMapping.getConnStr()))
+		{
+			mongoClient.getDatabase(fieldsMapping.getLocation())
+					.getCollection(entityType)
+					.insertOne(new Document(fieldsAndValues));
+		}
 	}
 
 	@Override
@@ -180,7 +176,7 @@ public class MongoDBAdapter extends DatabaseAdapter
 	}
 
 	@Override
-	protected Stream<Entity> executeRead(FieldsMapping fieldsMapping, String entityType, UUID uuid)
+	protected Stream<Entity> executeRead(FieldsMapping fieldsMapping, UUID uuid, String entityType)
 	{
 		return queryRead(fieldsMapping, entityType, uuid);
 	}

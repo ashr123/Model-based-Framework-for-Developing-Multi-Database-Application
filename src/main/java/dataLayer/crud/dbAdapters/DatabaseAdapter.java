@@ -47,24 +47,26 @@ public abstract class DatabaseAdapter
 				.anyMatch(entityFrag.getUuid()::equals);
 	}
 
-	protected static Map<FieldsMapping, Map<String, Object>> groupFieldsByFieldsMapping(Entity entity, DBType dbType)
+	public static void create(Entity entity, Query.Friend friend)
+	{
+		create(entity);
+	}
+
+	private static void create(Entity entity)
 	{
 		final Map<FieldsMapping, Map<String, Object>> locationDocumentMap = new HashMap<>();
 		entity.getFieldsValues()
 				.forEach((field, value) ->
 				{
 					final FieldsMapping fieldMappingFromEntityFields = Conf.getConfiguration().getFieldsMappingFromEntityField(entity.getEntityType(), field);
-					if (fieldMappingFromEntityFields.getType().equals(dbType))
+					locationDocumentMap.computeIfAbsent(fieldMappingFromEntityFields, fieldsMapping ->
 					{
-						locationDocumentMap.computeIfAbsent(fieldMappingFromEntityFields, fieldsMapping ->
-						{
-							final Map<String, Object> properties = new HashMap<>();
-							properties.put("uuid", entity.getUuid());
-							return properties;
-						}).put(field, validateAndTransformEntity(entity.getEntityType(), field, value));
-					}
+						final Map<String, Object> properties = new HashMap<>();
+						properties.put("uuid", entity.getUuid());
+						return properties;
+					}).put(field, validateAndTransformEntity(entity.getEntityType(), field, value));
 				});
-		return locationDocumentMap;
+		locationDocumentMap.forEach((fieldsMapping, fieldAndValue) -> fieldsMapping.getType().getDatabaseAdapter().executeCreate(fieldsMapping, entity.getEntityType(), fieldAndValue));
 	}
 
 	protected static void editFieldValueMap(String entityType, Map<String, Object> fieldsAndValues)
@@ -148,14 +150,8 @@ public abstract class DatabaseAdapter
 		if (!entity.getEntityType().equals(entityJavaType))
 			throw new MissingFormatArgumentException("javaType of value is " + entity.getEntityType() + ", expected " + entityJavaType);
 
-		//noinspection OptionalGetWithoutIsPresent
-		final FieldsMapping fieldsMapping = Conf.getConfiguration().getFieldsMappingFromEntityField(entity.getEntityType(), entity.getFieldsValues().keySet().stream().findAny().get());
-		if (fieldsMapping
-				    .getType()
-				    .getDatabaseAdapter()
-				    .executeRead(fieldsMapping, entity.getEntityType(), entity.getUuid())
-				    .count() == 0)
-			Query.create(entity);
+		if (Query.isNotPresentByPrimaryKey(entity))
+			create(entity);
 		return entity.getUuid();
 	}
 
@@ -187,7 +183,7 @@ public abstract class DatabaseAdapter
 				.flatMap(Function.identity()));
 	}
 
-	public abstract void executeCreate(Entity entity, Query.Friend friend);
+	protected abstract void executeCreate(FieldsMapping fieldsMapping, String entityType, Map<String, Object> fieldsAndValues);
 
 	protected abstract Stream<Entity> makeEntities(FieldsMapping fieldsMapping, String entityType);
 
@@ -203,11 +199,11 @@ public abstract class DatabaseAdapter
 
 	public abstract Stream<Entity> executeRead(Lte lte, Query.Friend friend);
 
-	protected abstract Stream<Entity> executeRead(FieldsMapping fieldsMapping, String entityType, UUID uuid);
+	protected abstract Stream<Entity> executeRead(FieldsMapping fieldsMapping, UUID uuid, String entityType);
 
-	public Stream<Entity> executeRead(String entityType, UUID uuid, FieldsMapping fieldsMapping, Query.Friend friend)
+	public Stream<Entity> executeRead(FieldsMapping fieldsMapping, UUID uuid, String entityType, Query.Friend friend)
 	{
-		return executeRead(fieldsMapping, entityType, uuid);
+		return executeRead(fieldsMapping, uuid, entityType);
 	}
 
 	public abstract void executeDelete(FieldsMapping fieldsMapping, Map<String, Collection<UUID>> typesAndUuids, Query.Friend friend);
