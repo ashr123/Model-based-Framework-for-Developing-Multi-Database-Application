@@ -71,7 +71,7 @@ public class MongoDBAdapter extends DatabaseAdapter
 	 * @param filter        upon which MongoDB returns the relevant results
 	 * @return flat, partial entities according to the given parameters
 	 * @see MongoDBAdapter#queryRead(SimpleFilter, Bson)
-	 * @see MongoDBAdapter#queryRead(FieldsMapping, String, UUID)
+	 * @see MongoDBAdapter#queryRead(FieldsMapping, UUID, String)
 	 */
 	private static Stream<Entity> makeEntities(FieldsMapping fieldsMapping, String entityType, Bson filter)
 	{
@@ -106,12 +106,12 @@ public class MongoDBAdapter extends DatabaseAdapter
 	 * Special case of {@link MongoDBAdapter#queryRead(SimpleFilter, Bson)} that suitable for getting result by {@link Entity#uuid} for internal purposes
 	 *
 	 * @param fieldsMapping contains the necessary information to map {@link Entity}'s field to the appropriate DB location
-	 * @param entityType    the type of the requested {@link Entity}
 	 * @param uuid          the {@link UUID} of the requested
+	 * @param entityType    the type of the requested {@link Entity}
 	 * @return 0 or single {@link Entity} that matched the given {@link UUID}
 	 * @see DatabaseAdapter#executeRead(FieldsMapping, UUID, String)
 	 */
-	private static Stream<Entity> queryRead(FieldsMapping fieldsMapping, String entityType, UUID uuid)
+	private static Stream<Entity> queryRead(FieldsMapping fieldsMapping, UUID uuid, String entityType)
 	{
 		return makeEntities(fieldsMapping, entityType, eq("uuid", uuid));
 	}
@@ -178,7 +178,7 @@ public class MongoDBAdapter extends DatabaseAdapter
 	@Override
 	protected Stream<Entity> executeRead(FieldsMapping fieldsMapping, UUID uuid, String entityType)
 	{
-		return queryRead(fieldsMapping, entityType, uuid);
+		return queryRead(fieldsMapping, uuid, entityType);
 	}
 
 	@Override
@@ -207,13 +207,12 @@ public class MongoDBAdapter extends DatabaseAdapter
 			{
 				if (!uuidsAndUpdates.getSecond().isEmpty())
 				{
-					editFieldValueMap(entityType, uuidsAndUpdates.getSecond());
 					database.getCollection(entityType)
 							.updateMany(or(uuidsAndUpdates.getFirst().stream()
 											.map(uuid -> eq("uuid", uuid))
 											.collect(Collectors.toList())),
 									combine(uuidsAndUpdates.getSecond().entrySet().stream()
-											.map(fieldsAndValues -> set(fieldsAndValues.getKey(), fieldsAndValues.getValue()))
+											.map(fieldsAndValues -> set(fieldsAndValues.getKey(), validateAndTransformEntity(entityType, fieldsAndValues.getKey(), fieldsAndValues.getValue())))
 											.collect(Collectors.toList())));
 				}
 			});

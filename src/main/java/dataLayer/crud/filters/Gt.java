@@ -25,6 +25,19 @@ public class Gt extends SimpleFilter
 	}
 
 	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+			return true;
+		if (!(o instanceof Gt))
+			return false;
+		SimpleFilter that = (SimpleFilter) o;
+		return getEntityType().equals(that.getEntityType()) &&
+		       getFieldName().equals(that.getFieldName()) &&
+		       getValue().equals(that.getValue());
+	}
+
+	@Override
 	public String toString()
 	{
 		return "Gt{" + super.toString() + '}';

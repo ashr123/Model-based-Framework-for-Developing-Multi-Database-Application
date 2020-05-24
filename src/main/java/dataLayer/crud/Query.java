@@ -239,10 +239,10 @@ public class Query
 				.forEach(fieldsMappingAndUpdate -> fieldsMappingAndUpdate.getKey().getType().getDatabaseAdapter().executeUpdate(fieldsMappingAndUpdate.getKey(), fieldsMappingAndUpdate.getValue(), FRIEND));
 	}
 
-	//TODO add example
-
 	/**
-	 * For each entity given, this method finds out if there are more fields that didn't extract (i.e the entity is partial entity) and extract them
+	 * For each entity given, this method finds out if there are more fields that didn't extract (i.e the entity is partial entity) and extract them. For example:<br>
+	 * From<pre>{@code Entity(UUID("4a464b0f-5e83-40c4-ba89-cfbf435bd0b9"), "Person", {"emailAddress": "Elmo@post.bgu.ac.il", "livesAt": UUID("751c7dc1-dbe2-42d6-8d7a-6efecdec1bff")})}</pre>
+	 * to<pre>{@code Entity(UUID("4a464b0f-5e83-40c4-ba89-cfbf435bd0b9"), "Person", {"name": "Elmo", "age": 12, "phoneNumber": "0521212121", "emailAddress": "Elmo@post.bgu.ac.il", "livesAt": UUID("751c7dc1-dbe2-42d6-8d7a-6efecdec1bff")})}</pre>
 	 *
 	 * @param entities the (maybe) partial entities
 	 * @return the entities with their missing fields
@@ -275,8 +275,8 @@ public class Query
 
 	/**
 	 * For each given entity, any field that suppose to hold "sub"-entity, this method replaces the field UUID with the appropriate entity (i.e make this entity "deep"). For example:<br>
-	 * from <pre>{@code Entity(UUID("4a464b0f-5e83-40c4-ba89-cfbf435bd0b9"), "Person", {"name": "Elmo", "age": 12, "phoneNumber": "0521212121", "emailAddress": "Elmo@post.bgu.ac.il", "livesAt": UUID("751c7dc1-dbe2-42d6-8d7a-6efecdec1bff")})}</pre>
-	 * to <pre>{@code Entity(UUID("4a464b0f-5e83-40c4-ba89-cfbf435bd0b9"), "Person", {"name": "Elmo", "age": 12, "phoneNumber": "0521212121", "emailAddress": "Elmo@post.bgu.ac.il", "livesAt": Entity(UUID("751c7dc1-dbe2-42d6-8d7a-6efecdec1bff"), "Address", {"street": "Sesame street", "state": "New York", "city": Entity(UUID("308aee6b-b225-41e8-9aec-83206035afdd"), "City", {"name": "newark", "mayor": "Mayor West"})})})}</pre>
+	 * from<pre>{@code Entity(UUID("4a464b0f-5e83-40c4-ba89-cfbf435bd0b9"), "Person", {"name": "Elmo", "age": 12, "phoneNumber": "0521212121", "emailAddress": "Elmo@post.bgu.ac.il", "livesAt": UUID("751c7dc1-dbe2-42d6-8d7a-6efecdec1bff")})}</pre>
+	 * to<pre>{@code Entity(UUID("4a464b0f-5e83-40c4-ba89-cfbf435bd0b9"), "Person", {"name": "Elmo", "age": 12, "phoneNumber": "0521212121", "emailAddress": "Elmo@post.bgu.ac.il", "livesAt": Entity(UUID("751c7dc1-dbe2-42d6-8d7a-6efecdec1bff"), "Address", {"street": "Sesame street", "state": "New York", "city": Entity(UUID("308aee6b-b225-41e8-9aec-83206035afdd"), "City", {"name": "newark", "mayor": "Mayor West"})})})}</pre>
 	 *
 	 * @param entities the (maybe) shallow entities to be made deep
 	 * @return the transformed entities
@@ -306,7 +306,7 @@ public class Query
 	private static boolean isStringUUID(Map.Entry<String, Object> fieldAndValue)
 	{
 		final String UUIDRegex = "(?i)[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}";
-		return fieldAndValue.getValue() instanceof String ? ((String) fieldAndValue.getValue()).matches(UUIDRegex) :
+		return fieldAndValue.getValue() instanceof String && ((String) fieldAndValue.getValue()).matches(UUIDRegex) ||
 		       fieldAndValue.getValue() instanceof Collection<?> && ((Collection<?>) fieldAndValue.getValue()).stream()
 				       .allMatch(uuid -> ((String) uuid).matches(UUIDRegex));
 	}
@@ -339,8 +339,8 @@ public class Query
 				.orElse(Set.of());
 		return temp.stream()
 				.filter(entitySet -> !firstSet.equals(entitySet))
-				.reduce(transformEntitiesFields(firstSet), (entities1, entities2) -> entities1.stream()
-						.flatMap(entity1 -> transformEntitiesFields(entities2).stream()
+				.reduce(transformEntitiesFields(firstSet).collect(toSet()), (entities1, entities2) -> entities1.stream()
+						.flatMap(entity1 -> transformEntitiesFields(entities2)
 								.map(entity2 -> new Entity(entity1.getFieldsValues()).merge(entity2)))
 						.collect(toSet())).stream()
 				.filter(predicate)
@@ -353,14 +353,13 @@ public class Query
 	 * @param entities the entities whose field need to be transformed
 	 * @return the transformed entities
 	 */
-	private static Set<Entity> transformEntitiesFields(Set<Entity> entities)
+	private static Stream<Entity> transformEntitiesFields(Set<Entity> entities)
 	{
 		return entities.stream()
 				.map(entity ->
 						new Entity(entity.getFieldsValues().entrySet().stream()
 								.map(fieldAndValue -> Map.entry(entity.getEntityType() + '.' + fieldAndValue.getKey(), fieldAndValue.getValue()))
-								.collect(toMap(Map.Entry::getKey, Map.Entry::getValue))))
-				.collect(Collectors.toSet());
+								.collect(toMap(Map.Entry::getKey, Map.Entry::getValue))));
 	}
 
 	public static final class Friend

@@ -23,12 +23,6 @@ public abstract class ComplexFilter implements Filter
 	}
 
 	@Override
-	public boolean equals(Object o)
-	{
-		return this == o || o instanceof ComplexFilter && Arrays.equals(filters, ((ComplexFilter) o).filters);
-	}
-
-	@Override
 	public int hashCode()
 	{
 		return Arrays.hashCode(filters);

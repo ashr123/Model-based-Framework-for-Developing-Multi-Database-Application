@@ -20,7 +20,6 @@ public class Reader
 		checkValidity();
 	}
 
-	// TODO check also corresponding fields in every class/type
 	private static void checkValidity()
 	{
 		if (!Conf.getConfiguration().getEntitiesType().equals(Schema.getClassesName()))

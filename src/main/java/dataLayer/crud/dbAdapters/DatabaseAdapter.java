@@ -69,12 +69,7 @@ public abstract class DatabaseAdapter
 		locationDocumentMap.forEach((fieldsMapping, fieldAndValue) -> fieldsMapping.getType().getDatabaseAdapter().executeCreate(fieldsMapping, entity.getEntityType(), fieldAndValue));
 	}
 
-	protected static void editFieldValueMap(String entityType, Map<String, Object> fieldsAndValues)
-	{
-		fieldsAndValues.forEach((field, value) -> fieldsAndValues.replace(field, validateAndTransformEntity(entityType, field, value)));
-	}
-
-	private static Object validateAndTransformEntity(String entityType, String field, Object value)
+	protected static Object validateAndTransformEntity(String entityType, String field, Object value)
 	{
 		final EntityPropertyData propertyType = Schema.getPropertyType(entityType, field);
 		switch (propertyType.getType())

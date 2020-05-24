@@ -337,15 +337,18 @@ public abstract class DatabaseTest
 		delete();
 	}
 
+
 	@Test
 	void testJoin() throws JsonProcessingException
 	{
+		//TODO complete testJoin
 		System.out.println(Conf.toJson(join(gt("Person", "age", 18), entity -> true)));
 	}
 
 	@Test
 	void testComplexJoin() throws JsonProcessingException
 	{
+		//TODO complete testComplexJoin
 		Entity city = Entity.of("City", Map.of("name", "Newark",
 				"mayor", "Mayor West."));
 		Entity nestedEntity1 = Entity.of("Person",

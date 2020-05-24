@@ -25,6 +25,19 @@ public class Eq extends SimpleFilter
 	}
 
 	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+			return true;
+		if (!(o instanceof Eq))
+			return false;
+		SimpleFilter that = (SimpleFilter) o;
+		return getEntityType().equals(that.getEntityType()) &&
+		       getFieldName().equals(that.getFieldName()) &&
+		       getValue().equals(that.getValue());
+	}
+
+	@Override
 	public String toString()
 	{
 		return "Eq{" + super.toString() + '}';

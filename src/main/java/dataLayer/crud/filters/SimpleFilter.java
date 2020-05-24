@@ -30,19 +30,6 @@ public abstract class SimpleFilter implements Filter
 	}
 
 	@Override
-	public boolean equals(Object o)
-	{
-		if (this == o)
-			return true;
-		if (!(o instanceof SimpleFilter))
-			return false;
-		SimpleFilter that = (SimpleFilter) o;
-		return entityType.equals(that.entityType) &&
-		       fieldName.equals(that.fieldName) &&
-		       value.equals(that.value);
-	}
-
-	@Override
 	public int hashCode()
 	{
 		return Objects.hash(entityType, fieldName, value);
