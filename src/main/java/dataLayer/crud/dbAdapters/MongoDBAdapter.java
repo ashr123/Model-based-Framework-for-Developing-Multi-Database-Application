@@ -99,7 +99,7 @@ public class MongoDBAdapter extends DatabaseAdapter
 	 */
 	private static Stream<Entity> queryRead(SimpleFilter simpleFilter, Bson filter)
 	{
-		return makeEntities(Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityType(), simpleFilter.getFieldName()), simpleFilter.getEntityType(), filter);
+		return makeEntities(Conf.getFieldsMappingFromEntityField(simpleFilter.getEntityType(), simpleFilter.getFieldName()), simpleFilter.getEntityType(), filter);
 	}
 
 	/**

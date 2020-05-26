@@ -74,7 +74,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 	 */
 	private static Stream<Entity> query(SimpleFilter simpleFilter, JcQuery jcQuery, JcNode jcNode)
 	{
-		FieldsMapping fieldsMapping = Conf.getConfiguration().getFieldsMappingFromEntityField(simpleFilter.getEntityType(), simpleFilter.getFieldName());
+		FieldsMapping fieldsMapping = Conf.getFieldsMappingFromEntityField(simpleFilter.getEntityType(), simpleFilter.getFieldName());
 		IDBAccess idbAccess = getDBAccess(fieldsMapping);
 		try
 		{

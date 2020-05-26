@@ -1,37 +1,81 @@
-//package dataLayer.queryAdapters.dbAdapters;
+//package dataLayer.crud.dbAdapters;
 //
-//import dataLayer.queryAdapters.crud.*;
+//import dataLayer.crud.Entity;
+//import dataLayer.crud.Pair;
+//import dataLayer.crud.Query;
+//import dataLayer.crud.filters.*;
+//import dataLayer.readers.configReader.FieldsMapping;
 //
+//import java.util.Collection;
 //import java.util.Map;
+//import java.util.UUID;
+//import java.util.stream.Stream;
 //
-///**
-// * Concrete element
-// */
-//public class MySQLAdapter implements DatabaseAdapter {
-//    //TODO: Implement later.
-//    public String getConnectionStringByField(String entityName, String fieldName) {
-//        return "";
-//    }
-//    public  void revealQuery(Query query) {
-//        query.accept(this);
-//    }
-//    public void execute(CreateQuery createQuery) {
-//        System.out.println("MySQL Create Query execute");
-//    }
-//    public void execute(ReadQuery readQuery) {
-//        System.out.println("MySQL Update Query execute");
-//    }
-//    public void execute(UpdateQuery updateQuery) {
-//        System.out.println("MySQL Update Query execute");
-//    }
-//    public void execute(DeleteQuery deleteQuery) {
-//        System.out.println("MySQL Delete Query execute");
-//    }
+//public class MySQLAdapter extends DatabaseAdapter
+//{
+//	@Override
+//	protected void executeCreate(FieldsMapping fieldsMapping, String entityType, Map<String, Object> fieldsAndValues)
+//	{
 //
-//    @Override
-//    public Map<String, Object> execute(Eq eq)
-//    {
+//	}
 //
-//        return null;
-//    }
+//	@Override
+//	protected Stream<Entity> makeEntities(FieldsMapping fieldsMapping, String entityType)
+//	{
+//		return null;
+//	}
+//
+//	@Override
+//	public Stream<Entity> executeRead(Eq eq, Query.Friend friend)
+//	{
+//		return null;
+//	}
+//
+//	@Override
+//	public Stream<Entity> executeRead(Ne ne, Query.Friend friend)
+//	{
+//		return null;
+//	}
+//
+//	@Override
+//	public Stream<Entity> executeRead(Gt gt, Query.Friend friend)
+//	{
+//		return null;
+//	}
+//
+//	@Override
+//	public Stream<Entity> executeRead(Lt lt, Query.Friend friend)
+//	{
+//		return null;
+//	}
+//
+//	@Override
+//	public Stream<Entity> executeRead(Gte gte, Query.Friend friend)
+//	{
+//		return null;
+//	}
+//
+//	@Override
+//	public Stream<Entity> executeRead(Lte lte, Query.Friend friend)
+//	{
+//		return null;
+//	}
+//
+//	@Override
+//	protected Stream<Entity> executeRead(FieldsMapping fieldsMapping, UUID uuid, String entityType)
+//	{
+//		return null;
+//	}
+//
+//	@Override
+//	public void executeDelete(FieldsMapping fieldsMapping, Map<String, Collection<UUID>> typesAndUuids, Query.Friend friend)
+//	{
+//
+//	}
+//
+//	@Override
+//	public void executeUpdate(FieldsMapping fieldsMapping, Map<String, Pair<Collection<UUID>, Map<String, Object>>> updates, Query.Friend friend)
+//	{
+//
+//	}
 //}

@@ -12,7 +12,11 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
-import static dataLayer.crud.Query.*;
+import static dataLayer.crud.Query.create;
+import static dataLayer.crud.Query.delete;
+import static dataLayer.crud.Query.join;
+import static dataLayer.crud.Query.read;
+import static dataLayer.crud.Query.update;
 import static dataLayer.crud.filters.All.all;
 import static dataLayer.crud.filters.And.and;
 import static dataLayer.crud.filters.Eq.eq;

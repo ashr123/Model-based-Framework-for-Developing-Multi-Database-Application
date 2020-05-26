@@ -8,7 +8,10 @@ import dataLayer.crud.Entity;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.*;
+import java.util.Collection;
+import java.util.InputMismatchException;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -38,14 +41,14 @@ public class Conf
 	{
 	}
 
-	public static Conf getConfiguration()
-	{
-		return Objects.requireNonNull(configuration, "No configuration file loaded");
-	}
+//	public static Conf getConfiguration()
+//	{
+//		return Objects.requireNonNull(configuration, "No configuration file loaded");
+//	}
 
 	public static void loadConfiguration(URL url) throws IOException
 	{
-		configuration = objectMapper.readValue(url, Conf.class).checkValidity();
+		(configuration = objectMapper.readValue(url, Conf.class)).checkValidity();
 	}
 
 	public static String toJson(Object o) throws JsonProcessingException
@@ -63,57 +66,56 @@ public class Conf
 //		return entities.get(key);
 //	}
 
-	public boolean isEntityComplete(Entity entityFrag)
+	public static boolean isEntityComplete(Entity entityFrag)
 	{
-		return entities.get(entityFrag.getEntityType()).keySet().equals(entityFrag.getFieldsValues().keySet());
+		return configuration.entities.get(entityFrag.getEntityType()).keySet().equals(entityFrag.getFieldsValues().keySet());
 	}
 
-	public Set<FieldsMapping> getMissingFields(Entity entityFrag)
+	public static Set<FieldsMapping> getMissingFields(Entity entityFrag)
 	{
-		return entities.get(entityFrag.getEntityType()).keySet().stream()
+		return configuration.entities.get(entityFrag.getEntityType()).keySet().stream()
 				.filter(field -> !entityFrag.getFieldsValues().containsKey(field))
 				.map(field -> getFieldsMappingFromEntityField(entityFrag.getEntityType(), field))
 				.collect(Collectors.toSet());
 	}
 
-	public Stream<FieldsMapping> getFieldsMappingForEntity(String entityType)
+	public static Stream<FieldsMapping> getFieldsMappingForEntity(String entityType)
 	{
-		return entities.get(entityType).values().stream()
-				.map(fieldsMappings::get);
+		return configuration.entities.get(entityType).values().stream()
+				.map(configuration.fieldsMappings::get);
 	}
 
-	public Stream<FieldsMapping> getFieldsMappingForEntity(Entity entity)
+	public static Stream<FieldsMapping> getFieldsMappingForEntity(Entity entity)
 	{
 		return getFieldsMappingForEntity(entity.getEntityType());
 	}
 
-	public FieldsMapping getFieldsMappingFromEntityField(String entityType, String field)
+	public static FieldsMapping getFieldsMappingFromEntityField(String entityType, String field)
 	{
-		FieldsMapping output = fieldsMappings.get(entities.get(entityType).get(field));
+		FieldsMapping output = configuration.fieldsMappings.get(configuration.entities.get(entityType).get(field));
 		if (output == null)
 			throw new NullPointerException("Field " + field + " doesn't exist in entity " + entityType);
 		return output;
 	}
 
-	public Set<String> getFieldsFromTypeAndMapping(String entityType, FieldsMapping fieldsMapping)
+	public static Set<String> getFieldsFromTypeAndMapping(String entityType, FieldsMapping fieldsMapping)
 	{
-		if (fieldsMappingsReverse == null)
-			fieldsMappingsReverse = fieldsMappings.entrySet().stream()
+		if (configuration.fieldsMappingsReverse == null)
+			configuration.fieldsMappingsReverse = configuration.fieldsMappings.entrySet().stream()
 					.collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
-		String nickname = fieldsMappingsReverse.get(fieldsMapping);
-		return entities.get(entityType).entrySet().stream()
+		String nickname = configuration.fieldsMappingsReverse.get(fieldsMapping);
+		return configuration.entities.get(entityType).entrySet().stream()
 				.filter(mapping -> mapping.getValue().equals(nickname))
 				.map(Map.Entry::getKey)
 				.collect(Collectors.toSet());
 	}
 
-	private Conf checkValidity()
+	private void checkValidity()
 	{
 		final Set<String> keySet = fieldsMappings.keySet();
-		if (entities.values().stream()
+		if (!entities.values().stream()
 				.allMatch(entityLocations -> keySet.containsAll(entityLocations.values())))
-			return this;
-		throw new InputMismatchException("Not all fieldsLocations locations exists as FieldsMapping!!");
+			throw new InputMismatchException("Not all fieldsLocations locations exists as FieldsMapping!!");
 //		entities.values()
 //				.forEach(entityLocations ->
 //				{
@@ -133,14 +135,14 @@ public class Conf
 	}
 
 	@JsonIgnore
-	public Collection<String> getEntitiesType()
+	public static Collection<String> getEntitiesType()
 	{
-		return entities.keySet();
+		return configuration.entities.keySet();
 	}
 
 	@JsonIgnore
-	public Collection<String> getEntityProperties(String entityName)
+	public static Collection<String> getEntityProperties(String entityName)
 	{
-		return entities.get(entityName).keySet();
+		return configuration.entities.get(entityName).keySet();
 	}
 }

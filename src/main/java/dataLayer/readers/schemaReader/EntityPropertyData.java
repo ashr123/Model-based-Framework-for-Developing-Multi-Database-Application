@@ -63,7 +63,7 @@ public class EntityPropertyData
 	{
 		if (type.equals(PropertyType.OBJECT))
 			return javaType;
-		if (type.equals(PropertyType.ARRAY)) // TODO Prevent deep arrays
+		if (type.equals(PropertyType.ARRAY) && !items.type.equals(PropertyType.ARRAY)) // To prevent deep arrays
 			return items.getRelatedClassName();
 		throw new NoSuchElementException("The property does not represent a relation.");
 	}

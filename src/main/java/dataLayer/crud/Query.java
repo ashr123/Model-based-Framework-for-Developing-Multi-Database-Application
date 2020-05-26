@@ -88,6 +88,7 @@ public class Query
 	}
 
 
+	//TODO search for arrays and objects
 	/**
 	 * Extracts complete entities from the different DBs according to the given filter and configuration
 	 *
@@ -102,12 +103,12 @@ public class Query
 	/**
 	 * @param filter the criteria for filtering Entities
 	 * @return stream of partial entities, that means that every entity might not have all it's fields
-	 * @apiNote depends on the given filter and loaded configuration
+	 * @implNote depends on the given filter and loaded configuration
 	 */
 	public static Stream<Entity> simpleRead(Filter filter)
 	{
 		return filter instanceof SimpleFilter /*simpleFilter*/ ?
-		       filter.executeRead(Conf.getConfiguration().getFieldsMappingFromEntityField(((SimpleFilter) filter).getEntityType(), ((SimpleFilter) filter).getFieldName())
+		       filter.executeRead(Conf.getFieldsMappingFromEntityField(((SimpleFilter) filter).getEntityType(), ((SimpleFilter) filter).getFieldName())
 				       .getType()
 				       .getDatabaseAdapter(), FRIEND) :
 //		       filter instanceof Or ? DatabaseAdapter.executeRead((Or) filter) :
@@ -151,7 +152,7 @@ public class Query
 	{
 		Map<FieldsMapping, Map<String, Collection<UUID>>> temp = new HashMap<>();
 		entities.forEach(entity ->
-				Conf.getConfiguration().getFieldsMappingForEntity(entity)
+				Conf.getFieldsMappingForEntity(entity)
 						.forEach(fieldsMapping ->
 								temp.computeIfAbsent(fieldsMapping, fieldsMapping1 -> new HashMap<>())
 										.computeIfAbsent(entity.getEntityType(), entityType -> new HashSet<>())
@@ -164,7 +165,7 @@ public class Query
 	 *
 	 * @param filter          given upon entities are updated
 	 * @param entitiesUpdates updated values according to entity's type
-	 * @apiNote in case there are multiple entities with the same type in {@code entitiesUpdates}, only one will be chosen for each type, it is undetermined which
+	 * @implNote in case there are multiple entities with the same type in {@code entitiesUpdates}, only one will be chosen for each type, it is undetermined which
 	 * @see Query#update(Set, Set)
 	 * @see Query#update(Stream, Set)
 	 */
@@ -178,7 +179,7 @@ public class Query
 	 *
 	 * @param entitiesToUpdate the given entities to be updated
 	 * @param entitiesUpdates  updated values according to entity's type
-	 * @apiNote in case there are multiple entities with the same type, only one will be chosen, it is undetermined which
+	 * @implNote in case there are multiple entities with the same type, only one will be chosen, it is undetermined which
 	 * @see Query#update(Filter, Set)
 	 * @see Query#update(Stream, Set)
 	 */
@@ -187,12 +188,13 @@ public class Query
 		update(entitiesToUpdate.stream(), entitiesUpdates);
 	}
 
+	//TODO handling removal of fields (maybe field with value "null" is enough?
 	/**
 	 * Updates all given entities
 	 *
 	 * @param entitiesToUpdate the given entities to be updated
 	 * @param entitiesUpdates  updated values according to entity's type
-	 * @apiNote in case there are multiple entities with the same type, only one will be chosen, it is undetermined which
+	 * @implNote in case there are multiple entities with the same type, only one will be chosen, it is undetermined which
 	 * @see Query#update(Filter, Set)
 	 * @see Query#update(Set, Set)
 	 */
@@ -211,7 +213,7 @@ public class Query
 					return true;
 				})
 				.forEach(entityToUpdate ->
-						Conf.getConfiguration().getFieldsMappingForEntity(entityToUpdate)
+						Conf.getFieldsMappingForEntity(entityToUpdate)
 								.forEach(fieldsMapping ->
 										temp.computeIfAbsent(fieldsMapping, fieldsMapping1 -> new HashMap<>())
 												.computeIfAbsent(entityToUpdate.getEntityType(), entityType -> new HashSet<>())
@@ -223,7 +225,7 @@ public class Query
 								fieldsMappingAndValue.getValue().entrySet().stream()
 										.map(entityTypeAndUuids ->
 										{
-											Set<String> fields = Conf.getConfiguration().getFieldsFromTypeAndMapping(entityTypeAndUuids.getKey(), fieldsMappingAndValue.getKey());
+											Set<String> fields = Conf.getFieldsFromTypeAndMapping(entityTypeAndUuids.getKey(), fieldsMappingAndValue.getKey());
 											return Map.entry(entityTypeAndUuids.getKey(),
 													new Pair<>(entityTypeAndUuids.getValue(),
 															entitiesUpdates.stream()
@@ -258,7 +260,7 @@ public class Query
 				Stream<Entity> fragments = Stream.of(entityFragment);
 			};
 			// For each missing field of entity fragment (Maybe should be for missing fields mapping).
-			Conf.getConfiguration().getMissingFields(entityFragment)
+			Conf.getMissingFields(entityFragment)
 					.forEach(missingFieldsMapping ->
 							// For certain entity fragment add missing field mapping entity.
 							ref.fragments = Stream.concat(ref.fragments,
@@ -327,7 +329,7 @@ public class Query
 	 * @param filter    performs initial filtering on the DBs, determines the fields to be combined by the returned entities's type
 	 * @param predicate filters the combined entities based on related fields determined by the user
 	 * @return set of entities with no UUID, type and with the combined fields
-	 * @apiNote the returned entities won't comply with any given schema, that means that those entities cannot be used with {@link Query#create(Entity...)}, {@link Query#create(Stream)} or {@link Query#create(Collection)}.
+	 * @implNote the returned entities won't comply with any given schema, that means that those entities cannot be used with {@link Query#create(Entity...)}, {@link Query#create(Stream)} or {@link Query#create(Collection)}.
 	 */
 	public static Set<Entity> join(Filter filter, Predicate<Entity> predicate)
 	{

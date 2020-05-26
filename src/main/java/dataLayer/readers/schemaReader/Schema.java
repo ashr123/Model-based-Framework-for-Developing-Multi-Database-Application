@@ -27,8 +27,7 @@ public class Schema
 
 	public static void loadSchema(URL url) throws IOException
 	{
-		schema = objectMapper.readValue(url, Schema.class);
-		schema.checkValidity();
+		(schema = objectMapper.readValue(url, Schema.class)).checkValidity();
 
 ////		noinspection unchecked
 //		schemaGraph = new DirectedPseudograph<>((Class<? extends Pair<String, String>>) new Pair<>("", "").getClass());

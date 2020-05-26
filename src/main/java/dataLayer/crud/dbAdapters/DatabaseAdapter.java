@@ -33,6 +33,13 @@ public abstract class DatabaseAdapter
 				.values().stream();
 	}
 
+	/**
+	 * Kind of recursice, gets complexFilter and breakes it down to its components until it get to the leaves-the simple filters,
+	 * for each of them it will get the relevant entities from the relevant DB
+	 *
+	 * @param complexFilter a filter that can contain 1 or more filters
+	 * @return groups of {@link Entity}s-one for every filter
+	 */
 	private static Stream<Stream<Entity>> getResultFromDBs(ComplexFilter complexFilter)
 	{
 		return Stream.of(complexFilter.getComplexQuery())
@@ -52,13 +59,24 @@ public abstract class DatabaseAdapter
 		create(entity);
 	}
 
+	/**
+	 * Groups the entity's fields by their {@link FieldsMapping} and then dispatches the insertion of those fields to the relevant DBs
+	 *
+	 * @param entity the entity to be created
+	 */
 	private static void create(Entity entity)
 	{
+		final Collection<String> classPrimaryKey = Schema.getClassPrimaryKey(entity.getEntityType());
+		if (!entity.getFieldsValues().keySet().containsAll(classPrimaryKey))
+			throw new MissingFormatArgumentException(entity + " must contain all of its primary keys.");
+		if (classPrimaryKey.stream().anyMatch(primaryField -> entity.getFieldsValues().get(primaryField) == null))
+			throw new MissingFormatArgumentException("Primary key fields for " + entity + " must not be null.");
+
 		final Map<FieldsMapping, Map<String, Object>> locationDocumentMap = new HashMap<>();
 		entity.getFieldsValues()
 				.forEach((field, value) ->
 				{
-					final FieldsMapping fieldMappingFromEntityFields = Conf.getConfiguration().getFieldsMappingFromEntityField(entity.getEntityType(), field);
+					final FieldsMapping fieldMappingFromEntityFields = Conf.getFieldsMappingFromEntityField(entity.getEntityType(), field);
 					locationDocumentMap.computeIfAbsent(fieldMappingFromEntityFields, fieldsMapping ->
 					{
 						final Map<String, Object> properties = new HashMap<>();
@@ -66,9 +84,18 @@ public abstract class DatabaseAdapter
 						return properties;
 					}).put(field, validateAndTransformEntity(entity.getEntityType(), field, value));
 				});
+
 		locationDocumentMap.forEach((fieldsMapping, fieldAndValue) -> fieldsMapping.getType().getDatabaseAdapter().executeCreate(fieldsMapping, entity.getEntityType(), fieldAndValue));
 	}
 
+	/**
+	 * Checks if entity's field & value compatible with the loaded schema (i.e if the entity has such a field and if so, if it has the appropriate type
+	 *
+	 * @param entityType the type of an entity, can considered as the "class" of the entity
+	 * @param field      the entity's field name
+	 * @param value      the field's value
+	 * @return for primitive field types-the value itself, for an object (i.e inner {@link Entity})-its {@link UUID}
+	 */
 	protected static Object validateAndTransformEntity(String entityType, String field, Object value)
 	{
 		final EntityPropertyData propertyType = Schema.getPropertyType(entityType, field);
@@ -100,6 +127,14 @@ public abstract class DatabaseAdapter
 		return value;
 	}
 
+	/**
+	 * Responsible for checking fields with type "array" (i.e {@link Collection})
+	 *
+	 * @param collection the collection to be checked
+	 * @param itemsType  the desired type for each cell of the collection
+	 * @return the collection itself for array of primitive types, collection of {@link UUID}s for array of objects (i.e {@link Entity}s)
+	 * @implNote in case of {@link dataLayer.readers.schemaReader.PropertyType#ARRAY}, it can behave as recursive type, see commented source code
+	 */
 	private static Collection<?> checkArrayWithSchema(Collection<?> collection, EntityPropertyData itemsType)
 	{
 		final String errorMsg = "Element in list isn't a";
@@ -140,6 +175,13 @@ public abstract class DatabaseAdapter
 				};
 	}
 
+	/**
+	 * Responsible For checking fields with type "object" (i.e {@link Entity}), checks if the entity exists in DBs, if not inserts it.
+	 *
+	 * @param entity         the about object
+	 * @param entityJavaType desired object's type
+	 * @return {@link UUID} of the about entity
+	 */
 	private static UUID checkObjectWithSchema(Entity entity, String entityJavaType)
 	{
 		if (!entity.getEntityType().equals(entityJavaType))
@@ -150,12 +192,22 @@ public abstract class DatabaseAdapter
 		return entity.getUuid();
 	}
 
+	/**
+	 * @param all    the filter that represents logical '∀'
+	 * @param friend a sort of "certificate" that gives access to this method only for {@link Query} class
+	 * @return all entities fragments of certain type
+	 */
 	public static Stream<Entity> executeRead(All all, Query.Friend friend)
 	{
-		return Conf.getConfiguration().getFieldsMappingForEntity(all.getEntityType())
+		return Conf.getFieldsMappingForEntity(all.getEntityType())
 				.flatMap(fieldsMapping -> fieldsMapping.getType().getDatabaseAdapter().makeEntities(fieldsMapping, all.getEntityType()));
 	}
 
+	/**
+	 * @param and    the filter that represents '⋀'
+	 * @param friend a sort of "certificate" that gives access to this method only for {@link Query} class
+	 * @return all entities fragments that present in all inner filters (by their {@link UUID})
+	 */
 	public static Stream<Entity> executeRead(And and, Query.Friend friend)
 	{
 		return getResultFromDBs(and)
@@ -172,6 +224,11 @@ public abstract class DatabaseAdapter
 				.orElse(Stream.of());
 	}
 
+	/**
+	 * @param or     the filter that represents '⋁'
+	 * @param friend a sort of "certificate" that gives access to this method only for {@link Query} class
+	 * @return all entities fragments that present in all inner filters (by their {@link UUID})
+	 */
 	public static Stream<Entity> executeRead(Or or, Query.Friend friend)
 	{
 		return groupEntities(getResultFromDBs(or)
@@ -182,27 +239,87 @@ public abstract class DatabaseAdapter
 
 	protected abstract Stream<Entity> makeEntities(FieldsMapping fieldsMapping, String entityType);
 
+	/**
+	 * @param eq     the filter that represents '='
+	 * @param friend a sort of "certificate" that gives access to this method only for {@link Query} class
+	 * @return all entities fragments that they have the asked field with the asked value
+	 */
 	public abstract Stream<Entity> executeRead(Eq eq, Query.Friend friend);
 
+	/**
+	 * @param ne     the filter that represents '¬'
+	 * @param friend a sort of "certificate" that gives access to this method only for {@link Query} class
+	 * @return all entities fragments that they have the asked field with not the asked value
+	 */
 	public abstract Stream<Entity> executeRead(Ne ne, Query.Friend friend);
 
+	/**
+	 * @param gt     the filter that represents '>'
+	 * @param friend a sort of "certificate" that gives access to this method only for {@link Query} class
+	 * @return all entities fragments that they have the asked field that grater-than asked value
+	 */
 	public abstract Stream<Entity> executeRead(Gt gt, Query.Friend friend);
 
+	/**
+	 * @param lt     the filter that represents '<'
+	 * @param friend a sort of "certificate" that gives access to this method only for {@link Query} class
+	 * @return all entities fragments that they have the asked field that less-than than asked value
+	 */
 	public abstract Stream<Entity> executeRead(Lt lt, Query.Friend friend);
 
+	/**
+	 * @param gte    the filter that represents '≥'
+	 * @param friend a sort of "certificate" that gives access to this method only for {@link Query} class
+	 * @return all entities fragments that they have the asked field that grater-than or equal to from asked value
+	 */
 	public abstract Stream<Entity> executeRead(Gte gte, Query.Friend friend);
 
+	/**
+	 * @param lte    the filter that represents '≤'
+	 * @param friend a sort of "certificate" that gives access to this method only for {@link Query} class
+	 * @return all entities fragments that they have the asked field that less-than or equal to from asked value
+	 */
 	public abstract Stream<Entity> executeRead(Lte lte, Query.Friend friend);
 
+	/**
+	 * Represents sort of replacement to UUID filter
+	 *
+	 * @param fieldsMapping represents the location of asked entity
+	 * @param uuid          uuid of the asked entity
+	 * @param entityType    type of asked entity
+	 * @return fragment of asked entity if exists
+	 */
 	protected abstract Stream<Entity> executeRead(FieldsMapping fieldsMapping, UUID uuid, String entityType);
 
+	/**
+	 * Represents sort of replacement to UUID filter
+	 *
+	 * @param fieldsMapping represents the location of asked entity
+	 * @param uuid          uuid of the asked entity
+	 * @param entityType    type of asked entity
+	 * @return fragment of asked entity if exists
+	 */
 	public Stream<Entity> executeRead(FieldsMapping fieldsMapping, UUID uuid, String entityType, Query.Friend friend)
 	{
 		return executeRead(fieldsMapping, uuid, entityType);
 	}
 
+	/**
+	 * Deletes all the entities with the specified {@link UUID}s
+	 *
+	 * @param fieldsMapping a location for entities to delete
+	 * @param typesAndUuids ty
+	 * @param friend        a sort of "certificate" that gives access to this method only for {@link Query} class
+	 */
 	public abstract void executeDelete(FieldsMapping fieldsMapping, Map<String, Collection<UUID>> typesAndUuids, Query.Friend friend);
 
+	/**
+	 * Updates entities's fields (by {@link UUID} with new values, adds the field to the entity if it isn't exists
+	 *
+	 * @param fieldsMapping represents the location of the entity
+	 * @param updates       includes types of entities, entities's {@link UUID} and updates (i.e updated fields and values)
+	 * @param friend        a sort of "certificate" that gives access to this method only for {@link Query} class
+	 */
 	public abstract void executeUpdate(FieldsMapping fieldsMapping,
 	                                   Map<String/*type*/, Pair<Collection<UUID>, Map<String/*field*/, Object/*value*/>>> updates,
 	                                   Query.Friend friend);

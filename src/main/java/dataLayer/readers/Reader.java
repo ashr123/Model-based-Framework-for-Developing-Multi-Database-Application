@@ -22,12 +22,12 @@ public class Reader
 
 	private static void checkValidity()
 	{
-		if (!Conf.getConfiguration().getEntitiesType().equals(Schema.getClassesName()))
+		if (!Conf.getEntitiesType().equals(Schema.getClassesName()))
 			throw new InputMismatchException("Classes in Conf and Schema don't equate!");
 
 		Schema.getClassesName().forEach(className ->
 		{
-			if (!Conf.getConfiguration().getEntityProperties(className).equals(Schema.getClassesFields(className)))
+			if (!Conf.getEntityProperties(className).equals(Schema.getClassesFields(className)))
 				throw new InputMismatchException(className + "'s fields in Conf and Schema don't equate!");
 		});
 	}
