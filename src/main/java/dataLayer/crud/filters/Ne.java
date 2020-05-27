@@ -7,9 +7,12 @@ import dataLayer.crud.dbAdapters.DatabaseAdapter;
 import java.util.stream.Stream;
 
 /**
- * This class represents a logical NE (Not equals i.e. "!=") operand (Represented as SimpleFilter).
- * @see SimpleFilter
- * @author Roy Ash & Yossi Landa.
+ * This class represents a logical not-sign (i.e. '¬') operand.<br>
+ * For example:
+ * <pre>Query.read(Ne.ne("Person", "age", 27L));</pre>
+ *
+ * @author Roy Ash
+ * @author Yossi Landa.
  */
 public class Ne extends SimpleFilter
 {

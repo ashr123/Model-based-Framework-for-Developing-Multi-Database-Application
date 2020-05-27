@@ -5,7 +5,8 @@ import java.util.Arrays;
 /**
  * This class represents a complex logical filter (comprised of one or more filters that may be complex or simple).
  *
- * @author Roy Ash & Yossi Landa.
+ * @author Roy Ash
+ * @author Yossi Landa.
  */
 public abstract class ComplexFilter implements Filter
 {

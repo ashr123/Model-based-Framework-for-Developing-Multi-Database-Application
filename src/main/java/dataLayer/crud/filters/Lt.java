@@ -7,9 +7,12 @@ import dataLayer.crud.dbAdapters.DatabaseAdapter;
 import java.util.stream.Stream;
 
 /**
- * This class represents a logical LT (Less than i.e. "<") operand (Represented as SimpleFilter).
- * @see SimpleFilter
- * @author Roy Ash & Yossi Landa.
+ * This class represents a logical Less than (i.e. '<') operand.<br>
+ * For example:
+ * <pre>Query.read(Lt.lt("Person", "age", 27L));</pre>
+ *
+ * @author Roy Ash
+ * @author Yossi Landa.
  */
 public class Lt extends SimpleFilter
 {

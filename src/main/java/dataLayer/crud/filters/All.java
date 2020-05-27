@@ -8,9 +8,12 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
- * This class represents a logical ALL (Select All i.e. "Select * From "entityType";") operand (Represented as ComplexFilter).
- * @see Filter
- * @author Roy Ash & Yossi Landa.
+ * This class represents a logical ALL (Select All i.e. "Select * From "entityType";") operand.<br>
+ * For example:
+ * <pre>Query.read(All.all("Person"));</pre>
+ *
+ * @author Roy Ash
+ * @author Yossi Landa.
  */
 public class All implements Filter
 {
@@ -18,6 +21,7 @@ public class All implements Filter
 
 	/**
 	 * Constructor function that builds the ALL filter.
+	 *
 	 * @param entityType The entity type on which we wish to filter.
 	 */
 	private All(String entityType)
@@ -27,6 +31,7 @@ public class All implements Filter
 
 	/**
 	 * Returns an ALL filter.
+	 *
 	 * @param entityType The entity type on which we wish to filter.
 	 * @return An ALL filter.
 	 */
@@ -37,6 +42,7 @@ public class All implements Filter
 
 	/**
 	 * Getter for the entity type.
+	 *
 	 * @return The entity type.
 	 */
 	public String getEntityType()

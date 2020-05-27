@@ -7,9 +7,12 @@ import dataLayer.crud.dbAdapters.DatabaseAdapter;
 import java.util.stream.Stream;
 
 /**
- * This class represents a logical GTE (Greater than/Equals i.e. ">=") operand (Represented as SimpleFilter).
- * @see SimpleFilter
- * @author Roy Ash & Yossi Landa.
+ * This class represents a logical Greater than or equal to (i.e. '≥') operand.<br>
+ * For example:
+ * <pre>Query.read(Gte.gte("Person", "age", 27L));</pre>
+ *
+ * @author Roy Ash
+ * @author Yossi Landa.
  */
 public class Gte extends SimpleFilter
 {

@@ -14,9 +14,16 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * Base class for all database-adapters, contains methods that are not specific and relevant for all database-adapters
+ *
+ * @author Roy Ash
+ * @see MongoDBAdapter
+ * @see Neo4jAdapter
+ */
 public abstract class DatabaseAdapter
 {
-	static final Friend FRIEND = new Friend();
+	protected static final Friend FRIEND = new Friend();
 
 	/**
 	 * given:
@@ -98,6 +105,8 @@ public abstract class DatabaseAdapter
 	 */
 	protected static Object validateAndTransformEntity(String entityType, String field, Object value)
 	{
+		if (value == null)
+			return value;
 		final EntityPropertyData propertyType = Schema.getPropertyType(entityType, field);
 		switch (propertyType.getType())
 		{
@@ -193,7 +202,7 @@ public abstract class DatabaseAdapter
 	}
 
 	/**
-	 * @param all    the filter that represents logical '∀'
+	 * @param all    the filter that represents logical '∀' for certain entity type
 	 * @param friend a sort of "certificate" that gives access to this method only for {@link Query} class
 	 * @return all entities fragments of certain type
 	 */

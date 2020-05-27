@@ -8,9 +8,12 @@ import java.util.Arrays;
 import java.util.stream.Stream;
 
 /**
- * This class represents a logical OR (Or i.e. "||" operand (Represented as ComplexFilter).
+ * This class represents a logical OR (i.e. '⋁') operand.<br>
+ * For example:
+ * <pre>Query.read(Or.or(Eq.eq("Person", "name", "Moshik"), Lt.lt("Person", "age", 28L), ...));</pre>
  * @see ComplexFilter
- * @author Roy Ash & Yossi Landa.
+ * @author Roy Ash
+ * @author Yossi Landa.
  */
 public class Or extends ComplexFilter
 {

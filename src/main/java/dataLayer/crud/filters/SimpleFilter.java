@@ -3,9 +3,10 @@ package dataLayer.crud.filters;
 import java.util.Objects;
 
 /**
- * This class represents an atomic/simple logical filter.
+ * This class represents an atomic logical filter.
  *
- * @author Roy Ash & Yossi Landa.
+ * @author Roy Ash
+ * @author Yossi Landa.
  */
 public abstract class SimpleFilter implements Filter
 {
