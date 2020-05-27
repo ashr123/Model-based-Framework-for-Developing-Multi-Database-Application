@@ -3,21 +3,36 @@ package dataLayer.crud.filters;
 import dataLayer.crud.Entity;
 import dataLayer.crud.Query;
 import dataLayer.crud.dbAdapters.DatabaseAdapter;
+import dataLayer.crud.dbAdapters.MongoDBAdapter;
 
 import java.util.Arrays;
 import java.util.stream.Stream;
 
+/**
+ * This class represents a logical AND (And i.e. "&&") operand (Represented as ComplexFilter).
+ * @see ComplexFilter
+ * @author Roy Ash & Yossi Landa.
+ */
 public class And extends ComplexFilter
 {
 
-	private And(Filter... queries)
+	/**
+	 * Constructor function that builds the AND complex filter.
+	 * @param filters Array of filters which we perform on the logical AND operand.
+	 */
+	private And(Filter... filters)
 	{
-		super(queries);
+		super(filters);
 	}
 
-	public static And and(Filter... queries)
+	/**
+	 * Returns an AND complex filter.
+	 * @param filters Array of filters which we perform on the logical AND operand.
+	 * @return An AND complex filter.
+	 */
+	public static And and(Filter... filters)
 	{
-		return new And(queries);
+		return new And(filters);
 	}
 
 	@Override

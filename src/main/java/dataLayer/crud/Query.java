@@ -88,7 +88,7 @@ public class Query
 	}
 
 
-	//TODO search for arrays and objects
+	//TODO: search for arrays.
 	/**
 	 * Extracts complete entities from the different DBs according to the given filter and configuration
 	 *

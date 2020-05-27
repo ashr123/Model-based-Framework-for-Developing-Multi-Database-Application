@@ -6,16 +6,34 @@ import dataLayer.crud.dbAdapters.DatabaseAdapter;
 
 import java.util.stream.Stream;
 
+/**
+ * This class represents a logical LT (Less than i.e. "<") operand (Represented as SimpleFilter).
+ * @see SimpleFilter
+ * @author Roy Ash & Yossi Landa.
+ */
 public class Lt extends SimpleFilter
 {
-	private Lt(String entityName, String fieldName, Object value)
+	/**
+	 * Constructor function that builds the LT simple filter.
+	 * @param entityType The entity type on which we wish to filter.
+	 * @param fieldName The entity field name which we wish to filter by.
+	 * @param value The entity field value which we wish to filter by.
+	 */
+	private Lt(String entityType, String fieldName, Object value)
 	{
-		super(entityName, fieldName, value);
+		super(entityType, fieldName, value);
 	}
 
-	public static Lt lt(String entityName, String fieldName, Object value)
+	/**
+	 * Returns a LT simple filter.
+	 * @param entityType The entity type on which we wish to filter.
+	 * @param fieldName The entity field name which we wish to filter by.
+	 * @param value The entity field value which we wish to filter by.
+	 * @return A LT simple filter.
+	 */
+	public static Lt lt(String entityType, String fieldName, Object value)
 	{
-		return new Lt(entityName, fieldName, value);
+		return new Lt(entityType, fieldName, value);
 	}
 
 	@Override

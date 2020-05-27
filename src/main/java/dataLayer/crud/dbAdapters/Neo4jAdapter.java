@@ -27,6 +27,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
+ * This class deals with CRUD operations in Neo4j.
+ *
  * @author Yossi Landa
  */
 public class Neo4jAdapter extends DatabaseAdapter

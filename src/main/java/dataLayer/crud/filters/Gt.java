@@ -6,16 +6,34 @@ import dataLayer.crud.dbAdapters.DatabaseAdapter;
 
 import java.util.stream.Stream;
 
+/**
+ * This class represents a logical GT (Greater than i.e. ">") operand (Represented as SimpleFilter).
+ * @see SimpleFilter
+ * @author Roy Ash & Yossi Landa.
+ */
 public class Gt extends SimpleFilter
 {
-	private Gt(String entityName, String fieldName, Object value)
+	/**
+	 * Constructor function that builds the GT simple filter.
+	 * @param entityType The entity type on which we wish to filter.
+	 * @param fieldName The entity field name which we wish to filter by.
+	 * @param value The entity field value which we wish to filter by.
+	 */
+	private Gt(String entityType, String fieldName, Object value)
 	{
-		super(entityName, fieldName, value);
+		super(entityType, fieldName, value);
 	}
 
-	public static Gt gt(String entityName, String fieldName, Object value)
+	/**
+	 * Returns a GT simple filter.
+	 * @param entityType The entity type on which we wish to filter.
+	 * @param fieldName The entity field name which we wish to filter by.
+	 * @param value The entity field value which we wish to filter by.
+	 * @return A GT simple filter.
+	 */
+	public static Gt gt(String entityType, String fieldName, Object value)
 	{
-		return new Gt(entityName, fieldName, value);
+		return new Gt(entityType, fieldName, value);
 	}
 
 	@Override

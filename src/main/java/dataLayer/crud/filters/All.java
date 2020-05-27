@@ -7,20 +7,38 @@ import dataLayer.crud.dbAdapters.DatabaseAdapter;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+/**
+ * This class represents a logical ALL (Select All i.e. "Select * From "entityType";") operand (Represented as ComplexFilter).
+ * @see Filter
+ * @author Roy Ash & Yossi Landa.
+ */
 public class All implements Filter
 {
 	private final String entityType;
 
+	/**
+	 * Constructor function that builds the ALL filter.
+	 * @param entityType The entity type on which we wish to filter.
+	 */
 	private All(String entityType)
 	{
 		this.entityType = entityType;
 	}
 
+	/**
+	 * Returns an ALL filter.
+	 * @param entityType The entity type on which we wish to filter.
+	 * @return An ALL filter.
+	 */
 	public static All all(String entityType)
 	{
 		return new All(entityType);
 	}
 
+	/**
+	 * Getter for the entity type.
+	 * @return The entity type.
+	 */
 	public String getEntityType()
 	{
 		return entityType;

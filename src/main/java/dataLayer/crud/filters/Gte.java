@@ -6,16 +6,34 @@ import dataLayer.crud.dbAdapters.DatabaseAdapter;
 
 import java.util.stream.Stream;
 
+/**
+ * This class represents a logical GTE (Greater than/Equals i.e. ">=") operand (Represented as SimpleFilter).
+ * @see SimpleFilter
+ * @author Roy Ash & Yossi Landa.
+ */
 public class Gte extends SimpleFilter
 {
-	private Gte(String entityName, String fieldName, Object value)
+	/**
+	 * Constructor function that builds the GTE simple filter.
+	 * @param entityType The entity type on which we wish to filter.
+	 * @param fieldName The entity field name which we wish to filter by.
+	 * @param value The entity field value which we wish to filter by.
+	 */
+	private Gte(String entityType, String fieldName, Object value)
 	{
-		super(entityName, fieldName, value);
+		super(entityType, fieldName, value);
 	}
 
-	public static Gte gte(String entityName, String fieldName, Object value)
+	/**
+	 * Returns a GTE simple filter.
+	 * @param entityType The entity type on which we wish to filter.
+	 * @param fieldName The entity field name which we wish to filter by.
+	 * @param value The entity field value which we wish to filter by.
+	 * @return A GTE simple filter.
+	 */
+	public static Gte gte(String entityType, String fieldName, Object value)
 	{
-		return new Gte(entityName, fieldName, value);
+		return new Gte(entityType, fieldName, value);
 	}
 
 	@Override

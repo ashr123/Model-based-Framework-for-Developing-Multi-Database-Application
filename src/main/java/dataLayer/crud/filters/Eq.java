@@ -6,16 +6,35 @@ import dataLayer.crud.dbAdapters.DatabaseAdapter;
 
 import java.util.stream.Stream;
 
+/**
+ * This class represents a logical EQ (Equals i.e. "==") operand (Represented as SimpleFilter).
+ * @see SimpleFilter
+ * @author Roy Ash & Yossi Landa.
+ */
 public class Eq extends SimpleFilter
 {
-	private Eq(String entityName, String fieldName, Object value)
+	/**
+	 * Constructor function that builds the EQ simple filter.
+	 * @param entityType The entity type on which we wish to filter.
+	 * @param fieldName The entity field name which we wish to filter by.
+	 * @param value The entity field value which we wish to filter by.
+	 */
+	private Eq(String entityType, String fieldName, Object value)
 	{
-		super(entityName, fieldName, value);
+		super(entityType, fieldName, value);
 	}
 
-	public static Eq eq(String entityName, String fieldName, Object value)
+
+	/**
+	 * Returns a EQ simple filter.
+	 * @param entityType The entity type on which we wish to filter.
+	 * @param fieldName The entity field name which we wish to filter by.
+	 * @param value The entity field value which we wish to filter by.
+	 * @return A EQ simple filter.
+	 */
+	public static Eq eq(String entityType, String fieldName, Object value)
 	{
-		return new Eq(entityName, fieldName, value);
+		return new Eq(entityType, fieldName, value);
 	}
 
 	@Override

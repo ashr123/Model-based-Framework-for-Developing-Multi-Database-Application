@@ -7,13 +7,27 @@ import dataLayer.crud.dbAdapters.DatabaseAdapter;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
+/**
+ * This class represents a logical OR (Or i.e. "||" operand (Represented as ComplexFilter).
+ * @see ComplexFilter
+ * @author Roy Ash & Yossi Landa.
+ */
 public class Or extends ComplexFilter
 {
-	private Or(Filter... queries)
+	/**
+	 * Constructor function that builds the OR complex filter.
+	 * @param filters Array of filters which we perform on the logical OR operand.
+	 */
+	private Or(Filter... filters)
 	{
-		super(queries);
+		super(filters);
 	}
 
+	/**
+	 * Returns an OR complex filter.
+	 * @param queries Array of filters which we perform on the logical OR operand.
+	 * @return An OR complex filter.
+	 */
 	public static Or or(Filter... queries)
 	{
 		return new Or(queries);
