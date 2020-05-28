@@ -90,36 +90,6 @@ public class Neo4jAdapter extends DatabaseAdapter
 		}
 	}
 
-	/**
-	 * Reading a stream of entities parts from given {@param entityType} and {@param fieldsMapping} that share the same {@link UUID}, that is existent in the Neo4j database.
-	 *
-	 * @param entityType    entity type of wanted result.
-	 * @param uuid          the wanted uuid to read by.
-	 * @param fieldsMapping a fieldsMapping that represent database location of entity properties.
-	 * @return Stream of entities from the given type and mapping that have the given uuid.
-	 */
-	private static Stream<Entity> query(String entityType, UUID uuid, FieldsMapping fieldsMapping)
-	{
-		IDBAccess idbAccess = getDBAccess(fieldsMapping);
-		JcNode jcNode = new JcNode(entityType);
-		JcQuery jcQuery = new JcQuery();
-		jcQuery.setClauses(new IClause[]{
-				MATCH.node(jcNode).label(entityType),
-				WHERE.valueOf(jcNode.property("uuid")).EQUALS(uuid),
-				RETURN.value(jcNode)
-		});
-		try
-		{
-			return idbAccess.execute(jcQuery)
-					.resultOf(jcNode).stream()
-					.map(Neo4jAdapter::getEntityFromNode);
-		}
-		finally
-		{
-			idbAccess.close();
-		}
-	}
-
 	@Override
 	protected Stream<Entity> makeEntities(FieldsMapping fieldsMapping, String entityType)
 	{
@@ -241,7 +211,24 @@ public class Neo4jAdapter extends DatabaseAdapter
 	@Override
 	protected Stream<Entity> executeRead(FieldsMapping fieldsMapping, UUID uuid, String entityType)
 	{
-		return query(entityType, uuid, fieldsMapping);
+		IDBAccess idbAccess = getDBAccess(fieldsMapping);
+		JcNode jcNode = new JcNode(entityType);
+		JcQuery jcQuery = new JcQuery();
+		jcQuery.setClauses(new IClause[]{
+				MATCH.node(jcNode).label(entityType),
+				WHERE.valueOf(jcNode.property("uuid")).EQUALS(uuid),
+				RETURN.value(jcNode)
+		});
+		try
+		{
+			return idbAccess.execute(jcQuery)
+					.resultOf(jcNode).stream()
+					.map(Neo4jAdapter::getEntityFromNode);
+		}
+		finally
+		{
+			idbAccess.close();
+		}
 	}
 
 	@Override

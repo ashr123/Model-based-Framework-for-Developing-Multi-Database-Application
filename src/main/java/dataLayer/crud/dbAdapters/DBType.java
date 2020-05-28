@@ -7,9 +7,9 @@ public enum DBType
 	@JsonProperty("mongodb")
 	MONGODB(new MongoDBAdapter()),
 	@JsonProperty("neo4j")
-	NEO4J(new Neo4jAdapter())/*,
+	NEO4J(new Neo4jAdapter()),
 	@JsonProperty("sql")
-	SQL(null)*/;
+	SQL(new SQLAdapter());
 
 	private final DatabaseAdapter databaseAdapter;
 

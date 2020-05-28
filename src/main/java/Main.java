@@ -1,9 +1,11 @@
 import dataLayer.readers.Reader;
 import org.jooq.DSLContext;
-import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 
 import java.io.IOException;
+
+import static org.jooq.impl.DSL.constraint;
+import static org.jooq.impl.DSL.using;
 
 public class Main
 {
@@ -11,10 +13,22 @@ public class Main
 	{
 		Reader.loadConfAndSchema(Main.class.getResource("/configurations/configurationMongoDB.json"),
 				Main.class.getResource("/schemas/Schema.json"));
-		try (DSLContext connection = DSL.using("jdbc:sqlite:src/main/resources/sqliteDBs/test.db"))
+		try (DSLContext connection = using("jdbc:sqlite:src/main/resources/sqliteDBs/test.db"))
 		{
-			connection.createTableIfNotExists("testTable").column("ts", SQLDataType.INTEGER).execute();
+			connection.createTableIfNotExists("testTable")
+					.column("uuid", SQLDataType.UUID)
+					.constraints(
+							constraint().primaryKey("uuid")
+					)
+					.execute();
 		}
-//		System.out.println(DSL.select(DSL.field("name")).from("Person").getSQL());
+//		System.out.println(
+//				deleteFrom(table("Person"))
+//						.where(field("uuid")
+//								.in(Stream.generate(UUID::randomUUID)
+//										.limit(5)
+//										.collect(Collectors.toList())))
+//						.getSQL());
+//		SQLDataType.UUID
 	}
 }

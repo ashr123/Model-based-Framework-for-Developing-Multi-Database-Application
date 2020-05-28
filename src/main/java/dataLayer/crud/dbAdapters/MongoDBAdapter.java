@@ -102,20 +102,6 @@ public class MongoDBAdapter extends DatabaseAdapter
 		return makeEntities(Conf.getFieldsMappingFromEntityField(simpleFilter.getEntityType(), simpleFilter.getFieldName()), simpleFilter.getEntityType(), filter);
 	}
 
-	/**
-	 * Special case of {@link MongoDBAdapter#queryRead(SimpleFilter, Bson)} that suitable for getting result by {@link Entity#uuid} for internal purposes
-	 *
-	 * @param fieldsMapping contains the necessary information to map {@link Entity}'s field to the appropriate DB location
-	 * @param uuid          the {@link UUID} of the requested
-	 * @param entityType    the type of the requested {@link Entity}
-	 * @return 0 or single {@link Entity} that matched the given {@link UUID}
-	 * @see DatabaseAdapter#executeRead(FieldsMapping, UUID, String)
-	 */
-	private static Stream<Entity> queryRead(FieldsMapping fieldsMapping, UUID uuid, String entityType)
-	{
-		return makeEntities(fieldsMapping, entityType, eq("uuid", uuid));
-	}
-
 	@Override
 	protected Stream<Entity> makeEntities(FieldsMapping fieldsMapping, String entityType)
 	{
@@ -178,7 +164,7 @@ public class MongoDBAdapter extends DatabaseAdapter
 	@Override
 	protected Stream<Entity> executeRead(FieldsMapping fieldsMapping, UUID uuid, String entityType)
 	{
-		return queryRead(fieldsMapping, uuid, entityType);
+		return makeEntities(fieldsMapping, entityType, eq("uuid", uuid));
 	}
 
 	@Override
