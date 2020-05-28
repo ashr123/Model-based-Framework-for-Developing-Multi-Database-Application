@@ -73,12 +73,6 @@ public abstract class DatabaseAdapter
 	 */
 	private static void create(Entity entity)
 	{
-		final Collection<String> classPrimaryKey = Schema.getClassPrimaryKey(entity.getEntityType());
-		if (!entity.getFieldsValues().keySet().containsAll(classPrimaryKey))
-			throw new MissingFormatArgumentException(entity + " must contain all of its primary keys.");
-		if (classPrimaryKey.stream().anyMatch(primaryField -> entity.getFieldsValues().get(primaryField) == null))
-			throw new MissingFormatArgumentException("Primary key fields for " + entity + " must not be null.");
-
 		final Map<FieldsMapping, Map<String, Object>> locationDocumentMap = new HashMap<>();
 		entity.getFieldsValues()
 				.forEach((field, value) ->

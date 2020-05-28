@@ -23,7 +23,7 @@ import static java.util.stream.Collectors.*;
  */
 public class Query
 {
-	private static final Friend FRIEND = new Friend();
+	protected static final Friend FRIEND = new Friend();
 
 	private Query()
 	{
@@ -37,6 +37,12 @@ public class Query
 	 */
 	public static boolean isNotPresentByPrimaryKey(Entity entity)
 	{
+		final Collection<String> classPrimaryKey = Schema.getClassPrimaryKey(entity.getEntityType());
+		if (!entity.getFieldsValues().keySet().containsAll(classPrimaryKey))
+			throw new MissingFormatArgumentException(entity + " must contain all of its primary keys.");
+		if (classPrimaryKey.stream().anyMatch(primaryField -> entity.getFieldsValues().get(primaryField) == null))
+			throw new MissingFormatArgumentException("Primary key fields for " + entity + " must not be " + null + '.');
+
 		return simpleRead(and(Schema.getClassPrimaryKey(entity.getEntityType()).stream()
 				.map(field -> eq(entity.getEntityType(), field, entity.get(field)))
 				.toArray(Filter[]::new)))
@@ -89,6 +95,7 @@ public class Query
 
 
 	//TODO: search for arrays.
+
 	/**
 	 * Extracts complete entities from the different DBs according to the given filter and configuration
 	 *
@@ -189,6 +196,7 @@ public class Query
 	}
 
 	//TODO handling removal of fields (maybe field with value "null" is enough?
+
 	/**
 	 * Updates all given entities
 	 *

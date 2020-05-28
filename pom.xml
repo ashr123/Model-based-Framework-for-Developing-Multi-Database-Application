@@ -25,6 +25,23 @@
 <!--			<artifactId>jgrapht-core</artifactId>-->
 <!--			<version>1.4.0</version>-->
 <!--		</dependency>-->
+
+		<dependency>
+			<groupId>org.jooq</groupId>
+			<artifactId>jooq</artifactId>
+			<version>3.13.2</version>
+		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>org.jooq</groupId>-->
+<!--			<artifactId>jooq-meta</artifactId>-->
+<!--			<version>3.13.2</version>-->
+<!--		</dependency>-->
+<!--		<dependency>-->
+<!--			<groupId>org.jooq</groupId>-->
+<!--			<artifactId>jooq-codegen</artifactId>-->
+<!--			<version>3.13.2</version>-->
+<!--		</dependency>-->
+
 		<!-- THIS IS THE RELEVANT PART OF NEO4J COMPONENT -->
 		<dependency>
 			<groupId>net.iot-solutions.graphdb</groupId>
