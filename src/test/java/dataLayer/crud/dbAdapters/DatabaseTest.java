@@ -2,7 +2,7 @@ package dataLayer.crud.dbAdapters;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import dataLayer.crud.Entity;
-import dataLayer.readers.configReader.Conf;
+import dataLayer.readers.Reader;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -12,11 +12,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
-import static dataLayer.crud.Query.create;
-import static dataLayer.crud.Query.delete;
-import static dataLayer.crud.Query.join;
-import static dataLayer.crud.Query.read;
-import static dataLayer.crud.Query.update;
+import static dataLayer.crud.Query.*;
 import static dataLayer.crud.filters.All.all;
 import static dataLayer.crud.filters.And.and;
 import static dataLayer.crud.filters.Eq.eq;
@@ -346,7 +342,7 @@ public abstract class DatabaseTest
 	void testJoin() throws JsonProcessingException
 	{
 		//TODO complete testJoin
-		System.out.println(Conf.toJson(join(gt("Person", "age", 18), entity -> true)));
+		System.out.println(Reader.toJson(join(gt("Person", "age", 18), entity -> true)));
 	}
 
 	@Test
@@ -391,7 +387,7 @@ public abstract class DatabaseTest
 										"postal-code", "432212",
 										"country", "Australia"))));
 		create(nestedEntity1, nestedEntity2, nestedEntity3);
-		System.out.println(Conf.toJson(join(or(gte("Person", "age", 12), eq("City", "name", "Unknown")), entity -> true)));
+		System.out.println(Reader.toJson(join(or(gte("Person", "age", 12), eq("City", "name", "Unknown")), entity -> true)));
 		delete(nestedEntity1, nestedEntity2, nestedEntity3);
 	}
 }

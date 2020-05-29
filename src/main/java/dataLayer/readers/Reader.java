@@ -1,5 +1,7 @@
 package dataLayer.readers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dataLayer.readers.configReader.Conf;
 import dataLayer.readers.schemaReader.Schema;
 
@@ -9,14 +11,16 @@ import java.util.InputMismatchException;
 
 public class Reader
 {
+	private final static ObjectMapper objectMapper = new ObjectMapper();
+
 	private Reader()
 	{
 	}
 
-	public static void loadConfAndSchema(URL confURL, URL schemaURL) throws IOException
+	public static void loadConfAndSchema(String confURL, String schemaURL) throws IOException
 	{
-		Conf.loadConfiguration(confURL);
-		Schema.loadSchema(schemaURL);
+		Conf.loadConfiguration(confURL, objectMapper);
+		Schema.loadSchema(schemaURL, objectMapper);
 		checkValidity();
 	}
 
@@ -30,5 +34,10 @@ public class Reader
 			if (!Conf.getEntityProperties(className).equals(Schema.getClassesFields(className)))
 				throw new InputMismatchException(className + "'s fields in Conf and Schema don't equate!");
 		});
+	}
+
+	public static String toJson(Object o) throws JsonProcessingException
+	{
+		return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(o);
 	}
 }

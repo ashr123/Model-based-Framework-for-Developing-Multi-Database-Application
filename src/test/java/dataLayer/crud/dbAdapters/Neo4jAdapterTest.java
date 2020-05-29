@@ -22,8 +22,8 @@ class Neo4jAdapterTest extends DatabaseTest
 	@Override
 	protected void setUp() throws IOException
 	{
-		Reader.loadConfAndSchema(Neo4jAdapter.class.getResource("/configurations/configurationNeo4j.json"),
-				MongoDBAdapterTest.class.getResource("/schemas/Schema.json"));
+		Reader.loadConfAndSchema("resourcesTemp/configurations/configurationNeo4j.json",
+				"resourcesTemp/schemas/Schema.json");
 		create(roy, yossi, karin);
 	}
 

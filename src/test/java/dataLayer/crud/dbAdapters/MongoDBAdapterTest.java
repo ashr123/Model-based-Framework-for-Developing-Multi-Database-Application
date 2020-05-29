@@ -22,8 +22,8 @@ class MongoDBAdapterTest extends DatabaseTest
 	@Override
 	protected void setUp() throws IOException
 	{
-		Reader.loadConfAndSchema(MongoDBAdapterTest.class.getResource("/configurations/configurationMongoDB.json"),
-				MongoDBAdapterTest.class.getResource("/schemas/Schema.json"));
+		Reader.loadConfAndSchema("resourcesTemp/configurations/configurationMongoDB.json",
+				"resourcesTemp/schemas/Schema.json");
 		create(roy, yossi, karin);
 	}
 

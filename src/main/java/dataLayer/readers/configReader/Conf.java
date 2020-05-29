@@ -2,12 +2,11 @@ package dataLayer.readers.configReader;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dataLayer.crud.Entity;
 
+import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.Collection;
 import java.util.InputMismatchException;
 import java.util.Map;
@@ -21,8 +20,6 @@ import java.util.stream.Stream;
 @SuppressWarnings({"ConstantConditions", "unused"})
 public class Conf
 {
-	private final static ObjectMapper objectMapper = new ObjectMapper();
-
 	private static Conf configuration;
 
 	/**
@@ -41,30 +38,10 @@ public class Conf
 	{
 	}
 
-//	public static Conf getConfiguration()
-//	{
-//		return Objects.requireNonNull(configuration, "No configuration file loaded");
-//	}
-
-	public static void loadConfiguration(URL url) throws IOException
+	public static void loadConfiguration(String url, ObjectMapper objectMapper) throws IOException
 	{
-		(configuration = objectMapper.readValue(url, Conf.class)).checkValidity();
+		(configuration = objectMapper.readValue(new File(url), Conf.class)).checkValidity();
 	}
-
-	public static String toJson(Object o) throws JsonProcessingException
-	{
-		return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(o);
-	}
-
-//	public FieldsMapping getFieldsMapping(String locationName)
-//	{
-//		return fieldsMappings.get(locationName);
-//	}
-//
-//	public Map<String, String> getEntity(String key)
-//	{
-//		return entities.get(key);
-//	}
 
 	public static boolean isEntityComplete(Entity entityFrag)
 	{
@@ -125,15 +102,6 @@ public class Conf
 //		return this;
 	}
 
-	@Override
-	public String toString()
-	{
-		return "Conf{" +
-		       "fieldsMappings=" + fieldsMappings +
-		       ", entities=" + entities +
-		       '}';
-	}
-
 	@JsonIgnore
 	public static Collection<String> getEntitiesType()
 	{
@@ -144,5 +112,14 @@ public class Conf
 	public static Collection<String> getEntityProperties(String entityName)
 	{
 		return configuration.entities.get(entityName).keySet();
+	}
+
+	@Override
+	public String toString()
+	{
+		return "Conf{" +
+		       "fieldsMappings=" + fieldsMappings +
+		       ", entities=" + entities +
+		       '}';
 	}
 }

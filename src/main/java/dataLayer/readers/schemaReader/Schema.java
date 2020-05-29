@@ -3,6 +3,7 @@ package dataLayer.readers.schemaReader;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
@@ -12,8 +13,6 @@ import java.util.Map;
 @SuppressWarnings("ConstantConditions")
 public class Schema
 {
-	private final static ObjectMapper objectMapper = new ObjectMapper();
-
 	private static Schema schema;
 
 //	private static Graph<String, Pair<String, String>> schemaGraph;
@@ -25,9 +24,9 @@ public class Schema
 	{
 	}
 
-	public static void loadSchema(URL url) throws IOException
+	public static void loadSchema(String url, ObjectMapper objectMapper) throws IOException
 	{
-		(schema = objectMapper.readValue(url, Schema.class)).checkValidity();
+		(schema = objectMapper.readValue(new File(url), Schema.class)).checkValidity();
 
 ////		noinspection unchecked
 //		schemaGraph = new DirectedPseudograph<>((Class<? extends Pair<String, String>>) new Pair<>("", "").getClass());
