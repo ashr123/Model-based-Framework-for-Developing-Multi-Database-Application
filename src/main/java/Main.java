@@ -4,7 +4,7 @@ import org.jooq.impl.SQLDataType;
 
 import java.io.IOException;
 
-import static org.jooq.impl.DSL.constraint;
+import static org.jooq.impl.DSL.primaryKey;
 import static org.jooq.impl.DSL.using;
 
 public class Main
@@ -17,9 +17,7 @@ public class Main
 		{
 			connection.createTableIfNotExists("testTable")
 					.column("uuid", SQLDataType.UUID)
-					.constraints(
-							constraint().primaryKey("uuid")
-					)
+					.constraint(primaryKey("uuid"))
 					.execute();
 		}
 //		System.out.println(

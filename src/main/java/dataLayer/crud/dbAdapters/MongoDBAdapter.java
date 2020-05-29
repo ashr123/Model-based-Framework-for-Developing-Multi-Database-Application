@@ -17,8 +17,10 @@ import org.bson.Document;
 import org.bson.UuidRepresentation;
 import org.bson.conversions.Bson;
 
-import java.util.*;
-import java.util.function.Consumer;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -47,20 +49,24 @@ public class MongoDBAdapter extends DatabaseAdapter
 	}
 
 	/**
-	 * Traverse on the result given by MongoDB driver and transforms it to {@link Map} of fields and values to be inserted into {@link Entity}
+	 * Traverse on the result given by MongoDB driver and transforms each result to {@link Map} of fields and values to be inserted into {@link Entity}
 	 *
-	 * @param myDoc the result given by MongoDB driver
-	 * @return {@link Set} of {@link Map}s
+	 * @param entityType the type of the created entities
+	 * @param result the result given by MongoDB driver
+	 * @return {@link Stream} of {@link Entity}s
 	 * @see MongoDBAdapter#makeEntities(FieldsMapping, String)
 	 * @see MongoDBAdapter#makeEntities(FieldsMapping, String, Bson)
 	 */
-	private static Set<Map<String, Object>> getStringObjectMap(FindIterable<Document> myDoc)
+	private static Stream<Entity> getFieldsAndValues(String entityType, FindIterable<Document> result)
 	{
-		final Set<Map<String, Object>> output = new HashSet<>();
-		myDoc.forEach((Consumer<? super Document>) document -> output.add(document.entrySet().stream()
-				.filter(entry -> !entry.getKey().equals("_id"))
-				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> b))));
-		return output;
+		return result.into(new LinkedList<>()).stream()
+				.map(document ->
+				{
+					Map<String, Object> fieldsMap = document.entrySet().stream()
+							.filter(entry -> !entry.getKey().equals("_id"))
+							.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> b));
+					return new Entity((UUID) fieldsMap.remove("uuid"), entityType, fieldsMap, FRIEND);
+				});
 	}
 
 	/**
@@ -71,16 +77,14 @@ public class MongoDBAdapter extends DatabaseAdapter
 	 * @param filter        upon which MongoDB returns the relevant results
 	 * @return flat, partial entities according to the given parameters
 	 * @see MongoDBAdapter#queryRead(SimpleFilter, Bson)
-	 * @see MongoDBAdapter#queryRead(FieldsMapping, UUID, String)
 	 */
 	private static Stream<Entity> makeEntities(FieldsMapping fieldsMapping, String entityType, Bson filter)
 	{
 		try (MongoClient mongoClient = createMongoClient(fieldsMapping.getConnStr()))
 		{
-			return getStringObjectMap(mongoClient.getDatabase(fieldsMapping.getLocation())
+			return getFieldsAndValues(entityType, mongoClient.getDatabase(fieldsMapping.getLocation())
 					.getCollection(entityType)
-					.find(filter)).stream()
-					.map(fieldsMap -> new Entity((UUID) fieldsMap.remove("uuid"), entityType, fieldsMap, FRIEND));
+					.find(filter));
 		}
 	}
 
@@ -107,10 +111,9 @@ public class MongoDBAdapter extends DatabaseAdapter
 	{
 		try (MongoClient mongoClient = createMongoClient(fieldsMapping.getConnStr()))
 		{
-			return getStringObjectMap(mongoClient.getDatabase(fieldsMapping.getLocation())
+			return getFieldsAndValues(entityType, mongoClient.getDatabase(fieldsMapping.getLocation())
 					.getCollection(entityType)
-					.find()).stream()
-					.map(fieldsMap -> new Entity((UUID) fieldsMap.remove("uuid"), entityType, fieldsMap, FRIEND));
+					.find());
 		}
 	}
 
@@ -175,9 +178,7 @@ public class MongoDBAdapter extends DatabaseAdapter
 			final MongoDatabase database = mongoClient.getDatabase(fieldsMapping.getLocation());
 			typesAndUuids.forEach((entityType, uuids) ->
 					database.getCollection(entityType)
-							.deleteMany(or(uuids.stream()
-									.map(uuid -> eq("uuid", uuid))
-									.collect(Collectors.toList()))));
+							.deleteMany(in("uuid", uuids)));
 		}
 	}
 
@@ -194,9 +195,7 @@ public class MongoDBAdapter extends DatabaseAdapter
 				if (!uuidsAndUpdates.getSecond().isEmpty())
 				{
 					database.getCollection(entityType)
-							.updateMany(or(uuidsAndUpdates.getFirst().stream()
-											.map(uuid -> eq("uuid", uuid))
-											.collect(Collectors.toList())),
+							.updateMany(in("uuid", uuidsAndUpdates.getFirst()),
 									combine(uuidsAndUpdates.getSecond().entrySet().stream()
 											.map(fieldsAndValues -> set(fieldsAndValues.getKey(), validateAndTransformEntity(entityType, fieldsAndValues.getKey(), fieldsAndValues.getValue())))
 											.collect(Collectors.toList())));

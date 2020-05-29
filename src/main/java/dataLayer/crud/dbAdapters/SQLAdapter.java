@@ -6,32 +6,49 @@ import dataLayer.crud.Query;
 import dataLayer.crud.filters.*;
 import dataLayer.readers.configReader.Conf;
 import dataLayer.readers.configReader.FieldsMapping;
-import org.jooq.*;
+import org.bson.conversions.Bson;
+import org.jooq.Condition;
+import org.jooq.DSLContext;
 import org.jooq.Record;
+import org.jooq.Result;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import static org.jooq.impl.DSL.field;
-import static org.jooq.impl.DSL.table;
-import static org.jooq.impl.DSL.using;
+import static java.util.stream.Collectors.toMap;
+import static org.jooq.impl.DSL.*;
 
 /**
+ * This class deals with CRUD operations on relational DBs
+ *
  * @author Roy Ash
  */
+@SuppressWarnings("JavadocReference")
 public class SQLAdapter extends DatabaseAdapter
 {
 	SQLAdapter()
 	{
 	}
 
+	/**
+	 * Traverse on the result given by the relevant relational DB driver and transforms each result to {@link Map} of fields and values to be inserted into {@link Entity}
+	 *
+	 * @param entityType the type of the created entities
+	 * @param result     the result given by MongoDB driver
+	 * @return {@link Stream} of {@link Entity}s
+	 * @see SQLAdapter#makeEntities(FieldsMapping, String)
+	 * @see SQLAdapter#makeEntities(FieldsMapping, String, Condition)
+	 */
 	private static Stream<Entity> getEntityFromResult(String entityType, Result<Record> result)
 	{
 		return result.stream()
-				.map(Record::intoMap)
-				.map(map -> new Entity((String) map.remove("uuid"), entityType, map, FRIEND));
+				.map(record ->
+				{
+					final Map<String, Object> fieldsAndValues = record.intoMap();
+					return new Entity((String) fieldsAndValues.remove("uuid"), entityType, fieldsAndValues, FRIEND);
+				});
 	}
 
 	@Override
@@ -39,10 +56,19 @@ public class SQLAdapter extends DatabaseAdapter
 	{
 		try (DSLContext connection = using(fieldsMapping.getConnStr()))
 		{
-			connection.insertInto(table(entityType)).set(fieldsAndValues);
+			connection.insertInto(table(entityType)).set(fieldsAndValues).execute();
 		}
 	}
 
+	/**
+	 * Queries relational DB with given {@link Entity#entityType} as collection name
+	 *
+	 * @param fieldsMapping gives the necessary details about the connection such as {@link FieldsMapping#connStr} and {@link FieldsMapping#location}
+	 * @param entityType    is practically {@link Entity#entityType}
+	 * @param filter        upon which MongoDB returns the relevant results
+	 * @return flat, partial entities according to the given parameters
+	 * @see SQLAdapter#queryRead(SimpleFilter, Condition)
+	 */
 	private static Stream<Entity> makeEntities(FieldsMapping fieldsMapping, String entityType, Condition filter)
 	{
 		try (DSLContext connection = using(fieldsMapping.getConnStr()))
@@ -62,6 +88,19 @@ public class SQLAdapter extends DatabaseAdapter
 		}
 	}
 
+	/**
+	 * General adapter for all {@link SimpleFilter}s
+	 *
+	 * @param simpleFilter which gives us the relevant {@link FieldsMapping} for the given {@link Entity#entityType} and it's field
+	 * @param filter       the filter upon MongoDB will filter its result
+	 * @return flat, partial entities according to the given parameters
+	 * @see SQLAdapter#executeRead(Eq, Query.Friend)
+	 * @see SQLAdapter#executeRead(Gt, Query.Friend)
+	 * @see SQLAdapter#executeRead(Gte, Query.Friend)
+	 * @see SQLAdapter#executeRead(Lt, Query.Friend)
+	 * @see SQLAdapter#executeRead(Ne, Query.Friend)
+	 * @see SQLAdapter#executeRead(Lte, Query.Friend)
+	 */
 	private static Stream<Entity> queryRead(SimpleFilter simpleFilter, Condition filter)
 	{
 		return makeEntities(Conf.getFieldsMappingFromEntityField(simpleFilter.getEntityType(), simpleFilter.getFieldName()), simpleFilter.getEntityType(), filter);
@@ -115,13 +154,27 @@ public class SQLAdapter extends DatabaseAdapter
 		try (DSLContext connection = using(fieldsMapping.getConnStr()))
 		{
 			typesAndUuids.forEach((entityType, uuids) ->
-					connection.deleteFrom(table(entityType)).where(field("uuid").in(uuids)));
+					connection.deleteFrom(table(entityType))
+							.where(field("uuid").in(uuids)).execute());
 		}
 	}
 
 	@Override
 	public void executeUpdate(FieldsMapping fieldsMapping, Map<String, Pair<Collection<UUID>, Map<String, Object>>> updates, Query.Friend friend)
 	{
-
+		try (DSLContext connection = using(fieldsMapping.getConnStr()))
+		{
+			updates.forEach((entityType, uuidsAndUpdates) ->
+			{
+				if (!uuidsAndUpdates.getSecond().isEmpty())
+				{
+					connection.update(table(entityType))
+							.set(uuidsAndUpdates.getSecond().entrySet().stream()
+									.map(fieldAndValue -> Map.entry(fieldAndValue.getKey(), validateAndTransformEntity(entityType, fieldAndValue.getKey(), fieldAndValue.getValue())))
+									.collect(toMap(Map.Entry::getKey, Map.Entry::getValue)))
+							.where(field("uuid").in(uuidsAndUpdates.getFirst())).execute();
+				}
+			});
+		}
 	}
 }
