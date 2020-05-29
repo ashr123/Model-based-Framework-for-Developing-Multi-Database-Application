@@ -6,7 +6,6 @@ import dataLayer.crud.Query;
 import dataLayer.crud.filters.*;
 import dataLayer.readers.configReader.Conf;
 import dataLayer.readers.configReader.FieldsMapping;
-import org.bson.conversions.Bson;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Record;
@@ -56,7 +55,9 @@ public class SQLAdapter extends DatabaseAdapter
 	{
 		try (DSLContext connection = using(fieldsMapping.getConnStr()))
 		{
-			connection.insertInto(table(entityType)).set(fieldsAndValues).execute();
+			connection.insertInto(table(entityType))
+					.set(fieldsAndValues)
+					.execute();
 		}
 	}
 
@@ -73,9 +74,10 @@ public class SQLAdapter extends DatabaseAdapter
 	{
 		try (DSLContext connection = using(fieldsMapping.getConnStr()))
 		{
-			return getEntityFromResult(entityType, connection.selectFrom(entityType)
-					.where(filter)
-					.fetch());
+			return getEntityFromResult(entityType,
+					connection.selectFrom(entityType)
+							.where(filter)
+							.fetch());
 		}
 	}
 
@@ -84,7 +86,9 @@ public class SQLAdapter extends DatabaseAdapter
 	{
 		try (DSLContext connection = using(fieldsMapping.getConnStr()))
 		{
-			return getEntityFromResult(entityType, connection.selectFrom(entityType).fetch());
+			return getEntityFromResult(entityType,
+					connection.selectFrom(entityType)
+							.fetch());
 		}
 	}
 
@@ -155,7 +159,8 @@ public class SQLAdapter extends DatabaseAdapter
 		{
 			typesAndUuids.forEach((entityType, uuids) ->
 					connection.deleteFrom(table(entityType))
-							.where(field("uuid").in(uuids)).execute());
+							.where(field("uuid").in(uuids))
+							.execute());
 		}
 	}
 
@@ -172,7 +177,8 @@ public class SQLAdapter extends DatabaseAdapter
 							.set(uuidsAndUpdates.getSecond().entrySet().stream()
 									.map(fieldAndValue -> Map.entry(fieldAndValue.getKey(), validateAndTransformEntity(entityType, fieldAndValue.getKey(), fieldAndValue.getValue())))
 									.collect(toMap(Map.Entry::getKey, Map.Entry::getValue)))
-							.where(field("uuid").in(uuidsAndUpdates.getFirst())).execute();
+							.where(field("uuid").in(uuidsAndUpdates.getFirst()))
+							.execute();
 				}
 			});
 		}
