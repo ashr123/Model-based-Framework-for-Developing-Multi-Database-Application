@@ -175,7 +175,7 @@ public class SQLAdapter extends DatabaseAdapter
 				{
 					connection.update(table(entityType))
 							.set(uuidsAndUpdates.getSecond().entrySet().stream()
-									.map(fieldAndValue -> Map.entry(fieldAndValue.getKey(), validateAndTransformEntity(entityType, fieldAndValue.getKey(), fieldAndValue.getValue())))
+									.peek(fieldAndValue -> fieldAndValue.setValue(validateAndTransformEntity(entityType, fieldAndValue.getKey(), fieldAndValue.getValue())))
 									.collect(toMap(Map.Entry::getKey, Map.Entry::getValue)))
 							.where(field("uuid").in(uuidsAndUpdates.getFirst()))
 							.execute();

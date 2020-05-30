@@ -71,11 +71,6 @@ public class EntityPropertyData
 	public boolean isRelationProperty()
 	{
 		return type.equals(PropertyType.OBJECT) || (type.equals(PropertyType.ARRAY) && items.isRelationProperty());
-//		if (type.equals(PropertyType.OBJECT))
-//			return true;
-//		if (type.equals(PropertyType.ARRAY))
-//			return items.isRelationProperty();
-//		return false;
 	}
 
 	@Override

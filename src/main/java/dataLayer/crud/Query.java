@@ -195,7 +195,7 @@ public class Query
 		update(entitiesToUpdate.stream(), entitiesUpdates);
 	}
 
-	//TODO handling removal of fields (maybe field with value "null" is enough?
+	//TODO handling removal of fields (maybe field with value "null" is enough?)
 
 	/**
 	 * Updates all given entities
