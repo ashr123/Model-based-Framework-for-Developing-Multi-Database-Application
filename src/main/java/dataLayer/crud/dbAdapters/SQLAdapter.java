@@ -10,10 +10,8 @@ import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.Result;
-import org.jooq.impl.DSL;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -178,6 +176,7 @@ public class SQLAdapter extends DatabaseAdapter
 		}
 	}
 
+	@SuppressWarnings("SimplifyStreamApiCallChains")
 	@Override
 	public void executeUpdate(FieldsMapping fieldsMapping, Map<String, Pair<Collection<UUID>, Map<String, Object>>> updates, Query.Friend friend)
 	{
