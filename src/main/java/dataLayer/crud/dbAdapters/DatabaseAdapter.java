@@ -101,7 +101,7 @@ public abstract class DatabaseAdapter
 	protected static Object validateAndTransformEntity(String entityType, String field, Object value)
 	{
 		if (value == null)
-			return value;
+			return null;
 		final EntityPropertyData propertyType = Schema.getPropertyType(entityType, field);
 		switch (propertyType.getType())
 		{
