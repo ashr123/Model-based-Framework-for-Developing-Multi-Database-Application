@@ -181,11 +181,16 @@ public class SQLAdapter extends DatabaseAdapter
 			{
 				if (!uuidsAndUpdates.getSecond().isEmpty())
 				{
-					List<Map.Entry<String, Object>> toUpdate = uuidsAndUpdates.getSecond().entrySet().stream()
+					final List<Map.Entry<String, Object>> toUpdate = uuidsAndUpdates.getSecond().entrySet().stream()
 							.peek(fieldAndValue -> fieldAndValue.setValue(validateAndTransformEntity(entityType, fieldAndValue.getKey(), fieldAndValue.getValue())))
 							.collect(toList());
 					connection.update(table(entityType))
-							.set(row(toUpdate.stream().map(entry -> field(entry.getKey())).collect(toList())), row(toUpdate.stream().map(Map.Entry::getValue).collect(toList())))
+							.set(row(toUpdate.stream()
+											.map(entry -> field(entry.getKey()))
+											.collect(toList())),
+									row(toUpdate.stream()
+											.map(Map.Entry::getValue)
+											.collect(toList())))
 							.where(field("uuid").in(uuidsAndUpdates.getFirst()))
 							.execute();
 				}
