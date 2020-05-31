@@ -6,7 +6,6 @@ import dataLayer.readers.configReader.Conf;
 import dataLayer.readers.schemaReader.Schema;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.InputMismatchException;
 
 public class Reader

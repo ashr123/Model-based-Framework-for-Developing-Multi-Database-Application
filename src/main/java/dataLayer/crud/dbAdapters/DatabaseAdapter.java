@@ -11,8 +11,9 @@ import dataLayer.readers.schemaReader.Schema;
 
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.*;
 
 /**
  * Base class for all database-adapters, contains methods that are not specific and relevant for all database-adapters
@@ -36,7 +37,7 @@ public abstract class DatabaseAdapter
 	private static Stream<Entity> groupEntities(Stream<Entity> entities)
 	{
 		return entities
-				.collect(Collectors.toMap(Entity::getUuid, Function.identity(), Entity::merge))
+				.collect(toMap(Entity::getUuid, Function.identity(), Entity::merge))
 				.values().stream();
 	}
 
@@ -160,7 +161,7 @@ public abstract class DatabaseAdapter
 								//noinspection StringConcatenationMissingWhitespace
 								throw new MissingFormatArgumentException(errorMsg + "n Entity");
 							})
-							.collect(Collectors.toList());
+							.collect(toList());
 					case NUMBER -> {
 						if (collection.stream().allMatch(Number.class::isInstance))
 							yield collection;
@@ -218,8 +219,8 @@ public abstract class DatabaseAdapter
 				.reduce((set1, set2) ->
 				{
 					final Collection<Entity>
-							collected1 = set1.collect(Collectors.toSet()),
-							collected2 = set2.collect(Collectors.toSet());
+							collected1 = set1.collect(toSet()),
+							collected2 = set2.collect(toSet());
 					return groupEntities(Stream.concat(collected1.stream(), collected2.stream())
 							.filter(entityFrag ->
 									isEntityInCollection(collected1, entityFrag) &&

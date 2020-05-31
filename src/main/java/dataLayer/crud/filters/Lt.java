@@ -19,9 +19,10 @@ public class Lt extends SimpleFilter
 {
 	/**
 	 * Constructor function that builds the LT simple filter.
+	 *
 	 * @param entityType The entity type on which we wish to filter.
-	 * @param fieldName The entity field name which we wish to filter by.
-	 * @param value The entity field value which we wish to filter by.
+	 * @param fieldName  The entity field name which we wish to filter by.
+	 * @param value      The entity field value which we wish to filter by.
 	 */
 	private Lt(String entityType, String fieldName, Object value)
 	{
@@ -30,9 +31,10 @@ public class Lt extends SimpleFilter
 
 	/**
 	 * Returns a LT simple filter.
+	 *
 	 * @param entityType The entity type on which we wish to filter.
-	 * @param fieldName The entity field name which we wish to filter by.
-	 * @param value The entity field value which we wish to filter by.
+	 * @param fieldName  The entity field name which we wish to filter by.
+	 * @param value      The entity field value which we wish to filter by.
 	 * @return A LT simple filter.
 	 */
 	public static Lt lt(String entityType, String fieldName, Object value)

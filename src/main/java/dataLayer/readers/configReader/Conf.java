@@ -11,8 +11,10 @@ import java.util.Collection;
 import java.util.InputMismatchException;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 
 /**
  * The main class for loading the configuration file.
@@ -53,7 +55,7 @@ public class Conf
 		return configuration.entities.get(entityFrag.getEntityType()).keySet().stream()
 				.filter(field -> !entityFrag.getFieldsValues().containsKey(field))
 				.map(field -> getFieldsMappingFromEntityField(entityFrag.getEntityType(), field))
-				.collect(Collectors.toSet());
+				.collect(toSet());
 	}
 
 	public static Stream<FieldsMapping> getFieldsMappingForEntity(String entityType)
@@ -79,12 +81,24 @@ public class Conf
 	{
 		if (configuration.fieldsMappingsReverse == null)
 			configuration.fieldsMappingsReverse = configuration.fieldsMappings.entrySet().stream()
-					.collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
+					.collect(toMap(Map.Entry::getValue, Map.Entry::getKey));
 		String nickname = configuration.fieldsMappingsReverse.get(fieldsMapping);
 		return configuration.entities.get(entityType).entrySet().stream()
 				.filter(mapping -> mapping.getValue().equals(nickname))
 				.map(Map.Entry::getKey)
-				.collect(Collectors.toSet());
+				.collect(toSet());
+	}
+
+	@JsonIgnore
+	public static Collection<String> getEntitiesType()
+	{
+		return configuration.entities.keySet();
+	}
+
+	@JsonIgnore
+	public static Collection<String> getEntityProperties(String entityName)
+	{
+		return configuration.entities.get(entityName).keySet();
 	}
 
 	private void checkValidity()
@@ -100,18 +114,6 @@ public class Conf
 //						throw new InputMismatchException("Not all fieldsLocations locations exists as FieldsMapping!!");
 //				});
 //		return this;
-	}
-
-	@JsonIgnore
-	public static Collection<String> getEntitiesType()
-	{
-		return configuration.entities.keySet();
-	}
-
-	@JsonIgnore
-	public static Collection<String> getEntityProperties(String entityName)
-	{
-		return configuration.entities.get(entityName).keySet();
 	}
 
 	@Override

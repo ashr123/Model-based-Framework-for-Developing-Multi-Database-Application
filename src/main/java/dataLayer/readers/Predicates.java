@@ -4,8 +4,9 @@ import dataLayer.crud.Entity;
 
 import java.util.Collection;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toSet;
 
 public class Predicates<X>
 {
@@ -75,6 +76,6 @@ public class Predicates<X>
 //										eqImplicit("Person.name", "Address.street"),
 										entity -> ((Entity) entity.get("Person.livesAt")).get("name").equals(entity.get("Address.street"))),
 								entity -> entity.get("phoneNumber").equals("0546815181")))
-				.collect(Collectors.toSet());
+				.collect(toSet());
 	}
 }

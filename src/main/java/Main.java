@@ -1,6 +1,5 @@
 import dataLayer.readers.Reader;
 import org.jooq.DSLContext;
-import org.jooq.Row1;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 
@@ -8,9 +7,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static java.util.UUID.randomUUID;
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Stream.generate;
 import static org.jooq.impl.DSL.*;
 
@@ -35,7 +34,7 @@ public class Main
 
 		try (DSLContext connection = using("jdbc:sqlite:resourcesTemp/sqliteDBs/test.db"))
 		{
-			connection.insertInto(table("testTable"), fieldsAndValues.keySet().stream().map(DSL::field).collect(Collectors.toSet()))
+			connection.insertInto(table("testTable"), fieldsAndValues.keySet().stream().map(DSL::field).collect(toList()))
 					.values(fieldsAndValues.values())
 					.execute();
 		}
@@ -47,7 +46,7 @@ public class Main
 		try (DSLContext connection = using("jdbc:sqlite:resourcesTemp/sqliteDBs/test.db"))
 		{
 			connection.update(table("testTable"))
-					.set((Row1) row(updates.keySet().stream().map(DSL::field).collect(Collectors.toSet())), (Row1) row(updates.values()))
+					.set(row(updates.keySet().stream().map(DSL::field).collect(toList())), row(updates.values()))
 					.execute();
 		}
 
@@ -56,7 +55,7 @@ public class Main
 						.where(field("uuid").in(
 								generate(UUID::randomUUID).parallel()
 										.limit(5)
-										.collect(Collectors.toList()))
+										.collect(toList()))
 						));
 	}
 }

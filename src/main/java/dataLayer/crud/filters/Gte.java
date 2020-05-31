@@ -19,9 +19,10 @@ public class Gte extends SimpleFilter
 {
 	/**
 	 * Constructor function that builds the GTE simple filter.
+	 *
 	 * @param entityType The entity type on which we wish to filter.
-	 * @param fieldName The entity field name which we wish to filter by.
-	 * @param value The entity field value which we wish to filter by.
+	 * @param fieldName  The entity field name which we wish to filter by.
+	 * @param value      The entity field value which we wish to filter by.
 	 */
 	private Gte(String entityType, String fieldName, Object value)
 	{
@@ -30,9 +31,10 @@ public class Gte extends SimpleFilter
 
 	/**
 	 * Returns a GTE simple filter.
+	 *
 	 * @param entityType The entity type on which we wish to filter.
-	 * @param fieldName The entity field name which we wish to filter by.
-	 * @param value The entity field value which we wish to filter by.
+	 * @param fieldName  The entity field name which we wish to filter by.
+	 * @param value      The entity field value which we wish to filter by.
 	 * @return A GTE simple filter.
 	 */
 	public static Gte gte(String entityType, String fieldName, Object value)

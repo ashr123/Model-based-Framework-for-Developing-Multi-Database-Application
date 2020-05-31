@@ -23,8 +23,9 @@ import iot.jcypher.query.values.JcNode;
 import org.neo4j.driver.v1.AuthTokens;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toMap;
 
 /**
  * This class deals with CRUD operations in Neo4j.
@@ -62,7 +63,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 				grNode.getLabels().get(0).getName(),
 				grNode.getProperties().stream()
 						.filter(grProperty -> !(grProperty.getName().equals("_c_version_") || grProperty.getName().equals("uuid")))
-						.collect(Collectors.toMap(GrProperty::getName, GrProperty::getValue, (a, b) -> b)),
+						.collect(toMap(GrProperty::getName, GrProperty::getValue, (a, b) -> b)),
 				FRIEND);
 	}
 

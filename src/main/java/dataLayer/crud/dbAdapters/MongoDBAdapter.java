@@ -21,12 +21,13 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Updates.combine;
 import static com.mongodb.client.model.Updates.set;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 /**
  * This class deals with CRUD operations on "mongoDB" DB
@@ -52,7 +53,7 @@ public class MongoDBAdapter extends DatabaseAdapter
 	 * Traverse on the result given by MongoDB driver and transforms each result to {@link Map} of fields and values to be inserted into {@link Entity}
 	 *
 	 * @param entityType the type of the created entities
-	 * @param result the result given by MongoDB driver
+	 * @param result     the result given by MongoDB driver
 	 * @return {@link Stream} of {@link Entity}s
 	 * @see MongoDBAdapter#makeEntities(FieldsMapping, String)
 	 * @see MongoDBAdapter#makeEntities(FieldsMapping, String, Bson)
@@ -64,7 +65,7 @@ public class MongoDBAdapter extends DatabaseAdapter
 				{
 					Map<String, Object> fieldsMap = document.entrySet().stream()
 							.filter(entry -> !entry.getKey().equals("_id"))
-							.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> b));
+							.collect(toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> b));
 					return new Entity((UUID) fieldsMap.remove("uuid"), entityType, fieldsMap, FRIEND);
 				});
 	}
@@ -198,7 +199,7 @@ public class MongoDBAdapter extends DatabaseAdapter
 							.updateMany(in("uuid", uuidsAndUpdates.getFirst()),
 									combine(uuidsAndUpdates.getSecond().entrySet().stream()
 											.map(fieldsAndValues -> set(fieldsAndValues.getKey(), validateAndTransformEntity(entityType, fieldsAndValues.getKey(), fieldsAndValues.getValue())))
-											.collect(Collectors.toList())));
+											.collect(toList())));
 				}
 			});
 		}

@@ -14,6 +14,7 @@ public abstract class ComplexFilter implements Filter
 
 	/**
 	 * Constructor function that builds a complex filter.
+	 *
 	 * @param filters Array of filters which we perform on the complex filter.
 	 */
 	protected ComplexFilter(Filter... filters)
@@ -23,6 +24,7 @@ public abstract class ComplexFilter implements Filter
 
 	/**
 	 * Getter for the filters in the complex filter.
+	 *
 	 * @return the array of filters comprising the complex array.
 	 */
 	public Filter[] getComplexQuery()

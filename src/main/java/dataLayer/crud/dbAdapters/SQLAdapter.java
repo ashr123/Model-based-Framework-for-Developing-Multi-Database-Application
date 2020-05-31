@@ -6,16 +6,19 @@ import dataLayer.crud.Query;
 import dataLayer.crud.filters.*;
 import dataLayer.readers.configReader.Conf;
 import dataLayer.readers.configReader.FieldsMapping;
-import org.jooq.*;
+import org.jooq.Condition;
+import org.jooq.DSLContext;
 import org.jooq.Record;
+import org.jooq.Result;
 import org.jooq.impl.DSL;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static org.jooq.impl.DSL.*;
 
@@ -55,17 +58,6 @@ public class SQLAdapter extends DatabaseAdapter
 				});
 	}
 
-	@Override
-	protected void executeCreate(FieldsMapping fieldsMapping, String entityType, Map<String, Object> fieldsAndValues)
-	{
-		try (DSLContext connection = using(fieldsMapping.getConnStr()))
-		{
-			connection.insertInto(table(entityType), fieldsAndValues.keySet().stream().map(DSL::field).collect(Collectors.toSet()))
-					.values(fieldsAndValues.values())
-					.execute();
-		}
-	}
-
 	/**
 	 * Queries relational DB with given {@link Entity#entityType} as collection name
 	 *
@@ -86,17 +78,6 @@ public class SQLAdapter extends DatabaseAdapter
 		}
 	}
 
-	@Override
-	protected Stream<Entity> makeEntities(FieldsMapping fieldsMapping, String entityType)
-	{
-		try (DSLContext connection = using(fieldsMapping.getConnStr()))
-		{
-			return getEntityFromResult(entityType,
-					connection.selectFrom(entityType)
-							.fetch());
-		}
-	}
-
 	/**
 	 * General adapter for all {@link SimpleFilter}s
 	 *
@@ -113,6 +94,28 @@ public class SQLAdapter extends DatabaseAdapter
 	private static Stream<Entity> queryRead(SimpleFilter simpleFilter, Condition filter)
 	{
 		return makeEntities(Conf.getFieldsMappingFromEntityField(simpleFilter.getEntityType(), simpleFilter.getFieldName()), simpleFilter.getEntityType(), filter);
+	}
+
+	@Override
+	protected void executeCreate(FieldsMapping fieldsMapping, String entityType, Map<String, Object> fieldsAndValues)
+	{
+		try (DSLContext connection = using(fieldsMapping.getConnStr()))
+		{
+			connection.insertInto(table(entityType), fieldsAndValues.keySet().stream().map(DSL::field).collect(toList()))
+					.values(fieldsAndValues.values())
+					.execute();
+		}
+	}
+
+	@Override
+	protected Stream<Entity> makeEntities(FieldsMapping fieldsMapping, String entityType)
+	{
+		try (DSLContext connection = using(fieldsMapping.getConnStr()))
+		{
+			return getEntityFromResult(entityType,
+					connection.selectFrom(entityType)
+							.fetch());
+		}
 	}
 
 	@Override
@@ -178,11 +181,11 @@ public class SQLAdapter extends DatabaseAdapter
 			{
 				if (!uuidsAndUpdates.getSecond().isEmpty())
 				{
-					Map<String, Object> toUpdate = uuidsAndUpdates.getSecond().entrySet().stream()
+					List<Map.Entry<String, Object>> toUpdate = uuidsAndUpdates.getSecond().entrySet().stream()
 							.peek(fieldAndValue -> fieldAndValue.setValue(validateAndTransformEntity(entityType, fieldAndValue.getKey(), fieldAndValue.getValue())))
-							.collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
+							.collect(toList());
 					connection.update(table(entityType))
-							.set((Row1) row(toUpdate.keySet().stream().map(DSL::field).collect(Collectors.toSet())), (Row1) row(toUpdate.values()))
+							.set(row(toUpdate.stream().map(entry -> field(entry.getKey())).collect(toList())), row(toUpdate.stream().map(Map.Entry::getValue).collect(toList())))
 							.where(field("uuid").in(uuidsAndUpdates.getFirst()))
 							.execute();
 				}

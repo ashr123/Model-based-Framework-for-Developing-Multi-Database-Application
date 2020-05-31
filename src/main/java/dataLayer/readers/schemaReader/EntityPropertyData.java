@@ -84,8 +84,8 @@ public class EntityPropertyData
 		EntityPropertyData that = (EntityPropertyData) o;
 		return type == that.type &&
 //		       relation == that.relation &&
-		       Objects.equals(javaType, that.javaType) &&
-		       Objects.equals(items, that.items);
+               Objects.equals(javaType, that.javaType) &&
+               Objects.equals(items, that.items);
 	}
 
 	@Override
@@ -102,6 +102,6 @@ public class EntityPropertyData
 		       ", javaType='" + javaType + '\'' +
 		       ", items=" + items +
 //		       ", relation=" + relation +
-		       '}';
+               '}';
 	}
 }

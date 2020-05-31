@@ -11,15 +11,17 @@ import java.util.stream.Stream;
  * This class represents a logical OR (i.e. '⋁') operand.<br>
  * For example:
  * <pre>Query.read(Or.or(Eq.eq("Person", "name", "Moshik"), Lt.lt("Person", "age", 28L), ...));</pre>
- * @see ComplexFilter
+ *
  * @author Roy Ash
  * @author Yossi Landa.
+ * @see ComplexFilter
  */
 @SuppressWarnings("EqualsAndHashcode")
 public class Or extends ComplexFilter
 {
 	/**
 	 * Constructor function that builds the OR complex filter.
+	 *
 	 * @param filters Array of filters which we perform on the logical OR operand.
 	 */
 	private Or(Filter... filters)
@@ -29,6 +31,7 @@ public class Or extends ComplexFilter
 
 	/**
 	 * Returns an OR complex filter.
+	 *
 	 * @param queries Array of filters which we perform on the logical OR operand.
 	 * @return An OR complex filter.
 	 */

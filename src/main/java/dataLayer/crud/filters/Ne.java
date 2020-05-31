@@ -19,9 +19,10 @@ public class Ne extends SimpleFilter
 {
 	/**
 	 * Constructor function that builds the NE simple filter.
+	 *
 	 * @param entityType The entity type on which we wish to filter.
-	 * @param fieldName The entity field name which we wish to filter by.
-	 * @param value The entity field value which we wish to filter by.
+	 * @param fieldName  The entity field name which we wish to filter by.
+	 * @param value      The entity field value which we wish to filter by.
 	 */
 	private Ne(String entityType, String fieldName, Object value)
 	{
@@ -30,9 +31,10 @@ public class Ne extends SimpleFilter
 
 	/**
 	 * Returns a NE simple filter.
+	 *
 	 * @param entityType The entity type on which we wish to filter.
-	 * @param fieldName The entity field name which we wish to filter by.
-	 * @param value The entity field value which we wish to filter by.
+	 * @param fieldName  The entity field name which we wish to filter by.
+	 * @param value      The entity field value which we wish to filter by.
 	 * @return A NE simple filter.
 	 */
 	public static Ne ne(String entityType, String fieldName, Object value)
