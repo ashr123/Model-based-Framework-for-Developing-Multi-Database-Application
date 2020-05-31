@@ -45,7 +45,9 @@ public class SQLAdapter extends DatabaseAdapter
 		return result.stream()
 				.map(record ->
 				{
-					final Map<String, Object> fieldsAndValues = record.intoMap();
+					final Map<String, Object> fieldsAndValues = record.intoMap().entrySet().stream()
+							.filter(fieldAndValue -> fieldAndValue.getValue() != null)
+							.collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
 					final Object uuid = fieldsAndValues.remove("uuid");
 					return uuid instanceof String ?
 					       new Entity((String) uuid, entityType, fieldsAndValues, FRIEND) :
@@ -180,7 +182,7 @@ public class SQLAdapter extends DatabaseAdapter
 							.peek(fieldAndValue -> fieldAndValue.setValue(validateAndTransformEntity(entityType, fieldAndValue.getKey(), fieldAndValue.getValue())))
 							.collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
 					connection.update(table(entityType))
-							.set((Row1) row(toUpdate.keySet().stream().map(DSL::field).collect(Collectors.toSet())), (Row1) row(toUpdate.values()))
+							.set((Row1<?>) row(toUpdate.keySet().stream().map(DSL::field).collect(Collectors.toSet())), (Row1<?>) row(toUpdate.values()))
 							.where(field("uuid").in(uuidsAndUpdates.getFirst()))
 							.execute();
 				}
