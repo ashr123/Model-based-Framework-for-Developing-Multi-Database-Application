@@ -318,7 +318,7 @@ public class Query
 	{
 		return fieldAndValue.getValue() instanceof String && REGEX.matcher((String) fieldAndValue.getValue()).matches() ||
 		       fieldAndValue.getValue() instanceof Collection<?> && ((Collection<?>) fieldAndValue.getValue()).stream()
-				       .allMatch(uuid -> REGEX.matcher((String) uuid).matches());
+				       .allMatch(uuid -> uuid instanceof String && REGEX.matcher((String) uuid).matches());
 	}
 
 	@SuppressWarnings("OptionalGetWithoutIsPresent")

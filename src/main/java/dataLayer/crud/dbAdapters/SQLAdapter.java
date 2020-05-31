@@ -46,7 +46,10 @@ public class SQLAdapter extends DatabaseAdapter
 				.map(record ->
 				{
 					final Map<String, Object> fieldsAndValues = record.intoMap();
-					return new Entity((String) fieldsAndValues.remove("uuid"), entityType, fieldsAndValues, FRIEND);
+					final Object uuid = fieldsAndValues.remove("uuid");
+					return uuid instanceof String ?
+					       new Entity((String) uuid, entityType, fieldsAndValues, FRIEND) :
+					       new Entity((UUID) uuid, entityType, fieldsAndValues, FRIEND);
 				});
 	}
 
