@@ -114,7 +114,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 	}
 
 	@Override
-	public void executeCreate(FieldsMapping fieldsMapping, String entityType, Map<String, Object> fieldsAndValues)
+	protected void executeCreate(FieldsMapping fieldsMapping, String entityType, Map<String, Object> fieldsAndValues)
 	{
 		final IDBAccess idbAccess = getDBAccess(fieldsMapping);
 		try
