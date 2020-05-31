@@ -61,7 +61,7 @@ public abstract class DatabaseAdapter
 				.anyMatch(entityFrag.getUuid()::equals);
 	}
 
-	public static void create(Entity entity, Query.Friend friend)
+	public static void create(Entity entity, @SuppressWarnings("unused") Query.Friend friend)
 	{
 		create(entity);
 	}
@@ -157,6 +157,7 @@ public abstract class DatabaseAdapter
 							{
 								if (element instanceof Entity)
 									return checkObjectWithSchema((Entity) element, itemsType.getJavaType());
+								//noinspection StringConcatenationMissingWhitespace
 								throw new MissingFormatArgumentException(errorMsg + "n Entity");
 							})
 							.collect(Collectors.toList());
@@ -200,7 +201,7 @@ public abstract class DatabaseAdapter
 	 * @param friend a sort of "certificate" that gives access to this method only for {@link Query} class
 	 * @return all entities fragments of certain type
 	 */
-	public static Stream<Entity> executeRead(All all, Query.Friend friend)
+	public static Stream<Entity> executeRead(All all, @SuppressWarnings("unused") Query.Friend friend)
 	{
 		return Conf.getFieldsMappingForEntity(all.getEntityType())
 				.flatMap(fieldsMapping -> fieldsMapping.getType().getDatabaseAdapter().makeEntities(fieldsMapping, all.getEntityType()));
@@ -211,7 +212,7 @@ public abstract class DatabaseAdapter
 	 * @param friend a sort of "certificate" that gives access to this method only for {@link Query} class
 	 * @return all entities fragments that present in all inner filters (by their {@link UUID})
 	 */
-	public static Stream<Entity> executeRead(And and, Query.Friend friend)
+	public static Stream<Entity> executeRead(And and, @SuppressWarnings("unused") Query.Friend friend)
 	{
 		return getResultFromDBs(and)
 				.reduce((set1, set2) ->
@@ -232,7 +233,7 @@ public abstract class DatabaseAdapter
 	 * @param friend a sort of "certificate" that gives access to this method only for {@link Query} class
 	 * @return all entities fragments that present in all inner filters (by their {@link UUID})
 	 */
-	public static Stream<Entity> executeRead(Or or, Query.Friend friend)
+	public static Stream<Entity> executeRead(Or or, @SuppressWarnings("unused") Query.Friend friend)
 	{
 		return groupEntities(getResultFromDBs(or)
 				.flatMap(Function.identity()));
@@ -302,7 +303,7 @@ public abstract class DatabaseAdapter
 	 * @param entityType    type of asked entity
 	 * @return fragment of asked entity if exists
 	 */
-	public Stream<Entity> executeRead(FieldsMapping fieldsMapping, UUID uuid, String entityType, Query.Friend friend)
+	public Stream<Entity> executeRead(FieldsMapping fieldsMapping, UUID uuid, String entityType, @SuppressWarnings("unused") Query.Friend friend)
 	{
 		return executeRead(fieldsMapping, uuid, entityType);
 	}

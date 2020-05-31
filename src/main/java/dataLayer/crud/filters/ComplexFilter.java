@@ -41,4 +41,10 @@ public abstract class ComplexFilter implements Filter
 	{
 		return Arrays.hashCode(filters);
 	}
+
+	@Override
+	public boolean equals(Object o)
+	{
+		return this == o || o instanceof ComplexFilter && Arrays.equals(filters, ((ComplexFilter) o).filters);
+	}
 }

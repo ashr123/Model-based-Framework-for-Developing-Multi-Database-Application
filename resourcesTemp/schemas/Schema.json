@@ -25,7 +25,6 @@
 		  "type": "string"
 		},
 		"city": {
-		  "relation": "aggregation",
 		  "type": "object",
 		  "javaType": "City"
 		},
@@ -55,7 +54,6 @@
 		  "type": "string"
 		},
 		"livesAt": {
-		  "relation": "aggregation",
 		  "type": "object",
 		  "javaType": "Address"
 		}
@@ -79,12 +77,10 @@
 		  "type": "string"
 		},
 		"livesAt": {
-		  "relation": "aggregation",
 		  "type": "object",
 		  "javaType": "Address"
 		},
 		"students": {
-		  "relation": "aggregation",
 		  "type": "array",
 		  "items": {
 			"javaType": "Person",
@@ -111,7 +107,6 @@
 		  "type": "string"
 		},
 		"livesAt": {
-		  "relation": "aggregation",
 		  "type": "object",
 		  "javaType": "Address"
 		}

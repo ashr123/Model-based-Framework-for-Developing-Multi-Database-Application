@@ -15,6 +15,7 @@ import java.util.stream.Stream;
  * @author Roy Ash
  * @author Yossi Landa.
  */
+@SuppressWarnings("EqualsAndHashcode")
 public class And extends ComplexFilter
 {
 

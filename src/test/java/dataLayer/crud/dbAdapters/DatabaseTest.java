@@ -113,9 +113,9 @@ public abstract class DatabaseTest
 				.findFirst()
 				.get();
 
-		assertEquals(updatedRoy.get("age"), 18L, "Age should be updated to 18.");
+		assertEquals(18L, updatedRoy.get("age"), "Age should be updated to 18.");
 
-		assertEquals(updatedRoy.get("phoneNumber"), "12345", "Age should be updated to 12345.");
+		assertEquals("12345", updatedRoy.get("phoneNumber"), "Age should be updated to 12345.");
 
 		delete(eq("Person", "name", "RoyForUpdate"));
 	}
@@ -155,9 +155,9 @@ public abstract class DatabaseTest
 				.findFirst()
 				.get();
 
-		assertEquals(updatedAnakin.get("age"), 25L, "Age should be updated to 25.");
+		assertEquals(25L, updatedAnakin.get("age"), "Age should be updated to 25.");
 
-		assertEquals(updatedAnakin.get("phoneNumber"), "0501111111", "Age should be updated to 0501111111.");
+		assertEquals("0501111111", updatedAnakin.get("phoneNumber"), "Age should be updated to 0501111111.");
 
 		update(Set.of(updatedAnakin), primaryUpdates);
 
@@ -166,7 +166,7 @@ public abstract class DatabaseTest
 				.findFirst()
 				.get();
 
-		assertEquals(darthVader.get("name"), "Darth Vader", "Name should be updated to Darth Vader.");
+		assertEquals("Darth Vader", darthVader.get("name"), "Name should be updated to Darth Vader.");
 
 		assertThrows(IllegalStateException.class, () -> update(Set.of(darthVader), existingPrimaryUpdates));
 
@@ -295,7 +295,8 @@ public abstract class DatabaseTest
 										gte("Person", "age", 18)),
 								and(
 										eq("Person", "phoneNumber", "0587158627"),
-										eq("Person", "name", "Yossi"))))));
+										eq("Person", "name", "Yossi"))))),
+				"Should be the same!!!");
 	}
 
 	@Test
@@ -310,7 +311,8 @@ public abstract class DatabaseTest
 										gte("Person", "age", 18)),
 								or(
 										eq("Person", "phoneNumber", "0587158627"),
-										eq("Person", "name", "Yossi"))))));
+										eq("Person", "name", "Yossi"))))),
+				"Should be the same!!!");
 	}
 
 	@Test

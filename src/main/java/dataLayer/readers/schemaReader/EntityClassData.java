@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.InputMismatchException;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @SuppressWarnings("ConstantConditions")
 public class EntityClassData
@@ -28,22 +27,22 @@ public class EntityClassData
 				.forEach(EntityPropertyData::checkValidity);
 	}
 
-	public Map<String/*property name*/, String /*related class name*/> getRelatedClasses()
-	{
-		return properties.entrySet().stream()
-				.filter(property -> property.getValue().isRelationProperty() && property.getValue().getRelation() != null)
-				.collect(Collectors.toMap(Map.Entry::getKey, property -> property.getValue().getRelatedClassName()));
-	}
+//	public Map<String/*property name*/, String /*related class name*/> getRelatedClasses()
+//	{
+//		return properties.entrySet().stream()
+//				.filter(property -> property.getValue().isRelationProperty() && property.getValue().getRelation() != null)
+//				.collect(Collectors.toMap(Map.Entry::getKey, property -> property.getValue().getRelatedClassName()));
+//	}
 
 	public EntityPropertyData getPropertyData(String propertyName)
 	{
 		return properties.get(propertyName);
 	}
 
-	public Collection<EntityPropertyData> getClassPropertiesData()
-	{
-		return properties.values();
-	}
+//	public Collection<EntityPropertyData> getClassPropertiesData()
+//	{
+//		return properties.values();
+//	}
 
 	public Collection<String> getClassPropertiesNames()
 	{

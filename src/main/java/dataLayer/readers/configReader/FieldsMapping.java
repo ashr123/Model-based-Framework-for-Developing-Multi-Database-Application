@@ -8,7 +8,7 @@ import java.util.Objects;
 /**
  * Represents a mapping from one or more fields of one or more entities to certain database.
  */
-@SuppressWarnings("ConstantConditions")
+@SuppressWarnings({"ConstantConditions", "FieldMayBeStatic"})
 public class FieldsMapping
 {
 	@JsonProperty("type")

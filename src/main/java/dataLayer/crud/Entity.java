@@ -24,7 +24,7 @@ public class Entity
 		this(entity.uuid, entity.entityType, new HashMap<>(entity.fieldsValues));
 	}
 
-	public Entity(String uuid, String entityType, Map<String, Object> fieldsValues, DatabaseAdapter.Friend friend)
+	public Entity(String uuid, String entityType, Map<String, Object> fieldsValues, @SuppressWarnings("unused") DatabaseAdapter.Friend friend)
 	{
 		this(uuid, entityType, fieldsValues);
 	}
@@ -34,7 +34,7 @@ public class Entity
 		this(UUID.fromString(uuid), entityType, fieldsValues);
 	}
 
-	public Entity(UUID uuid, String entityType, Map<String, Object> fieldsValues, DatabaseAdapter.Friend friend)
+	public Entity(UUID uuid, String entityType, Map<String, Object> fieldsValues, @SuppressWarnings("unused") DatabaseAdapter.Friend friend)
 	{
 		this(uuid, entityType, fieldsValues);
 	}

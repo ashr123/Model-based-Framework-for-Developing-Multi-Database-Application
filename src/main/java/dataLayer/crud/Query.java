@@ -11,7 +11,7 @@ import dataLayer.readers.schemaReader.Schema;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import static dataLayer.crud.filters.And.and;
@@ -24,6 +24,7 @@ import static java.util.stream.Collectors.*;
 public class Query
 {
 	protected static final Friend FRIEND = new Friend();
+	private static final Pattern REGEX = Pattern.compile("(?i)[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
 
 	private Query()
 	{
@@ -241,11 +242,11 @@ public class Query
 																	.map(entity ->
 																			fields.stream()
 																					.filter(entity.getFieldsValues()::containsKey)
-																					.collect(Collectors.toMap(Function.identity(), entity::get)))
+																					.collect(toMap(Function.identity(), entity::get)))
 																	.findFirst()
 																	.orElse(Map.of())));
 										})
-										.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))))
+										.collect(toMap(Map.Entry::getKey, Map.Entry::getValue))))
 				.forEach(fieldsMappingAndUpdate -> fieldsMappingAndUpdate.getKey().getType().getDatabaseAdapter().executeUpdate(fieldsMappingAndUpdate.getKey(), fieldsMappingAndUpdate.getValue(), FRIEND));
 	}
 
@@ -315,10 +316,9 @@ public class Query
 
 	private static boolean isStringUUID(Map.Entry<String, Object> fieldAndValue)
 	{
-		final String UUIDRegex = "(?i)[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}";
-		return fieldAndValue.getValue() instanceof String && ((String) fieldAndValue.getValue()).matches(UUIDRegex) ||
+		return fieldAndValue.getValue() instanceof String && REGEX.matcher((String) fieldAndValue.getValue()).matches() ||
 		       fieldAndValue.getValue() instanceof Collection<?> && ((Collection<?>) fieldAndValue.getValue()).stream()
-				       .allMatch(uuid -> ((String) uuid).matches(UUIDRegex));
+				       .allMatch(uuid -> REGEX.matcher((String) uuid).matches());
 	}
 
 	@SuppressWarnings("OptionalGetWithoutIsPresent")

@@ -11,12 +11,13 @@ public class EntityPropertyData
 {
 	@JsonProperty("type")
 	private final PropertyType type = null;
+	@SuppressWarnings("FieldMayBeStatic")
 	@JsonProperty("javaType")
 	private final String javaType = null;
 	@JsonProperty("items")
 	private final EntityPropertyData items = null;
-	@JsonProperty("relation")
-	private final RelationType relation = null;
+//	@JsonProperty("relation")
+//	private final RelationType relation = null;
 
 	private EntityPropertyData()
 	{
@@ -37,10 +38,10 @@ public class EntityPropertyData
 		return items;
 	}
 
-	public RelationType getRelation()
-	{
-		return relation;
-	}
+//	public RelationType getRelation()
+//	{
+//		return relation;
+//	}
 
 	void checkValidity()
 	{
@@ -82,7 +83,7 @@ public class EntityPropertyData
 			return false;
 		EntityPropertyData that = (EntityPropertyData) o;
 		return type == that.type &&
-		       relation == that.relation &&
+//		       relation == that.relation &&
 		       Objects.equals(javaType, that.javaType) &&
 		       Objects.equals(items, that.items);
 	}
@@ -90,7 +91,7 @@ public class EntityPropertyData
 	@Override
 	public int hashCode()
 	{
-		return Objects.hash(type, javaType, items, relation);
+		return Objects.hash(type, javaType, items/*, relation*/);
 	}
 
 	@Override
@@ -100,7 +101,7 @@ public class EntityPropertyData
 		       "type=" + type +
 		       ", javaType='" + javaType + '\'' +
 		       ", items=" + items +
-		       ", relation=" + relation +
+//		       ", relation=" + relation +
 		       '}';
 	}
 }

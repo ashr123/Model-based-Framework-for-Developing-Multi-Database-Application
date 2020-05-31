@@ -66,4 +66,17 @@ public abstract class SimpleFilter implements Filter
 		       ", fieldName='" + fieldName + '\'' +
 		       ", value=" + value;
 	}
+
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+			return true;
+		if (!(o instanceof SimpleFilter))
+			return false;
+		SimpleFilter that = (SimpleFilter) o;
+		return entityType.equals(that.entityType) &&
+		       fieldName.equals(that.fieldName) &&
+		       value.equals(that.value);
+	}
 }

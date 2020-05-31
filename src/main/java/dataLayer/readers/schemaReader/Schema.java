@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.Collection;
 import java.util.InputMismatchException;
 import java.util.Map;
@@ -75,16 +74,10 @@ public class Schema
 		return schema.classes.get(className).getPrimaryKey();
 	}
 
-	public static void containsAllClasses(Collection<String> classNames)
-	{
-		if (!schema.classes.keySet().containsAll(classNames))
-			throw new InputMismatchException("There is an unknown class in Schema!");
-	}
-
-	public static EntityClassData getEntityClass(String className)
-	{
-		return schema.classes.get(className);
-	}
+//	public static EntityClassData getEntityClass(String className)
+//	{
+//		return schema.classes.get(className);
+//	}
 
 	public static Collection<String> getClassesName()
 	{

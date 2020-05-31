@@ -3,6 +3,7 @@ import org.jooq.DSLContext;
 import org.jooq.impl.SQLDataType;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -26,10 +27,9 @@ public class Main
 		System.out.println(
 				deleteFrom(table("Person"))
 						.where(field("uuid")
-								.in(Stream.generate(UUID::randomUUID)
+								.in(Stream.generate(UUID::randomUUID).parallel()
 										.limit(5)
-										.collect(Collectors.toList())))
-						.getSQL());
+										.collect(Collectors.toList()))));
 //		SQLDataType.UUID
 	}
 }
