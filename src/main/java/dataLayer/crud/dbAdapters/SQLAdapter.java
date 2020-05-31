@@ -6,14 +6,14 @@ import dataLayer.crud.Query;
 import dataLayer.crud.filters.*;
 import dataLayer.readers.configReader.Conf;
 import dataLayer.readers.configReader.FieldsMapping;
-import org.jooq.Condition;
-import org.jooq.DSLContext;
+import org.jooq.*;
 import org.jooq.Record;
-import org.jooq.Result;
+import org.jooq.impl.DSL;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toMap;
@@ -58,8 +58,8 @@ public class SQLAdapter extends DatabaseAdapter
 	{
 		try (DSLContext connection = using(fieldsMapping.getConnStr()))
 		{
-			connection.insertInto(table(entityType))
-					.set(fieldsAndValues)
+			connection.insertInto(table(entityType), fieldsAndValues.keySet().stream().map(DSL::field).collect(Collectors.toSet()))
+					.values(fieldsAndValues.values())
 					.execute();
 		}
 	}
@@ -176,10 +176,11 @@ public class SQLAdapter extends DatabaseAdapter
 			{
 				if (!uuidsAndUpdates.getSecond().isEmpty())
 				{
+					Map<String, Object> toUpdate = uuidsAndUpdates.getSecond().entrySet().stream()
+							.peek(fieldAndValue -> fieldAndValue.setValue(validateAndTransformEntity(entityType, fieldAndValue.getKey(), fieldAndValue.getValue())))
+							.collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
 					connection.update(table(entityType))
-							.set(uuidsAndUpdates.getSecond().entrySet().stream()
-									.peek(fieldAndValue -> fieldAndValue.setValue(validateAndTransformEntity(entityType, fieldAndValue.getKey(), fieldAndValue.getValue())))
-									.collect(toMap(Map.Entry::getKey, Map.Entry::getValue)))
+							.set((Row1) row(toUpdate.keySet().stream().map(DSL::field).collect(Collectors.toSet())), (Row1) row(toUpdate.values()))
 							.where(field("uuid").in(uuidsAndUpdates.getFirst()))
 							.execute();
 				}

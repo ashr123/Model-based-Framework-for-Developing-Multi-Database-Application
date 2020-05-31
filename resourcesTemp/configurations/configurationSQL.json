@@ -1,0 +1,65 @@
+{
+  "fieldsMappings": {
+	"neo1": {
+	  "type": "neo4j",
+	  "connStr": "bolt://localhost:7687",
+	  "username": "neo4j",
+	  "password": "neo4j1"
+	},
+	"neo2": {
+	  "type": "neo4j",
+	  "connStr": "bolt://localhost:11008",
+	  "username": "neo4j",
+	  "password": "neo4j1"
+	},
+	"mongo1": {
+	  "type": "mongodb",
+	  "connStr": "mongodb://localhost",
+	  "location": "myDB"
+	},
+	"mongo2": {
+	  "type": "mongodb",
+	  "connStr": "mongodb://localhost",
+	  "location": "TestDB"
+	},
+	"sql1": {
+	  "type": "sql",
+	  "connStr": "jdbc:sqlite:resourcesTemp/sqliteDBs/test.db"
+	}
+  },
+  "entities": {
+	"City": {
+	  "name": "neo1",
+	  "mayor": "sql1"
+	},
+	"Address": {
+	  "street": "neo1",
+	  "city": "neo2",
+	  "state": "mongo1",
+	  "postal-code": "mongo2",
+	  "country": "sql1"
+	},
+	"Person": {
+	  "name": "sql1",
+	  "age": "sql1",
+	  "phoneNumber": "mongo1",
+	  "emailAddress": "mongo2",
+	  "livesAt": "sql1"
+	},
+	"Professor": {
+	  "name": "neo1",
+	  "age": "neo1",
+	  "phoneNumber": "sql1",
+	  "emailAddress": "sql1",
+	  "livesAt": "neo1",
+	  "students": "neo1"
+	},
+	"Student": {
+	  "name": "sql1",
+	  "age": "sql1",
+	  "phoneNumber": "neo1",
+	  "emailAddress": "neo2",
+	  "livesAt": "neo2"
+	}
+  }
+}
