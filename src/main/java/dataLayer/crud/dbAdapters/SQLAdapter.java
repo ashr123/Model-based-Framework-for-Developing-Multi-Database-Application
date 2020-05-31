@@ -182,7 +182,7 @@ public class SQLAdapter extends DatabaseAdapter
 							.peek(fieldAndValue -> fieldAndValue.setValue(validateAndTransformEntity(entityType, fieldAndValue.getKey(), fieldAndValue.getValue())))
 							.collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
 					connection.update(table(entityType))
-							.set((Row1<?>) row(toUpdate.keySet().stream().map(DSL::field).collect(Collectors.toSet())), (Row1<?>) row(toUpdate.values()))
+							.set((Row1) row(toUpdate.keySet().stream().map(DSL::field).collect(Collectors.toSet())), (Row1) row(toUpdate.values()))
 							.where(field("uuid").in(uuidsAndUpdates.getFirst()))
 							.execute();
 				}
