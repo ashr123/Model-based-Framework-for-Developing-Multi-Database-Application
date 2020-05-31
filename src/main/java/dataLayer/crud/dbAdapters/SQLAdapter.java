@@ -10,8 +10,12 @@ import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.Result;
+import org.jooq.impl.DSL;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
@@ -92,17 +96,17 @@ public class SQLAdapter extends DatabaseAdapter
 		return makeEntities(Conf.getFieldsMappingFromEntityField(simpleFilter.getEntityType(), simpleFilter.getFieldName()), simpleFilter.getEntityType(), filter);
 	}
 
+	@SuppressWarnings("SimplifyStreamApiCallChains")
 	@Override
 	protected void executeCreate(FieldsMapping fieldsMapping, String entityType, Map<String, Object> fieldsAndValues)
 	{
 		try (DSLContext connection = using(fieldsMapping.getConnStr()))
 		{
-			final List<Map.Entry<String, Object>> listOfMap = new ArrayList<>(fieldsAndValues.entrySet());
 			connection.insertInto(table(entityType),
-					listOfMap.stream()
-							.map(entry -> field(entry.getKey()))
+					fieldsAndValues.entrySet().stream()
+							.map(fieldAndValue -> field(fieldAndValue.getKey()))
 							.collect(toList()))
-					.values(listOfMap.stream()
+					.values(fieldsAndValues.entrySet().stream()
 							.map(Map.Entry::getValue)
 							.collect(toList()))
 					.execute();
@@ -159,7 +163,7 @@ public class SQLAdapter extends DatabaseAdapter
 	@Override
 	protected Stream<Entity> executeRead(FieldsMapping fieldsMapping, UUID uuid, String entityType)
 	{
-		return makeEntities(fieldsMapping, entityType, field("uuid").eq(uuid));
+		return makeEntities(fieldsMapping, entityType, field("uuid", UUID.class).eq(uuid));
 	}
 
 	@Override
@@ -183,15 +187,12 @@ public class SQLAdapter extends DatabaseAdapter
 			{
 				if (!uuidsAndUpdates.getSecond().isEmpty())
 				{
-					final List<Map.Entry<String, Object>> toUpdate = uuidsAndUpdates.getSecond().entrySet().stream()
-							.peek(fieldAndValue -> fieldAndValue.setValue(validateAndTransformEntity(entityType, fieldAndValue.getKey(), fieldAndValue.getValue())))
-							.collect(toList());
 					connection.update(table(entityType))
-							.set(row(toUpdate.stream()
+							.set(row(uuidsAndUpdates.getSecond().entrySet().stream()
 											.map(entry -> field(entry.getKey()))
 											.collect(toList())),
-									row(toUpdate.stream()
-											.map(Map.Entry::getValue)
+									row(uuidsAndUpdates.getSecond().entrySet().stream()
+											.map(fieldAndValue -> validateAndTransformEntity(entityType, fieldAndValue.getKey(), fieldAndValue.getValue()))
 											.collect(toList())))
 							.where(field("uuid").in(uuidsAndUpdates.getFirst()))
 							.execute();
