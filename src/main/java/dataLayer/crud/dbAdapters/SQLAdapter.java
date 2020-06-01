@@ -6,8 +6,10 @@ import dataLayer.crud.Query;
 import dataLayer.crud.filters.*;
 import dataLayer.readers.configReader.Conf;
 import dataLayer.readers.configReader.FieldsMapping;
+import org.jooq.Condition;
+import org.jooq.DSLContext;
 import org.jooq.Record;
-import org.jooq.*;
+import org.jooq.Table;
 
 import java.util.Collection;
 import java.util.Map;
@@ -39,9 +41,9 @@ public class SQLAdapter extends DatabaseAdapter
 	 * @see SQLAdapter#makeEntities(FieldsMapping, String)
 	 * @see SQLAdapter#makeEntities(FieldsMapping, String, Condition)
 	 */
-	private static Stream<Entity> getEntityFromResult(String entityType, Result<Record> result)
+	private static Stream<Entity> getEntityFromResult(String entityType, Stream<Record> result)
 	{
-		return result.stream()
+		return result
 				.map(record ->
 				{
 					final Map<String, Object> fieldsAndValues = record.intoMap().entrySet().stream()
@@ -86,7 +88,7 @@ public class SQLAdapter extends DatabaseAdapter
 			return getEntityFromResult(entityType,
 					connection.selectFrom(entityType)
 							.where(filter)
-							.fetch());
+							.fetchStream());
 		}
 	}
 
@@ -97,7 +99,7 @@ public class SQLAdapter extends DatabaseAdapter
 		{
 			return getEntityFromResult(entityType,
 					connection.selectFrom(entityType)
-							.fetch());
+							.fetchStream());
 		}
 	}
 
