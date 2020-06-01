@@ -3,8 +3,8 @@ package dataLayer.crud.dbAdapters;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import dataLayer.readers.Reader;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.io.IOException;
 
@@ -12,7 +12,7 @@ import static dataLayer.crud.Query.create;
 
 class MongoDBAdapterTest extends DatabaseTest
 {
-	@BeforeAll
+	@BeforeEach
 	@Override
 	protected void setUp() throws IOException
 	{
@@ -21,7 +21,7 @@ class MongoDBAdapterTest extends DatabaseTest
 		create(roy, yossi, karin);
 	}
 
-	@AfterAll
+	@AfterEach
 	@Override
 	protected void tearDown()
 	{

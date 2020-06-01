@@ -3,8 +3,8 @@ package dataLayer.crud.dbAdapters;
 import dataLayer.readers.Reader;
 import org.jooq.DSLContext;
 import org.jooq.impl.SQLDataType;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.io.IOException;
 
@@ -14,7 +14,7 @@ import static org.jooq.impl.DSL.using;
 
 class SQLAdapterTest extends DatabaseTest
 {
-	@BeforeAll
+	@BeforeEach
 	@Override
 	protected void setUp() throws IOException
 	{
@@ -96,7 +96,7 @@ class SQLAdapterTest extends DatabaseTest
 		create(roy, yossi, karin);
 	}
 
-	@AfterAll
+	@AfterEach
 	@Override
 	protected void tearDown()
 	{

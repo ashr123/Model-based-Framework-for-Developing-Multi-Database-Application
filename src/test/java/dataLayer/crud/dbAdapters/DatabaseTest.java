@@ -3,10 +3,9 @@ package dataLayer.crud.dbAdapters;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import dataLayer.crud.Entity;
 import dataLayer.readers.Reader;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 
 import java.io.IOException;
 import java.util.Map;
@@ -25,7 +24,7 @@ import static dataLayer.crud.filters.Or.or;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+//TODO insert an array
 public abstract class DatabaseTest
 {
 
@@ -46,10 +45,10 @@ public abstract class DatabaseTest
 							"phoneNumber", "0504563434",
 							"emailAddress", "davidz@post.bgu.ac.il"));
 
-	@AfterAll
+	@AfterEach
 	abstract protected void tearDown();
 
-	@BeforeAll
+	@BeforeEach
 	abstract protected void setUp() throws IOException;
 
 	@Test
@@ -65,7 +64,6 @@ public abstract class DatabaseTest
 		assertEquals(Set.of(luke),
 				read(eq("Person", "name", "Luke Skywalker")),
 				"Should return Luke Skywalker.");
-		delete(luke);
 	}
 
 	@Test
@@ -83,7 +81,6 @@ public abstract class DatabaseTest
 						"emailAddress", "luke@SithEmpire.com"));
 
 		assertThrows(IllegalStateException.class, () -> create(luke, cloneLuke));
-		delete(luke, cloneLuke);
 	}
 
 	@Test
@@ -116,8 +113,6 @@ public abstract class DatabaseTest
 		assertEquals(18L, updatedRoy.get("age"), "Age should be updated to 18.");
 
 		assertEquals("12345", updatedRoy.get("phoneNumber"), "Age should be updated to 12345.");
-
-		delete(eq("Person", "name", "RoyForUpdate"));
 	}
 
 	@Test
@@ -172,8 +167,6 @@ public abstract class DatabaseTest
 		assertEquals("Darth Vader", darthVader.get("name"), "Name should be updated to Darth Vader.");
 
 		assertThrows(IllegalStateException.class, () -> update(Set.of(darthVader), existingPrimaryUpdates));
-
-		delete(darthVader);
 	}
 
 	@Test
@@ -339,7 +332,6 @@ public abstract class DatabaseTest
 		assertEquals(Set.of(nestedEntity),
 				read(eq("Person", "name", "Oscar")),
 				"Should return person named Oscar.");
-		delete();
 	}
 
 
@@ -393,6 +385,6 @@ public abstract class DatabaseTest
 										"country", "Australia"))));
 		create(nestedEntity1, nestedEntity2, nestedEntity3);
 		System.out.println(Reader.toJson(join(or(gte("Person", "age", 12), eq("City", "name", "Unknown")), entity -> true)));
-		delete(nestedEntity1, nestedEntity2, nestedEntity3);
+//		delete(nestedEntity1, nestedEntity2, nestedEntity3);
 	}
 }

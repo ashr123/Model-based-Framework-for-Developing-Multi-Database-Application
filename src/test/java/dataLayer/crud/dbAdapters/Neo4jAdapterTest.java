@@ -5,8 +5,8 @@ import iot.jcypher.database.DBAccessFactory;
 import iot.jcypher.database.DBProperties;
 import iot.jcypher.database.DBType;
 import iot.jcypher.database.IDBAccess;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.neo4j.driver.v1.AuthTokens;
 
 import java.io.IOException;
@@ -16,7 +16,7 @@ import static dataLayer.crud.Query.create;
 
 class Neo4jAdapterTest extends DatabaseTest
 {
-	@BeforeAll
+	@BeforeEach
 	@Override
 	protected void setUp() throws IOException
 	{
@@ -25,7 +25,7 @@ class Neo4jAdapterTest extends DatabaseTest
 		create(roy, yossi, karin);
 	}
 
-	@AfterAll
+	@AfterEach
 	@Override
 	protected void tearDown()
 	{

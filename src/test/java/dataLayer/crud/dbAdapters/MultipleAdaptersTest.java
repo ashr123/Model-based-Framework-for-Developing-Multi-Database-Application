@@ -9,19 +9,20 @@ import iot.jcypher.database.DBType;
 import iot.jcypher.database.IDBAccess;
 import org.jooq.DSLContext;
 import org.jooq.impl.SQLDataType;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.neo4j.driver.v1.AuthTokens;
 
 import java.io.IOException;
 import java.util.Properties;
 
 import static dataLayer.crud.Query.create;
-import static org.jooq.impl.DSL.*;
+import static org.jooq.impl.DSL.primaryKey;
+import static org.jooq.impl.DSL.using;
 
 class MultipleAdaptersTest extends DatabaseTest
 {
-	@BeforeAll
+	@BeforeEach
 	@Override
 	protected void setUp() throws IOException
 	{
@@ -77,7 +78,7 @@ class MultipleAdaptersTest extends DatabaseTest
 					.execute();
 			connection.createTableIfNotExists("Professor")
 					.column("uuid", SQLDataType.UUID)
-					.column( "emailAddress", SQLDataType.VARCHAR)
+					.column("emailAddress", SQLDataType.VARCHAR)
 					.constraint(primaryKey("uuid"))
 					.execute();
 			connection.createTableIfNotExists("Student")
@@ -90,7 +91,7 @@ class MultipleAdaptersTest extends DatabaseTest
 		create(roy, yossi, karin);
 	}
 
-	@AfterAll
+	@AfterEach
 	@Override
 	protected void tearDown()
 	{
