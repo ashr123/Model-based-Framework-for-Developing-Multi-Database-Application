@@ -15,7 +15,7 @@
 	},
 	"Address": {
 	  "primaryKey": [
-		"postal-code"
+		"postalCode"
 	  ],
 	  "properties": {
 		"street": {
@@ -28,7 +28,7 @@
 		  "type": "object",
 		  "javaType": "City"
 		},
-		"postal-code": {
+		"postalCode": {
 		  "type": "string"
 		},
 		"country": {

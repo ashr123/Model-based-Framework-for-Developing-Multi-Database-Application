@@ -11,46 +11,41 @@
 	  "connStr": "bolt://localhost:11008",
 	  "username": "neo4j",
 	  "password": "neo4j1"
-	},
-	"mongo1": {
-	  "type": "mongodb",
-	  "connStr": "mongodb://localhost",
-	  "location": "myDB"
 	}
   },
   "entities": {
 	"City": {
 	  "name": "neo1",
-	  "mayor": "neo1"
+	  "mayor": "neo2"
 	},
 	"Address": {
 	  "street": "neo1",
-	  "city": "neo2",
-	  "state": "neo1",
-	  "postal-code": "neo2",
+	  "state": "neo2",
+	  "city": "neo1",
+	  "postalCode": "neo2",
 	  "country": "neo1"
 	},
 	"Person": {
-	  "name": "neo1",
-	  "age": "mongo1",
-	  "phoneNumber": "mongo1",
-	  "emailAddress": "neo2",
+	  "name": "neo2",
+	  "age": "neo1",
+	  "phoneNumber": "neo2",
+	  "emailAddress": "neo1",
 	  "livesAt": "neo2"
 	},
 	"Professor": {
 	  "name": "neo1",
-	  "age": "neo1",
-	  "phoneNumber": "neo2",
+	  "age": "neo2",
+	  "phoneNumber": "neo1",
 	  "emailAddress": "neo2",
-	  "livesAt": "neo2",
-	  "students": "neo1"
+	  "livesAt": "neo1",
+	  "students": "neo2"
 	},
 	"Student": {
 	  "name": "neo1",
-	  "age": "neo1",
-	  "phoneNumber": "neo2",
+	  "age": "neo2",
+	  "phoneNumber": "neo1",
 	  "emailAddress": "neo2",
-	  "livesAt": "neo2"
+	  "livesAt": "neo1"
 	}
   }
 }

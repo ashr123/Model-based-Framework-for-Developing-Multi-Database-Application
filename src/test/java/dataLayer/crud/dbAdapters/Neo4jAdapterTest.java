@@ -1,7 +1,5 @@
 package dataLayer.crud.dbAdapters;
 
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
 import dataLayer.readers.Reader;
 import iot.jcypher.database.DBAccessFactory;
 import iot.jcypher.database.DBProperties;
@@ -31,12 +29,7 @@ class Neo4jAdapterTest extends DatabaseTest
 	@Override
 	protected void tearDown()
 	{
-		try (MongoClient mongoClient = MongoClients.create())
-		{
-			mongoClient.getDatabase("TestDB").drop();
-			mongoClient.getDatabase("myDB").drop();
-		}
-
+		//Dropping all Neo4j databases.
 		Properties props = new Properties();
 		props.setProperty(DBProperties.SERVER_ROOT_URI, "bolt://localhost:7687");
 		IDBAccess dbAccess = DBAccessFactory.createDBAccess(iot.jcypher.database.DBType.REMOTE, props, AuthTokens.basic("neo4j", "neo4j1"));

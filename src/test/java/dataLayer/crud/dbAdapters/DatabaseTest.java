@@ -132,7 +132,8 @@ public abstract class DatabaseTest
 		Set<Entity> nonPrimaryUpdates = Set.of(
 				Entity.of("Person",
 						Map.of("age", 25L,
-								"phoneNumber", "0501111111")));
+								"phoneNumber", "0501111111",
+								"emailAddress", "updated@SithEmpire.com")));
 
 		Set<Entity> primaryUpdates = Set.of(
 				Entity.of("Person",
@@ -157,7 +158,9 @@ public abstract class DatabaseTest
 
 		assertEquals(25L, updatedAnakin.get("age"), "Age should be updated to 25.");
 
-		assertEquals("0501111111", updatedAnakin.get("phoneNumber"), "Age should be updated to 0501111111.");
+		assertEquals("0501111111", updatedAnakin.get("phoneNumber"), "Phone number should be updated to 0501111111.");
+
+		assertEquals("updated@SithEmpire.com", updatedAnakin.get("emailAddress"), "E-mail address should be updated to updated@SithEmpire.com.");
 
 		update(Set.of(updatedAnakin), primaryUpdates);
 
@@ -328,7 +331,7 @@ public abstract class DatabaseTest
 										"state", "New York",
 										"city", Entity.of("City", Map.of("name", "California",
 												"mayor", "Arnold")),
-										"postal-code", "777777",
+										"postalCode", "777777",
 										"country", "United States"))));
 
 		create(nestedEntity);
@@ -362,7 +365,7 @@ public abstract class DatabaseTest
 								Map.of("street", "Sesame street",
 										"state", "New York",
 										"city", city,
-										"postal-code", "757212",
+										"postalCode", "757212",
 										"country", "United States"))));
 		Entity city2 = Entity.of("City", Map.of("name", "Unknown",
 				"mayor", "Some magical wizard"));
@@ -375,7 +378,7 @@ public abstract class DatabaseTest
 								Map.of("street", "Hobbit Street",
 										"state", "Mordor",
 										"city", city2,
-										"postal-code", "123212",
+										"postalCode", "123212",
 										"country", "Australia"))));
 		Entity nestedEntity3 = Entity.of("Person",
 				Map.of("name", "Frodo",
@@ -386,7 +389,7 @@ public abstract class DatabaseTest
 								Map.of("street", "Hobbit Street",
 										"state", "Mordor",
 										"city", city2,
-										"postal-code", "432212",
+										"postalCode", "432212",
 										"country", "Australia"))));
 		create(nestedEntity1, nestedEntity2, nestedEntity3);
 		System.out.println(Reader.toJson(join(or(gte("Person", "age", 12), eq("City", "name", "Unknown")), entity -> true)));
