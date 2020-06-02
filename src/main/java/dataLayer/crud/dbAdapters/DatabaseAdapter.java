@@ -133,28 +133,28 @@ public abstract class DatabaseAdapter
 	}
 
 	/**
-	 * Responsible for checking fields with type "array" (i.e {@link Collection})
+	 * Responsible for checking fields with type "array" (i.e {@link Set})
 	 *
-	 * @param collection the collection to be checked
-	 * @param itemsType  the desired type for each cell of the collection
-	 * @return the collection itself for array of primitive types, collection of {@link UUID}s for array of objects (i.e {@link Entity}s)
+	 * @param set       the set to be checked
+	 * @param itemsType the desired type for each cell of the set
+	 * @return the set itself for array of primitive types, set of {@link UUID}s for array of objects (i.e {@link Entity}s)
 	 * @implNote in case of {@link dataLayer.readers.schemaReader.PropertyType#ARRAY}, it can behave as recursive type, see commented source code
 	 */
-	private static Collection<?> checkArrayWithSchema(Set<?> collection, EntityPropertyData itemsType)
+	private static Set<?> checkArrayWithSchema(Set<?> set, EntityPropertyData itemsType)
 	{
 		final String errorMsg = "Element in list isn't a";
 		return switch (itemsType.getType())
 				{
 					case ARRAY -> throw new MissingFormatArgumentException("Only 1d array is possible");
-//							collection.stream()
+//							set.stream()
 //							.map(element ->
 //							{
-//								if (element instanceof Collection<?>)
-//									return checkArrayWithSchema((Collection<?>) element, itemsType.getItems());
+//								if (element instanceof Set<?>)
+//									return checkArrayWithSchema((Set<?>) element, itemsType.getItems());
 //								throw new MissingFormatArgumentException(errorMsg + " list");
 //							})
 //							.collect(Collectors.toList());
-					case OBJECT -> collection.stream()
+					case OBJECT -> set.stream()
 							.map(element ->
 							{
 								if (element instanceof Entity)
@@ -164,18 +164,18 @@ public abstract class DatabaseAdapter
 							})
 							.collect(toSet());
 					case NUMBER -> {
-						if (collection.stream().allMatch(Number.class::isInstance))
-							yield collection;
+						if (set.stream().allMatch(Number.class::isInstance))
+							yield set;
 						throw new MissingFormatArgumentException(errorMsg + " number");
 					}
 					case STRING -> {
-						if (collection.stream().allMatch(String.class::isInstance))
-							yield collection;
+						if (set.stream().allMatch(String.class::isInstance))
+							yield set;
 						throw new MissingFormatArgumentException(errorMsg + " string");
 					}
 					case BOOLEAN -> {
-						if (collection.stream().allMatch(Boolean.class::isInstance))
-							yield collection;
+						if (set.stream().allMatch(Boolean.class::isInstance))
+							yield set;
 						throw new MissingFormatArgumentException(errorMsg + " boolean");
 					}
 				};

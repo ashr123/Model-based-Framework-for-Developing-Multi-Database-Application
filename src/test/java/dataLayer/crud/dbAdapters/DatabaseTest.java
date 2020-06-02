@@ -24,7 +24,6 @@ import static dataLayer.crud.filters.Or.or;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-//TODO insert an array
 public abstract class DatabaseTest
 {
 
