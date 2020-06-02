@@ -34,7 +34,7 @@ public class SQLAdapter extends DatabaseAdapter
 	{
 	}
 
-	private static <S extends Serializable> byte[] objectToBytes(final S obj) throws IOException
+	private static byte[] objectToBytes(final Serializable obj) throws IOException
 	{
 		try (final ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		     final ObjectOutputStream oos = new ObjectOutputStream(bos))
