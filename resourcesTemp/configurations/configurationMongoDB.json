@@ -37,13 +37,6 @@
 	  "emailAddress": "mongo1",
 	  "livesAt": "mongo2",
 	  "students": "mongo1"
-	},
-	"Student": {
-	  "name": "mongo2",
-	  "age": "mongo1",
-	  "phoneNumber": "mongo2",
-	  "emailAddress": "mongo1",
-	  "livesAt": "mongo2"
 	}
   }
 }

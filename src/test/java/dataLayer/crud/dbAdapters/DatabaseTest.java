@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -43,13 +44,28 @@ public abstract class DatabaseTest
 					Map.of("name", "Karin",
 							"age", 26L,
 							"phoneNumber", "0504563434",
-							"emailAddress", "davidz@post.bgu.ac.il"));
+							"emailAddress", "davidz@post.bgu.ac.il")),
+
+			arnon = Entity.of("Professor",
+					Map.of("name", "Arnon",
+					"age", 50L,
+					"phoneNumber", "0501234567",
+					"emailAddress", "strum@post.bgu.ac.il",
+					"students", List.of(roy, yossi)));
 
 	@AfterEach
 	abstract protected void tearDown();
 
 	@BeforeEach
 	abstract protected void setUp() throws IOException;
+
+	@Test
+	void testInsertArray()
+	{
+		assertEquals(Set.of(arnon),
+				read(eq("Professor", "name", "Arnon")),
+				"Should return person named Arnon.");
+	}
 
 	@Test
 	void testExecuteCreate()

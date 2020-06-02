@@ -22,7 +22,7 @@ class Neo4jAdapterTest extends DatabaseTest
 	{
 		Reader.loadConfAndSchema("resourcesTemp/configurations/configurationNeo4j.json",
 				"resourcesTemp/schemas/Schema.json");
-		create(roy, yossi, karin);
+		create(roy, yossi, karin, arnon);
 	}
 
 	@AfterEach

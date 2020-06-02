@@ -46,13 +46,7 @@ class SQLAdapterTest extends DatabaseTest
 					.column("uuid", SQLDataType.UUID)
 					.column("age", SQLDataType.BIGINT)
 					.column("emailAddress", SQLDataType.VARCHAR)
-					.column("students", SQLDataType.BLOB)
-					.constraint(primaryKey("uuid"))
-					.execute();
-			connection.createTableIfNotExists("Student")
-					.column("uuid", SQLDataType.UUID)
-					.column("age", SQLDataType.BIGINT)
-					.column("emailAddress", SQLDataType.VARCHAR)
+					.column("students", SQLDataType.OTHER)
 					.constraint(primaryKey("uuid"))
 					.execute();
 		}
@@ -84,16 +78,9 @@ class SQLAdapterTest extends DatabaseTest
 					.column("livesAt", SQLDataType.UUID)
 					.constraint(primaryKey("uuid"))
 					.execute();
-			connection.createTableIfNotExists("Student")
-					.column("uuid", SQLDataType.UUID)
-					.column("name", SQLDataType.VARCHAR)
-					.column("phoneNumber", SQLDataType.VARCHAR)
-					.column("livesAt", SQLDataType.UUID)
-					.constraint(primaryKey("uuid"))
-					.execute();
 		}
 
-		create(roy, yossi, karin);
+		create(roy, yossi, karin, arnon);
 	}
 
 	@AfterEach
@@ -107,7 +94,6 @@ class SQLAdapterTest extends DatabaseTest
 			connection.dropTable("Address").execute();
 			connection.dropTable("Person").execute();
 			connection.dropTable("Professor").execute();
-			connection.dropTable("Student").execute();
 		}
 
 		try (DSLContext connection = using("jdbc:sqlite:resourcesTemp/sqliteDBs/test2.db"))
@@ -116,7 +102,6 @@ class SQLAdapterTest extends DatabaseTest
 			connection.dropTable("Address").execute();
 			connection.dropTable("Person").execute();
 			connection.dropTable("Professor").execute();
-			connection.dropTable("Student").execute();
 		}
 	}
 }

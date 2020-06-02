@@ -88,29 +88,6 @@
 		  }
 		}
 	  }
-	},
-	"Student": {
-	  "primaryKey": [
-		"name"
-	  ],
-	  "properties": {
-		"name": {
-		  "type": "string"
-		},
-		"age": {
-		  "type": "number"
-		},
-		"phoneNumber": {
-		  "type": "string"
-		},
-		"emailAddress": {
-		  "type": "string"
-		},
-		"livesAt": {
-		  "type": "object",
-		  "javaType": "Address"
-		}
-	  }
 	}
   }
 }

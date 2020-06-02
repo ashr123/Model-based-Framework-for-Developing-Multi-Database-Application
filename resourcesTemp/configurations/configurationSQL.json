@@ -35,13 +35,6 @@
 	  "emailAddress": "sql1",
 	  "livesAt": "sql2",
 	  "students": "sql1"
-	},
-	"Student": {
-	  "name": "sql2",
-	  "age": "sql1",
-	  "phoneNumber": "sql2",
-	  "emailAddress": "sql1",
-	  "livesAt": "sql2"
 	}
   }
 }

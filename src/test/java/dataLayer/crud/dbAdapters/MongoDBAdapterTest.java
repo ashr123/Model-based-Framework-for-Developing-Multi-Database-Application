@@ -18,7 +18,7 @@ class MongoDBAdapterTest extends DatabaseTest
 	{
 		Reader.loadConfAndSchema("resourcesTemp/configurations/configurationMongoDB.json",
 				"resourcesTemp/schemas/Schema.json");
-		create(roy, yossi, karin);
+		create(roy, yossi, karin, arnon);
 	}
 
 	@AfterEach

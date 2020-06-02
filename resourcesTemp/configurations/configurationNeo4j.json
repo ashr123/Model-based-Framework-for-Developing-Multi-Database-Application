@@ -39,13 +39,6 @@
 	  "emailAddress": "neo2",
 	  "livesAt": "neo1",
 	  "students": "neo2"
-	},
-	"Student": {
-	  "name": "neo1",
-	  "age": "neo2",
-	  "phoneNumber": "neo1",
-	  "emailAddress": "neo2",
-	  "livesAt": "neo1"
 	}
   }
 }

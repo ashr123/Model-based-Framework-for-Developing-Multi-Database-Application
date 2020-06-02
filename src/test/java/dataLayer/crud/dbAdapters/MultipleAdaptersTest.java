@@ -88,7 +88,7 @@ class MultipleAdaptersTest extends DatabaseTest
 					.execute();
 		}
 
-		create(roy, yossi, karin);
+		create(roy, yossi, karin, arnon);
 	}
 
 	@AfterEach
