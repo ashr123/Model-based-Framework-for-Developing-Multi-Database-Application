@@ -3,6 +3,7 @@ package dataLayer.readers.configReader;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import dataLayer.crud.dbAdapters.DBType;
 
+import java.util.InputMismatchException;
 import java.util.Objects;
 
 /**
@@ -49,6 +50,18 @@ public class FieldsMapping
 	public String getPassword()
 	{
 		return password;
+	}
+
+	void checkValidity()
+	{
+		if (type == null)
+			throw new InputMismatchException("Type can't be " + null);
+		if (connStr == null)
+			throw new InputMismatchException("Connection string can't be " + null);
+		if (username != null && password == null)
+			throw new InputMismatchException("If username not null, so must the password");
+		else if (password != null && username == null)
+			throw new InputMismatchException("If password not null, so must the username");
 	}
 
 	@Override

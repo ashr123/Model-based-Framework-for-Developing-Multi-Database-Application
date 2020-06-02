@@ -151,9 +151,9 @@ public abstract class DatabaseAdapter
 //							{
 //								if (element instanceof Set<?>)
 //									return checkArrayWithSchema((Set<?>) element, itemsType.getItems());
-//								throw new MissingFormatArgumentException(errorMsg + " list");
+//								throw new MissingFormatArgumentException(errorMsg + " set");
 //							})
-//							.collect(Collectors.toList());
+//							.collect(Collectors.toSet());
 					case OBJECT -> set.stream()
 							.map(element ->
 							{

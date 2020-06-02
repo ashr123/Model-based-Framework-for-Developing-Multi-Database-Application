@@ -12,17 +12,17 @@ import static dataLayer.crud.Query.create;
 import static org.jooq.impl.DSL.primaryKey;
 import static org.jooq.impl.DSL.using;
 
-class SQLAdapterTest extends DatabaseTest
+class MySQLTest extends DatabaseTest
 {
 	@BeforeEach
 	@Override
 	protected void setUp() throws IOException
 	{
-		Reader.loadConfAndSchema("src/test/resources/configurations/configurationSQL.json",
+		Reader.loadConfAndSchema("src/test/resources/configurations/configurationMySQL.json",
 				"src/test/resources/schemas/Schema.json");
 
 		//Setting all the SQL databases.
-		try (DSLContext connection = using("jdbc:sqlite:src/test/resources/sqliteDBs/test.db"))
+		try (DSLContext connection = using("jdbc:mysql://localhost:3306/test", "root", ""))
 		{
 			connection.createTableIfNotExists("City")
 					.column("uuid", SQLDataType.UUID.nullable(false))
@@ -52,7 +52,7 @@ class SQLAdapterTest extends DatabaseTest
 					.execute();
 		}
 
-		try (DSLContext connection = using("jdbc:sqlite:src/test/resources/sqliteDBs/test2.db"))
+		try (DSLContext connection = using("jdbc:mysql://localhost:3306/test2", "root", ""))
 		{
 			connection.createTableIfNotExists("City")
 					.column("uuid", SQLDataType.UUID.nullable(false))
@@ -89,7 +89,7 @@ class SQLAdapterTest extends DatabaseTest
 	protected void tearDown()
 	{
 		//Dropping all SQL databases.
-		try (DSLContext connection = using("jdbc:sqlite:src/test/resources/sqliteDBs/test.db"))
+		try (DSLContext connection = using("jdbc:mysql://localhost:3306/test", "root", ""))
 		{
 			connection.dropTableIfExists("City").execute();
 			connection.dropTableIfExists("Address").execute();
@@ -97,7 +97,7 @@ class SQLAdapterTest extends DatabaseTest
 			connection.dropTableIfExists("Professor").execute();
 		}
 
-		try (DSLContext connection = using("jdbc:sqlite:src/test/resources/sqliteDBs/test2.db"))
+		try (DSLContext connection = using("jdbc:mysql://localhost:3306/test2", "root", ""))
 		{
 			connection.dropTableIfExists("City").execute();
 			connection.dropTableIfExists("Address").execute();

@@ -110,6 +110,7 @@ public class Conf
 		if (!entities.values().stream()
 				.allMatch(entityLocations -> keySet.containsAll(entityLocations.values())))
 			throw new InputMismatchException("Not all fieldsLocations locations exists as FieldsMapping!!");
+		fieldsMappings.forEach((mappingName, fieldsMappings) -> fieldsMappings.checkValidity());
 //		entities.values()
 //				.forEach(entityLocations ->
 //				{

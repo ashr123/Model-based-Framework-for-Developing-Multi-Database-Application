@@ -6,32 +6,35 @@ import dataLayer.crud.Query;
 import dataLayer.crud.filters.*;
 import dataLayer.readers.configReader.Conf;
 import dataLayer.readers.configReader.FieldsMapping;
+import org.jooq.Condition;
+import org.jooq.DSLContext;
 import org.jooq.Record;
-import org.jooq.*;
+import org.jooq.Result;
 
 import java.io.*;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
-import static org.jooq.impl.DSL.field;
-import static org.jooq.impl.DSL.using;
+import static org.jooq.impl.DSL.*;
 
 /**
  * This class deals with CRUD operations on relational DBs
  *
  * @author Roy Ash
  */
-@SuppressWarnings("JavadocReference")
+@SuppressWarnings({"JavadocReference", "SimplifyStreamApiCallChains"})
 public class SQLAdapter extends DatabaseAdapter
 {
 	SQLAdapter()
 	{
 	}
 
-	private static byte[] objectToBytes(final Serializable obj) throws IOException
+	private static <S extends Serializable> byte[] objectToBytes(final S obj) throws IOException
 	{
 		try (final ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		     final ObjectOutputStream oos = new ObjectOutputStream(bos))
@@ -73,7 +76,7 @@ public class SQLAdapter extends DatabaseAdapter
 									{
 										fieldAndValue.setValue(bytesToObject((byte[]) fieldAndValue.getValue()));
 									}
-									catch (ClassNotFoundException | IOException e) // doesn't suppose to happen
+									catch (ClassNotFoundException | IOException e) // Doesn't suppose to happen
 									{
 										e.printStackTrace();
 									}
@@ -87,11 +90,6 @@ public class SQLAdapter extends DatabaseAdapter
 				});
 	}
 
-	private static Table<?> getTable(DSLContext connection, String entityType)
-	{
-		return connection.meta().getTables(entityType).get(0);
-	}
-
 	/**
 	 * Queries relational DB with given {@link Entity#entityType} as collection name
 	 *
@@ -103,13 +101,18 @@ public class SQLAdapter extends DatabaseAdapter
 	 */
 	private static Stream<Entity> makeEntities(FieldsMapping fieldsMapping, String entityType, Condition filter)
 	{
-		try (DSLContext connection = using(fieldsMapping.getConnStr()))
+		try (DSLContext connection = getConnection(fieldsMapping))
 		{
 			return getEntityFromResult(entityType,
 					connection.selectFrom(entityType)
 							.where(filter)
 							.fetch());
 		}
+	}
+
+	private static DSLContext getConnection(FieldsMapping fieldsMapping)
+	{
+		return fieldsMapping.getUsername() == null ? using(fieldsMapping.getConnStr()) : using(fieldsMapping.getConnStr(), fieldsMapping.getUsername(), fieldsMapping.getPassword());
 	}
 
 	/**
@@ -133,31 +136,54 @@ public class SQLAdapter extends DatabaseAdapter
 	@Override
 	protected void executeCreate(FieldsMapping fieldsMapping, String entityType, Map<String, Object> fieldsAndValues)
 	{
-		try (DSLContext connection = using(fieldsMapping.getConnStr()))
+		try (DSLContext connection = getConnection(fieldsMapping))
 		{
-			connection.insertInto(getTable(connection, entityType))
-					.set(fieldsAndValues.entrySet().stream()
-							.peek(fieldAndValue ->
-							{
-								if (fieldAndValue.getValue() instanceof Collection<?>)
-									try
-									{
-										fieldAndValue.setValue(objectToBytes((Serializable) fieldAndValue.getValue()));
-									}
-									catch (IOException e) // doesn't suppose to happen
-									{
-										e.printStackTrace();
-									}
-							})
-							.collect(toMap(Map.Entry::getKey, Map.Entry::getValue)))
+			connection.insertInto(table(entityType),
+					fieldsAndValues.entrySet().stream()
+							.map(fieldAndValue -> field(fieldAndValue.getKey()))
+							.collect(toList()))
+					.values(fieldsAndValues.entrySet().stream()
+							.map(fieldAndValue -> SerializeIfNeededTo(fieldAndValue.getValue()))
+							.collect(toList()))
 					.execute();
+//			connection.insertInto(getTable(connection, entityType))
+//					.set(fieldsAndValues.entrySet().stream()
+//							.peek(fieldAndValue ->
+//							{
+//								if (fieldAndValue.getValue() instanceof Collection<?>)
+//									try
+//									{
+//										fieldAndValue.setValue(objectToBytes((Serializable) fieldAndValue.getValue()));
+//									}
+//									catch (IOException e) // Doesn't suppose to happen
+//									{
+//										e.printStackTrace();
+//									}
+//							})
+//							.collect(toMap(Map.Entry::getKey, Map.Entry::getValue)))
+//					.execute();
 		}
+	}
+
+	private static Object SerializeIfNeededTo(Object value)
+	{
+		if (value instanceof Set<?> && value instanceof Serializable)
+			try
+			{
+				return objectToBytes((Serializable) value);
+			}
+			catch (IOException e) // Doesn't suppose to happen
+			{
+				e.printStackTrace();
+				return null;
+			}
+		return value;
 	}
 
 	@Override
 	protected Stream<Entity> makeEntities(FieldsMapping fieldsMapping, String entityType)
 	{
-		try (DSLContext connection = using(fieldsMapping.getConnStr()))
+		try (DSLContext connection = getConnection(fieldsMapping))
 		{
 			return getEntityFromResult(entityType,
 					connection.selectFrom(entityType)
@@ -210,10 +236,10 @@ public class SQLAdapter extends DatabaseAdapter
 	@Override
 	public void executeDelete(FieldsMapping fieldsMapping, Map<String, Collection<UUID>> typesAndUuids, Query.Friend friend)
 	{
-		try (DSLContext connection = using(fieldsMapping.getConnStr()))
+		try (DSLContext connection = getConnection(fieldsMapping))
 		{
 			typesAndUuids.forEach((entityType, uuids) ->
-					connection.deleteFrom(getTable(connection, entityType))
+					connection.deleteFrom(table(entityType))
 							.where(field("uuid").in(uuids))
 							.execute());
 		}
@@ -222,18 +248,28 @@ public class SQLAdapter extends DatabaseAdapter
 	@Override
 	public void executeUpdate(FieldsMapping fieldsMapping, Map<String, Pair<Collection<UUID>, Map<String, Object>>> updates, Query.Friend friend)
 	{
-		try (DSLContext connection = using(fieldsMapping.getConnStr()))
+		try (DSLContext connection = getConnection(fieldsMapping))
 		{
 			updates.forEach((entityType, uuidsAndUpdates) ->
 			{
 				if (!uuidsAndUpdates.getSecond().isEmpty())
 				{
-					connection.update(getTable(connection, entityType))
-							.set(uuidsAndUpdates.getSecond().entrySet().stream()
-									.peek(fieldAndValue -> fieldAndValue.setValue(validateAndTransformEntity(entityType, fieldAndValue.getKey(), fieldAndValue.getValue())))
-									.collect(toMap(Map.Entry::getKey, Map.Entry::getValue)))
+					connection.update(table(entityType))
+							.set(row(uuidsAndUpdates.getSecond().entrySet().stream()
+											.map(entry -> field(entry.getKey()))
+											.collect(toList())),
+									row(uuidsAndUpdates.getSecond().entrySet().stream()
+											.map(fieldAndValue -> SerializeIfNeededTo(validateAndTransformEntity(entityType, fieldAndValue.getKey(), fieldAndValue.getValue())))
+											.collect(toList())))
 							.where(field("uuid").in(uuidsAndUpdates.getFirst()))
 							.execute();
+
+//					connection.update(getTable(connection, entityType))
+//							.set(uuidsAndUpdates.getSecond().entrySet().stream()
+//									.peek(fieldAndValue -> fieldAndValue.setValue(validateAndTransformEntity(entityType, fieldAndValue.getKey(), fieldAndValue.getValue()))) // need to be fixed with SerializeIfNeededTo
+//									.collect(toMap(Map.Entry::getKey, Map.Entry::getValue)))
+//							.where(field("uuid").in(uuidsAndUpdates.getFirst()))
+//							.execute();
 				}
 			});
 		}
