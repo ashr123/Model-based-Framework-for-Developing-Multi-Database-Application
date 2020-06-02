@@ -8,7 +8,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -45,13 +44,12 @@ public abstract class DatabaseTest
 							"age", 26L,
 							"phoneNumber", "0504563434",
 							"emailAddress", "davidz@post.bgu.ac.il")),
-
 			arnon = Entity.of("Professor",
 					Map.of("name", "Arnon",
-					"age", 50L,
-					"phoneNumber", "0501234567",
-					"emailAddress", "strum@post.bgu.ac.il",
-					"students", List.of(roy, yossi)));
+							"age", 50L,
+							"phoneNumber", "0501234567",
+							"emailAddress", "strum@post.bgu.ac.il",
+							"students", Set.of(roy, yossi)));
 
 	@AfterEach
 	abstract protected void tearDown();

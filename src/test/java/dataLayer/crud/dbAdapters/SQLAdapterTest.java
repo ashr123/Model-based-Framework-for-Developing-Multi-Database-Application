@@ -44,9 +44,10 @@ class SQLAdapterTest extends DatabaseTest
 					.execute();
 			connection.createTableIfNotExists("Professor")
 					.column("uuid", SQLDataType.UUID)
+					.column("name", SQLDataType.VARCHAR)
 					.column("age", SQLDataType.BIGINT)
 					.column("emailAddress", SQLDataType.VARCHAR)
-					.column("students", SQLDataType.OTHER)
+					.column("students", SQLDataType.BLOB)
 					.constraint(primaryKey("uuid"))
 					.execute();
 		}

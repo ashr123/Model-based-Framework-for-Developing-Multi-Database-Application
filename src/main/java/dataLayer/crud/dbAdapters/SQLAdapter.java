@@ -6,9 +6,10 @@ import dataLayer.crud.Query;
 import dataLayer.crud.filters.*;
 import dataLayer.readers.configReader.Conf;
 import dataLayer.readers.configReader.FieldsMapping;
-import org.jooq.*;
 import org.jooq.Record;
+import org.jooq.*;
 
+import java.io.*;
 import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
@@ -30,6 +31,24 @@ public class SQLAdapter extends DatabaseAdapter
 	{
 	}
 
+	private static byte[] objectToBytes(final Serializable obj) throws IOException
+	{
+		try (final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		     final ObjectOutputStream oos = new ObjectOutputStream(bos))
+		{
+			oos.writeObject(obj);
+			return bos.toByteArray();
+		}
+	}
+
+	private static Object bytesToObject(final byte[] data) throws ClassNotFoundException, IOException
+	{
+		try (final ObjectInputStream objectInputStream = new ObjectInputStream(new ByteArrayInputStream(data)))
+		{
+			return objectInputStream.readObject();
+		}
+	}
+
 	/**
 	 * Traverse on the result given by the relevant relational DB driver and transforms each result to {@link Map} of fields and values to be inserted into {@link Entity}
 	 *
@@ -46,6 +65,20 @@ public class SQLAdapter extends DatabaseAdapter
 				{
 					final Map<String, Object> fieldsAndValues = record.intoMap().entrySet().stream()
 							.filter(fieldAndValue -> fieldAndValue.getValue() != null)
+							.peek(fieldAndValue ->
+							{
+								if (fieldAndValue.getValue() instanceof byte[])
+								{
+									try
+									{
+										fieldAndValue.setValue(bytesToObject((byte[]) fieldAndValue.getValue()));
+									}
+									catch (ClassNotFoundException | IOException e) // doesn't suppose to happen
+									{
+										e.printStackTrace();
+									}
+								}
+							})
 							.collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
 					final Object uuid = fieldsAndValues.remove("uuid");
 					return uuid instanceof String ?
@@ -60,7 +93,20 @@ public class SQLAdapter extends DatabaseAdapter
 		try (DSLContext connection = using(fieldsMapping.getConnStr()))
 		{
 			connection.insertInto(getTable(connection, entityType))
-					.set(fieldsAndValues)
+					.set(fieldsAndValues.entrySet().stream()
+							.peek(fieldAndValue ->
+							{
+								if (fieldAndValue.getValue() instanceof Collection<?>)
+									try
+									{
+										fieldAndValue.setValue(objectToBytes((Serializable) fieldAndValue.getValue()));
+									}
+									catch (IOException e) // doesn't suppose to happen
+									{
+										e.printStackTrace();
+									}
+							})
+							.collect(toMap(Map.Entry::getKey, Map.Entry::getValue)))
 					.execute();
 		}
 	}

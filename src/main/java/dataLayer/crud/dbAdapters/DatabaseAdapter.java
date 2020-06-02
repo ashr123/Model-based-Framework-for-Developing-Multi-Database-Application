@@ -11,6 +11,7 @@ import dataLayer.readers.schemaReader.Schema;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.*;
@@ -106,9 +107,9 @@ public abstract class DatabaseAdapter
 		switch (propertyType.getType())
 		{
 			case ARRAY -> {
-				if (!(value instanceof Collection<?>))
+				if (!(value instanceof Set<?>))
 					throw new MissingFormatArgumentException("Value of " + entityType + '.' + field + " isn't a list");
-				value = checkArrayWithSchema((Collection<?>) value, propertyType.getItems());
+				value = checkArrayWithSchema((Set<?>) value, propertyType.getItems());
 			}
 			case OBJECT -> {
 				if (!(value instanceof Entity))
@@ -139,7 +140,7 @@ public abstract class DatabaseAdapter
 	 * @return the collection itself for array of primitive types, collection of {@link UUID}s for array of objects (i.e {@link Entity}s)
 	 * @implNote in case of {@link dataLayer.readers.schemaReader.PropertyType#ARRAY}, it can behave as recursive type, see commented source code
 	 */
-	private static Collection<?> checkArrayWithSchema(Collection<?> collection, EntityPropertyData itemsType)
+	private static Collection<?> checkArrayWithSchema(Set<?> collection, EntityPropertyData itemsType)
 	{
 		final String errorMsg = "Element in list isn't a";
 		return switch (itemsType.getType())
@@ -161,7 +162,7 @@ public abstract class DatabaseAdapter
 								//noinspection StringConcatenationMissingWhitespace
 								throw new MissingFormatArgumentException(errorMsg + "n Entity");
 							})
-							.collect(toList());
+							.collect(toSet());
 					case NUMBER -> {
 						if (collection.stream().allMatch(Number.class::isInstance))
 							yield collection;

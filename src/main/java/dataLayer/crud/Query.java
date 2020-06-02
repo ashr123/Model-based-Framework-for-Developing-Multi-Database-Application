@@ -306,7 +306,7 @@ public class Query
 							if (fieldAndValue.getValue() instanceof String || fieldAndValue.getValue() instanceof UUID)
 								entity.getFieldsValues().put(fieldAndValue.getKey(), completeEntitiesReferences(Set.of(getEntitiesFromReference(entity, fieldAndValue.getKey(), fieldAndValue.getValue()))).stream()
 										.findFirst().get());
-							else
+							else // Collection<?>
 								entity.getFieldsValues().put(fieldAndValue.getKey(), completeEntitiesReferences(((Collection<?>) fieldAndValue.getValue()).stream()
 										.map(entityReference -> getEntitiesFromReference(entity, fieldAndValue.getKey(), entityReference))
 										.collect(toSet())));

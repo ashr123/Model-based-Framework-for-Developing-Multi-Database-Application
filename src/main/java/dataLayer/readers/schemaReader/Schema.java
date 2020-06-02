@@ -60,7 +60,8 @@ public class Schema
 
 	public static String getPropertyJavaType(String className, String propertyName)
 	{
-		return schema.classes.get(className).getPropertyData(propertyName).getJavaType();
+		final EntityPropertyData propertyData = schema.classes.get(className).getPropertyData(propertyName);
+		return propertyData.getType().equals(PropertyType.ARRAY) ?  propertyData.getItems().getJavaType(): propertyData.getJavaType();
 	}
 
 	static void containsClass(String className)

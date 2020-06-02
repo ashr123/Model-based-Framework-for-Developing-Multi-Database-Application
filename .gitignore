@@ -183,4 +183,5 @@ buildNumber.properties
 .flattened-pom.xml
 
 # End of https://www.gitignore.io/api/java,macos,windows,intellij
-/.idea/misc.xml
+.idea/misc.xml
+resourcesTemp/sqliteDBs
