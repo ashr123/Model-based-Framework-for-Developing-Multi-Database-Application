@@ -24,11 +24,11 @@
 	},
 	"sql1": {
 	  "type": "sql",
-	  "connStr": "jdbc:sqlite:resourcesTemp/sqliteDBs/test.db"
+	  "connStr": "jdbc:sqlite:src/test/resources/sqliteDBs/test.db"
 	},
 	"sql2": {
 	  "type": "sql",
-	  "connStr": "jdbc:sqlite:resourcesTemp/sqliteDBs/test2.db"
+	  "connStr": "jdbc:sqlite:src/test/resources/sqliteDBs/test2.db"
 	}
   },
   "entities": {

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dataLayer.crud.Entity;
+import dataLayer.crud.dbAdapters.DatabaseAdapter;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,6 +37,8 @@ public class Conf
 	private final Map<String, Map<String, String>> entities = null;
 	private Map<FieldsMapping, String> fieldsMappingsReverse;
 
+	protected static final Friend FRIEND = new Friend();
+
 	private Conf()
 	{
 	}
@@ -47,13 +50,13 @@ public class Conf
 
 	public static boolean isEntityComplete(Entity entityFrag)
 	{
-		return configuration.entities.get(entityFrag.getEntityType()).keySet().equals(entityFrag.getFieldsValues().keySet());
+		return configuration.entities.get(entityFrag.getEntityType()).keySet().equals(entityFrag.getFieldsValues(FRIEND).keySet());
 	}
 
 	public static Set<FieldsMapping> getMissingFields(Entity entityFrag)
 	{
 		return configuration.entities.get(entityFrag.getEntityType()).keySet().stream()
-				.filter(field -> !entityFrag.getFieldsValues().containsKey(field))
+				.filter(field -> !entityFrag.getFieldsValues(FRIEND).containsKey(field))
 				.map(field -> getFieldsMappingFromEntityField(entityFrag.getEntityType(), field))
 				.collect(toSet());
 	}
@@ -123,5 +126,12 @@ public class Conf
 		       "fieldsMappings=" + fieldsMappings +
 		       ", entities=" + entities +
 		       '}';
+	}
+
+	public static final class Friend
+	{
+		private Friend()
+		{
+		}
 	}
 }

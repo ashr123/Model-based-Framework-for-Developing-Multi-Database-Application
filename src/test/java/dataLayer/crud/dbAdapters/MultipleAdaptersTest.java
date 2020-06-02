@@ -26,11 +26,11 @@ class MultipleAdaptersTest extends DatabaseTest
 	@Override
 	protected void setUp() throws IOException
 	{
-		Reader.loadConfAndSchema("resourcesTemp/configurations/configurationMultipleDatabases.json",
-				"resourcesTemp/schemas/Schema.json");
+		Reader.loadConfAndSchema("src/test/resources/configurations/configurationMultipleDatabases.json",
+				"src/test/resources/schemas/Schema.json");
 
 		//Setting all the SQL databases.
-		try (DSLContext connection = using("jdbc:sqlite:resourcesTemp/sqliteDBs/test.db"))
+		try (DSLContext connection = using("jdbc:sqlite:src/test/resources/sqliteDBs/test.db"))
 		{
 			connection.createTableIfNotExists("City")
 					.column("uuid", SQLDataType.UUID)
@@ -52,14 +52,9 @@ class MultipleAdaptersTest extends DatabaseTest
 					.column("phoneNumber", SQLDataType.VARCHAR)
 					.constraint(primaryKey("uuid"))
 					.execute();
-			connection.createTableIfNotExists("Student")
-					.column("uuid", SQLDataType.UUID)
-					.column("age", SQLDataType.BIGINT)
-					.constraint(primaryKey("uuid"))
-					.execute();
 		}
 
-		try (DSLContext connection = using("jdbc:sqlite:resourcesTemp/sqliteDBs/test2.db"))
+		try (DSLContext connection = using("jdbc:sqlite:src/test/resources/sqliteDBs/test2.db"))
 		{
 			connection.createTableIfNotExists("City")
 					.column("uuid", SQLDataType.UUID)
@@ -79,11 +74,6 @@ class MultipleAdaptersTest extends DatabaseTest
 			connection.createTableIfNotExists("Professor")
 					.column("uuid", SQLDataType.UUID)
 					.column("emailAddress", SQLDataType.VARCHAR)
-					.constraint(primaryKey("uuid"))
-					.execute();
-			connection.createTableIfNotExists("Student")
-					.column("uuid", SQLDataType.UUID)
-					.column("phoneNumber", SQLDataType.VARCHAR)
 					.constraint(primaryKey("uuid"))
 					.execute();
 		}
@@ -128,22 +118,20 @@ class MultipleAdaptersTest extends DatabaseTest
 		}
 
 		//Dropping all SQL databases.
-		try (DSLContext connection = using("jdbc:sqlite:resourcesTemp/sqliteDBs/test.db"))
+		try (DSLContext connection = using("jdbc:sqlite:src/test/resources/sqliteDBs/test.db"))
 		{
-			connection.dropTable("City").execute();
-			connection.dropTable("Address").execute();
-			connection.dropTable("Person").execute();
-			connection.dropTable("Professor").execute();
-			connection.dropTable("Student").execute();
+			connection.dropTableIfExists("City").execute();
+			connection.dropTableIfExists("Address").execute();
+			connection.dropTableIfExists("Person").execute();
+			connection.dropTableIfExists("Professor").execute();
 		}
 
-		try (DSLContext connection = using("jdbc:sqlite:resourcesTemp/sqliteDBs/test2.db"))
+		try (DSLContext connection = using("jdbc:sqlite:src/test/resources/sqliteDBs/test2.db"))
 		{
-			connection.dropTable("City").execute();
-			connection.dropTable("Address").execute();
-			connection.dropTable("Person").execute();
-			connection.dropTable("Professor").execute();
-			connection.dropTable("Student").execute();
+			connection.dropTableIfExists("City").execute();
+			connection.dropTableIfExists("Address").execute();
+			connection.dropTableIfExists("Person").execute();
+			connection.dropTableIfExists("Professor").execute();
 		}
 	}
 }

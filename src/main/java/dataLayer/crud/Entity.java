@@ -1,6 +1,7 @@
 package dataLayer.crud;
 
 import dataLayer.crud.dbAdapters.DatabaseAdapter;
+import dataLayer.readers.configReader.Conf;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -76,9 +77,19 @@ public class Entity
 		return fieldsValues.get(field);
 	}
 
-	public Map<String, Object> getFieldsValues()
+	Map<String, Object> getFieldsValues()
 	{
 		return fieldsValues;
+	}
+
+	public Map<String, Object> getFieldsValues(DatabaseAdapter.Friend friend)
+	{
+		return getFieldsValues();
+	}
+
+	public Map<String, Object> getFieldsValues(Conf.Friend friend)
+	{
+		return getFieldsValues();
 	}
 
 	public Entity merge(Entity entity)

@@ -87,30 +87,6 @@ public class SQLAdapter extends DatabaseAdapter
 				});
 	}
 
-	@Override
-	protected void executeCreate(FieldsMapping fieldsMapping, String entityType, Map<String, Object> fieldsAndValues)
-	{
-		try (DSLContext connection = using(fieldsMapping.getConnStr()))
-		{
-			connection.insertInto(getTable(connection, entityType))
-					.set(fieldsAndValues.entrySet().stream()
-							.peek(fieldAndValue ->
-							{
-								if (fieldAndValue.getValue() instanceof Collection<?>)
-									try
-									{
-										fieldAndValue.setValue(objectToBytes((Serializable) fieldAndValue.getValue()));
-									}
-									catch (IOException e) // doesn't suppose to happen
-									{
-										e.printStackTrace();
-									}
-							})
-							.collect(toMap(Map.Entry::getKey, Map.Entry::getValue)))
-					.execute();
-		}
-	}
-
 	private static Table<?> getTable(DSLContext connection, String entityType)
 	{
 		return connection.meta().getTables(entityType).get(0);
@@ -136,17 +112,6 @@ public class SQLAdapter extends DatabaseAdapter
 		}
 	}
 
-	@Override
-	protected Stream<Entity> makeEntities(FieldsMapping fieldsMapping, String entityType)
-	{
-		try (DSLContext connection = using(fieldsMapping.getConnStr()))
-		{
-			return getEntityFromResult(entityType,
-					connection.selectFrom(entityType)
-							.fetch());
-		}
-	}
-
 	/**
 	 * General adapter for all {@link SimpleFilter}s
 	 *
@@ -163,6 +128,41 @@ public class SQLAdapter extends DatabaseAdapter
 	private static Stream<Entity> queryRead(SimpleFilter simpleFilter, Condition filter)
 	{
 		return makeEntities(Conf.getFieldsMappingFromEntityField(simpleFilter.getEntityType(), simpleFilter.getFieldName()), simpleFilter.getEntityType(), filter);
+	}
+
+	@Override
+	protected void executeCreate(FieldsMapping fieldsMapping, String entityType, Map<String, Object> fieldsAndValues)
+	{
+		try (DSLContext connection = using(fieldsMapping.getConnStr()))
+		{
+			connection.insertInto(getTable(connection, entityType))
+					.set(fieldsAndValues.entrySet().stream()
+							.peek(fieldAndValue ->
+							{
+								if (fieldAndValue.getValue() instanceof Collection<?>)
+									try
+									{
+										fieldAndValue.setValue(objectToBytes((Serializable) fieldAndValue.getValue()));
+									}
+									catch (IOException e) // doesn't suppose to happen
+									{
+										e.printStackTrace();
+									}
+							})
+							.collect(toMap(Map.Entry::getKey, Map.Entry::getValue)))
+					.execute();
+		}
+	}
+
+	@Override
+	protected Stream<Entity> makeEntities(FieldsMapping fieldsMapping, String entityType)
+	{
+		try (DSLContext connection = using(fieldsMapping.getConnStr()))
+		{
+			return getEntityFromResult(entityType,
+					connection.selectFrom(entityType)
+							.fetch());
+		}
 	}
 
 	@Override

@@ -11,10 +11,10 @@ import dataLayer.readers.schemaReader.Schema;
 
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 
 /**
  * Base class for all database-adapters, contains methods that are not specific and relevant for all database-adapters
@@ -76,7 +76,7 @@ public abstract class DatabaseAdapter
 	private static void create(Entity entity)
 	{
 		final Map<FieldsMapping, Map<String, Object>> locationDocumentMap = new HashMap<>();
-		entity.getFieldsValues()
+		entity.getFieldsValues(FRIEND)
 				.forEach((field, value) ->
 				{
 					final FieldsMapping fieldMappingFromEntityFields = Conf.getFieldsMappingFromEntityField(entity.getEntityType(), field);

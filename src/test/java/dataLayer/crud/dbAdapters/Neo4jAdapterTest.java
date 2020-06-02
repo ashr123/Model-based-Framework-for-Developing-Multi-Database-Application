@@ -20,8 +20,8 @@ class Neo4jAdapterTest extends DatabaseTest
 	@Override
 	protected void setUp() throws IOException
 	{
-		Reader.loadConfAndSchema("resourcesTemp/configurations/configurationNeo4j.json",
-				"resourcesTemp/schemas/Schema.json");
+		Reader.loadConfAndSchema("src/test/resources/configurations/configurationNeo4j.json",
+				"src/test/resources/schemas/Schema.json");
 		create(roy, yossi, karin, arnon);
 	}
 
