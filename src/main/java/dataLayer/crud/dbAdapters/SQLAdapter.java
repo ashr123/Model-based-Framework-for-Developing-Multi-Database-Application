@@ -82,9 +82,9 @@ public class SQLAdapter extends DatabaseAdapter
 							})
 							.collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
 					final Object uuid = fieldsAndValues.remove("uuid");
-					return uuid instanceof String ?
-					       new Entity((String) uuid, entityType, fieldsAndValues, FRIEND) :
-					       new Entity((UUID) uuid, entityType, fieldsAndValues, FRIEND);
+					return /*uuid instanceof String ?*/
+					       new Entity((String) uuid, entityType, fieldsAndValues, FRIEND)/* :
+					       new Entity((UUID) uuid, entityType, fieldsAndValues, FRIEND)*/;
 				});
 	}
 
