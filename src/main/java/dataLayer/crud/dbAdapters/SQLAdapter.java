@@ -71,7 +71,6 @@ public class SQLAdapter extends DatabaseAdapter
 							.peek(fieldAndValue ->
 							{
 								if (fieldAndValue.getValue() instanceof byte[])
-								{
 									try
 									{
 										fieldAndValue.setValue(bytesToObject((byte[]) fieldAndValue.getValue()));
@@ -80,7 +79,6 @@ public class SQLAdapter extends DatabaseAdapter
 									{
 										e.printStackTrace();
 									}
-								}
 							})
 							.collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
 					final Object uuid = fieldsAndValues.remove("uuid");
