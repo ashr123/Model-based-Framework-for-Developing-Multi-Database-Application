@@ -143,7 +143,7 @@ public class SQLAdapter extends DatabaseAdapter
 							.map(fieldAndValue -> field(fieldAndValue.getKey()))
 							.collect(toList()))
 					.values(fieldsAndValues.entrySet().stream()
-							.map(fieldAndValue -> SerializeIfNeededTo(fieldAndValue.getValue()))
+							.map(fieldAndValue -> serializeIfNeeded(fieldAndValue.getValue()))
 							.collect(toList()))
 					.execute();
 //			connection.insertInto(getTable(connection, entityType))
@@ -165,7 +165,7 @@ public class SQLAdapter extends DatabaseAdapter
 		}
 	}
 
-	private static Object SerializeIfNeededTo(Object value)
+	private static Object serializeIfNeeded(Object value)
 	{
 		if (value instanceof Set<?> && value instanceof Serializable)
 			try
@@ -259,7 +259,7 @@ public class SQLAdapter extends DatabaseAdapter
 											.map(entry -> field(entry.getKey()))
 											.collect(toList())),
 									row(uuidsAndUpdates.getSecond().entrySet().stream()
-											.map(fieldAndValue -> SerializeIfNeededTo(validateAndTransformEntity(entityType, fieldAndValue.getKey(), fieldAndValue.getValue())))
+											.map(fieldAndValue -> serializeIfNeeded(validateAndTransformEntity(entityType, fieldAndValue.getKey(), fieldAndValue.getValue())))
 											.collect(toList())))
 							.where(field("uuid").in(uuidsAndUpdates.getFirst()))
 							.execute();
