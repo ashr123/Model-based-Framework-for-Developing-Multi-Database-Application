@@ -110,7 +110,9 @@ public class SQLAdapter extends DatabaseAdapter
 
 	private static DSLContext getConnection(FieldsMapping fieldsMapping)
 	{
-		return fieldsMapping.getUsername() == null ? using(fieldsMapping.getConnStr()) : using(fieldsMapping.getConnStr(), fieldsMapping.getUsername(), fieldsMapping.getPassword());
+		return fieldsMapping.getUsername() == null ?
+		       using(fieldsMapping.getConnStr()) :
+		       using(fieldsMapping.getConnStr(), fieldsMapping.getUsername(), fieldsMapping.getPassword());
 	}
 
 	/**
