@@ -3,10 +3,14 @@ package dataLayer.crud.dbAdapters;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import dataLayer.crud.Entity;
 import dataLayer.readers.Reader;
+import dataLayer.readers.configReader.Conf;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.neo4j.test.assertion.Assert;
 
+import javax.management.monitor.StringMonitor;
+import java.awt.image.ImageProducer;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
@@ -26,6 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public abstract class DatabaseTest
 {
+	protected static final Friend FRIEND = new Friend();
 
 	protected final Entity
 			roy = Entity.of("Person",
@@ -351,12 +356,154 @@ public abstract class DatabaseTest
 	@Test
 	void testJoin() throws JsonProcessingException
 	{
-		//TODO complete testJoin
-		System.out.println(Reader.toJson(join(gt("Person", "age", 18), entity -> true)));
+		Entity city = Entity.of("City", Map.of("name", "Beersheba",
+				"mayor", "Rubik Danilovich"));
+		Entity address = Entity.of("Address",
+				Map.of("street", "Rager 4",
+						"state", "Israel",
+						"city", city,
+						"postalCode", "432212",
+						"country", "Israel"));
+		create(city, address);
+
+		Map<String, Object> expectedAddress = Map.of("Address.street","Rager 4",
+				"Address.state","Israel",
+				"Address.city",city,
+				"Address.postalCode", "432212",
+				"Address.country","Israel");
+
+		Map<String, Object> expectedCity = Map.of("City.name", "Beersheba",
+				"City.mayor", "Rubik Danilovich");
+
+		Map<String, Object> expected1 = new java.util.HashMap<>(Map.of("Person.name", "Roy",
+				"Person.age", 27L,
+				"Person.phoneNumber", "0546815181",
+				"Person.emailAddress", "ashr@post.bgu.ac.il"));
+
+		expected1.putAll(expectedCity);
+		Entity expectedEntity1 = new Entity(null,null,expected1);
+
+		Map<String, Object> expected2 = new java.util.HashMap<>(Map.of("Person.name","Yossi",
+				"Person.age",22L,
+				"Person.phoneNumber","0587158627",
+				"Person.emailAddress","yossilan@post.bgu.ac.il"));
+
+		expected2.putAll(expectedCity);
+		Entity expectedEntity2 = new Entity(null, null,expected2);
+
+		Map<String, Object> expected3 = new java.util.HashMap<>(Map.of("Person.name","Karin",
+				"Person.age",26L ,
+				"Person.phoneNumber","0504563434",
+				"Person.emailAddress","davidz@post.bgu.ac.il"));
+
+		expected3.putAll(expectedCity);
+		Entity expectedEntity3 = new Entity(null, null,expected3);
+
+		Set<Entity> expectedResult = Set.of(expectedEntity1, expectedEntity2, expectedEntity3);
+		Set<Entity> joinResult = join(or(gte("Person", "age", 18), eq("City", "name", "Beersheba")), entity -> true);
+
+		assertEquals(expectedResult, joinResult, "Should return a set of joined Person entity and City entity together, preform join between people over 18 and cities named Beersheba");
+
+		expected1.putAll(expectedAddress);
+		expectedEntity1 = new Entity(null,null,expected1);
+
+		expected2.putAll(expectedAddress);
+		expectedEntity2 = new Entity(null, null,expected2);
+
+		expected3.putAll(expectedAddress);
+		expectedEntity3 = new Entity(null, null,expected3);
+
+		expectedResult = Set.of(expectedEntity1, expectedEntity2, expectedEntity3);
+		joinResult = join(or(gte("Person", "age", 12), eq("Address", "state", "Israel"), eq("City", "name", "Beersheba")), entity -> true);
+
+		assertEquals(expectedResult, joinResult, "Should return a set of joined Person entity, Address entity and City entity together, preform join between people over 18, Addresses in Israel and cities named Beersheba");
+
+		delete(address, city);
 	}
+
 
 	@Test
 	void testComplexJoin() throws JsonProcessingException
+	{
+		Entity city = Entity.of("City", Map.of("name", "Newark",
+				"mayor", "Mayor West."));
+
+		Entity city2 = Entity.of("City", Map.of("name", "Unknown",
+				"mayor", "Some magical wizard"));
+
+		Entity address1 = Entity.of("Address",
+				Map.of("street", "Sesame street",
+						"state", "New York",
+						"city", city,
+						"postalCode", "757212",
+						"country", "United States"));
+
+		Entity address2 = Entity.of("Address",
+				Map.of("street", "Hobbit Street",
+						"state", "Mordor",
+						"city", city2,
+						"postalCode", "123212",
+						"country", "Australia"));
+
+		Entity address3 = Entity.of("Address",
+				Map.of("street", "Hobbit Street",
+						"state", "Mordor",
+						"city", city2,
+						"postalCode", "432212",
+						"country", "Australia"));
+
+		Entity nestedEntity1 = Entity.of("Person",
+				Map.of("name", "Elmo",
+						"age", 12L,
+						"phoneNumber", "0521212121",
+						"emailAddress", "Elmo@post.bgu.ac.il",
+						"livesAt", address1));
+
+		Entity nestedEntity2 = Entity.of("Person",
+				Map.of("name", "Bilbo",
+						"age", 16L,
+						"phoneNumber", "0531313131",
+						"emailAddress", "Baggins@post.bgu.ac.il",
+						"livesAt", address2));
+
+		Entity nestedEntity3 = Entity.of("Person",
+				Map.of("name", "Frodo",
+						"age", 18L,
+						"phoneNumber", "0541414141",
+						"emailAddress", "Frodo@post.bgu.ac.il",
+						"livesAt", address3));
+
+		Map<String, Object> expectedCity = Map.of("City.name", "Unknown",
+				"City.mayor", "Some magical wizard");
+
+		Map<String, Object> expected1 = new java.util.HashMap<>(Map.of("Person.name", "Bilbo",
+				"Person.age", 16L,
+				"Person.phoneNumber", "0531313131",
+				"Person.emailAddress", "Baggins@post.bgu.ac.il",
+				"Person.livesAt", address2));
+
+		expected1.putAll(expectedCity);
+		Entity expectedEntity1 = new Entity(null,null,expected1);
+
+		Map<String, Object> expected2 = new java.util.HashMap<>(Map.of("Person.name","Frodo",
+				"Person.age",18L,
+				"Person.phoneNumber","0541414141",
+				"Person.emailAddress","Frodo@post.bgu.ac.il",
+				"Person.livesAt", address3));
+
+		expected2.putAll(expectedCity);
+		Entity expectedEntity2 = new Entity(null, null,expected2);
+
+		create(city, city2, address1, address2, address3, nestedEntity1, nestedEntity2, nestedEntity3);
+
+		Set<Entity> expectedResult = Set.of(expectedEntity1, expectedEntity2);
+		Set<Entity> joinResult = join(or(lte("Person", "age", 18), eq("City", "name", "Unknown")),
+				entity -> ((Entity) ((Entity) entity.get("Person.livesAt")).get("city")).get("name").equals(entity.get("City.name")));
+
+		assertEquals(expectedResult, joinResult, "Should return a set of joined Person entity and City entity together, preform natural join between people under 19 who live in city named Unknown");
+	}
+	@Test
+	void temp() throws JsonProcessingException
 	{
 		//TODO complete testComplexJoin
 		Entity city = Entity.of("City", Map.of("name", "Newark",
@@ -396,8 +543,24 @@ public abstract class DatabaseTest
 										"city", city2,
 										"postalCode", "432212",
 										"country", "Australia"))));
+		Entity address = Entity.of("Address",
+				Map.of("street", "Hobbit Street",
+						"state", "Mordor",
+						"city", city2,
+						"postalCode", "432212",
+						"country", "Australia"));
+		create(city2, address);
 		create(nestedEntity1, nestedEntity2, nestedEntity3);
-		System.out.println(Reader.toJson(join(or(gte("Person", "age", 12), eq("City", "name", "Unknown")), entity -> true)));
-//		delete(nestedEntity1, nestedEntity2, nestedEntity3);
+		//TODO: There's an issue with join, there are Person entites such as: Roy, Yossi and Karin that do not have Address (Which is okay) but it causes a NullPointerException.
+		Set<Entity> joinResult = join(or(gt("Person", "age", 12), eq("City", "name", "Unknown")),
+				entity -> ((Entity) ((Entity) entity.get("Person.livesAt")).get("city")).get("name").equals(entity.get("City.name")));
+		System.out.println(Reader.toJson(joinResult));
+	}
+
+	public static final class Friend
+	{
+		private Friend()
+		{
+		}
 	}
 }

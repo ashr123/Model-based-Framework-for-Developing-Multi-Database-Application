@@ -40,7 +40,8 @@ public class Entity
 		this(uuid, entityType, fieldsValues);
 	}
 
-	Entity(UUID uuid, String entityType, Map<String, Object> fieldsValues)
+	//TODO: delete public and fix permission issue;
+	public Entity(UUID uuid, String entityType, Map<String, Object> fieldsValues)
 	{
 		this.uuid = uuid;
 		this.entityType = entityType;
