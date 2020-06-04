@@ -2,6 +2,7 @@ package dataLayer.crud.dbAdapters;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import dataLayer.crud.Entity;
+import dataLayer.crud.entityHelper;
 import dataLayer.readers.Reader;
 import dataLayer.readers.configReader.Conf;
 import org.junit.jupiter.api.AfterEach;
@@ -381,7 +382,7 @@ public abstract class DatabaseTest
 				"Person.emailAddress", "ashr@post.bgu.ac.il"));
 
 		expected1.putAll(expectedCity);
-		Entity expectedEntity1 = new Entity(null,null,expected1);
+		Entity expectedEntity1 = entityHelper.entityBuilder(null, null, expected1);
 
 		Map<String, Object> expected2 = new java.util.HashMap<>(Map.of("Person.name","Yossi",
 				"Person.age",22L,
@@ -389,7 +390,7 @@ public abstract class DatabaseTest
 				"Person.emailAddress","yossilan@post.bgu.ac.il"));
 
 		expected2.putAll(expectedCity);
-		Entity expectedEntity2 = new Entity(null, null,expected2);
+		Entity expectedEntity2 = entityHelper.entityBuilder(null, null,expected2);
 
 		Map<String, Object> expected3 = new java.util.HashMap<>(Map.of("Person.name","Karin",
 				"Person.age",26L ,
@@ -397,7 +398,7 @@ public abstract class DatabaseTest
 				"Person.emailAddress","davidz@post.bgu.ac.il"));
 
 		expected3.putAll(expectedCity);
-		Entity expectedEntity3 = new Entity(null, null,expected3);
+		Entity expectedEntity3 = entityHelper.entityBuilder(null, null,expected3);
 
 		Set<Entity> expectedResult = Set.of(expectedEntity1, expectedEntity2, expectedEntity3);
 		Set<Entity> joinResult = join(or(gte("Person", "age", 18), eq("City", "name", "Beersheba")), entity -> true);
@@ -405,13 +406,13 @@ public abstract class DatabaseTest
 		assertEquals(expectedResult, joinResult, "Should return a set of joined Person entity and City entity together, preform join between people over 18 and cities named Beersheba");
 
 		expected1.putAll(expectedAddress);
-		expectedEntity1 = new Entity(null,null,expected1);
+		expectedEntity1 = entityHelper.entityBuilder(null,null,expected1);
 
 		expected2.putAll(expectedAddress);
-		expectedEntity2 = new Entity(null, null,expected2);
+		expectedEntity2 = entityHelper.entityBuilder(null, null,expected2);
 
 		expected3.putAll(expectedAddress);
-		expectedEntity3 = new Entity(null, null,expected3);
+		expectedEntity3 = entityHelper.entityBuilder(null, null,expected3);
 
 		expectedResult = Set.of(expectedEntity1, expectedEntity2, expectedEntity3);
 		joinResult = join(or(gte("Person", "age", 12), eq("Address", "state", "Israel"), eq("City", "name", "Beersheba")), entity -> true);
@@ -483,7 +484,7 @@ public abstract class DatabaseTest
 				"Person.livesAt", address2));
 
 		expected1.putAll(expectedCity);
-		Entity expectedEntity1 = new Entity(null,null,expected1);
+		Entity expectedEntity1 = entityHelper.entityBuilder(null,null,expected1);
 
 		Map<String, Object> expected2 = new java.util.HashMap<>(Map.of("Person.name","Frodo",
 				"Person.age",18L,
@@ -492,7 +493,7 @@ public abstract class DatabaseTest
 				"Person.livesAt", address3));
 
 		expected2.putAll(expectedCity);
-		Entity expectedEntity2 = new Entity(null, null,expected2);
+		Entity expectedEntity2 = entityHelper.entityBuilder(null, null,expected2);
 
 		create(city, city2, address1, address2, address3, nestedEntity1, nestedEntity2, nestedEntity3);
 
@@ -551,7 +552,7 @@ public abstract class DatabaseTest
 						"country", "Australia"));
 		create(city2, address);
 		create(nestedEntity1, nestedEntity2, nestedEntity3);
-		//TODO: There's an issue with join, there are Person entites such as: Roy, Yossi and Karin that do not have Address (Which is okay) but it causes a NullPointerException.
+		//TODO: There's an issue with join, there are Person entities such as: Roy, Yossi and Karin that do not have Address (Which is okay) but it causes a NullPointerException.
 		Set<Entity> joinResult = join(or(gt("Person", "age", 12), eq("City", "name", "Unknown")),
 				entity -> ((Entity) ((Entity) entity.get("Person.livesAt")).get("city")).get("name").equals(entity.get("City.name")));
 		System.out.println(Reader.toJson(joinResult));

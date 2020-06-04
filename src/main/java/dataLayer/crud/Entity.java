@@ -41,7 +41,7 @@ public class Entity
 	}
 
 	//TODO: delete public and fix permission issue;
-	public Entity(UUID uuid, String entityType, Map<String, Object> fieldsValues)
+	Entity(UUID uuid, String entityType, Map<String, Object> fieldsValues)
 	{
 		this.uuid = uuid;
 		this.entityType = entityType;
