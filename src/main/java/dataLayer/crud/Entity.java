@@ -51,6 +51,7 @@ public class Entity
 
 	/**
 	 * Adds a new field to this entity
+	 *
 	 * @param field the about field name
 	 * @param value its value
 	 */
@@ -60,8 +61,7 @@ public class Entity
 	}
 
 	/**
-	 *
-	 * @param entityType the type of the about entity
+	 * @param entityType   the type of the about entity
 	 * @param fieldsValues its values
 	 * @return a new entity of type {@code entityType} and the specified fields and values
 	 */
@@ -81,7 +81,6 @@ public class Entity
 //	}
 
 	/**
-	 *
 	 * @return this entity's {@link UUID}
 	 */
 	public UUID getUuid()
@@ -90,7 +89,6 @@ public class Entity
 	}
 
 	/**
-	 *
 	 * @return this entity's type
 	 */
 	public String getEntityType()
@@ -99,7 +97,6 @@ public class Entity
 	}
 
 	/**
-	 *
 	 * @param field the name of the requested field
 	 * @return this entity's field's value, if the field doesn't exist, it returns {@code null}
 	 * @see Map#get(Object)
