@@ -238,6 +238,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 	@Override
 	public void executeDelete(FieldsMapping fieldsMapping, Map<String, Collection<UUID>> typesAndUuids, Query.Friend friend)
 	{
+		Objects.requireNonNull(friend);
 		IDBAccess idbAccess = getDBAccess(fieldsMapping);
 		try
 		{

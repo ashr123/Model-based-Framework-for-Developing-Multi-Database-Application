@@ -67,9 +67,11 @@ public abstract class DatabaseAdapter
 	 * Groups the entity's fields by their {@link FieldsMapping} and then dispatches the insertion of those fields to the relevant DBs
 	 *
 	 * @param entity the entity to be created
+	 * @param friend acts as a pool for entities
 	 */
 	public static void create(Entity entity, Query.Friend friend)
 	{
+		Objects.requireNonNull(friend);
 		final Map<FieldsMapping, Map<String, Object>> locationDocumentMap = new HashMap<>();
 		entity.getFieldsValues(FRIEND)
 				.forEach((field, value) ->
@@ -92,6 +94,7 @@ public abstract class DatabaseAdapter
 	 * @param entityType the type of an entity, can considered as the "class" of the entity
 	 * @param field      the entity's field name
 	 * @param value      the field's value
+	 * @param friend     acts as a pool for entities
 	 * @return for primitive field types-the value itself, for an object (i.e inner {@link Entity})-its {@link UUID}
 	 */
 	protected static Object validateAndTransformEntity(String entityType, String field, Object value, Query.Friend friend)
@@ -132,6 +135,7 @@ public abstract class DatabaseAdapter
 	 *
 	 * @param set       the set to be checked
 	 * @param itemsType the desired type for each cell of the set
+	 * @param friend    acts as a pool for entities
 	 * @return the set itself for array of primitive types, set of {@link UUID}s for array of objects (i.e {@link Entity}s)
 	 * @implNote in case of {@link dataLayer.readers.schemaReader.PropertyType#ARRAY}, it can behave as recursive type, see commented source code
 	 */
@@ -145,7 +149,7 @@ public abstract class DatabaseAdapter
 //							.map(element ->
 //							{
 //								if (element instanceof Set<?>)
-//									return checkArrayWithSchema((Set<?>) element, itemsType.getItems());
+//									return checkArrayWithSchema((Set<?>) element, itemsType.getItems(), friend);
 //								throw new MissingFormatArgumentException(errorMsg + " set");
 //							})
 //							.collect(Collectors.toSet());
@@ -181,6 +185,7 @@ public abstract class DatabaseAdapter
 	 *
 	 * @param entity         the about object
 	 * @param entityJavaType desired object's type
+	 * @param friend         acts as a pool for entities
 	 * @return {@link UUID} of the about entity
 	 */
 	private static UUID checkObjectWithSchema(Entity entity, String entityJavaType, Query.Friend friend)

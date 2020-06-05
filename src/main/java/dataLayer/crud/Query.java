@@ -245,6 +245,14 @@ public class Query
 				.forEach(fieldsMappingAndUpdate -> fieldsMappingAndUpdate.getKey().getType().getDatabaseAdapter().executeUpdate(fieldsMappingAndUpdate.getKey(), fieldsMappingAndUpdate.getValue(), friend));
 	}
 
+	/**
+	 * For each entity given, this method finds out if there are more fields that didn't extract (i.e the entity is partial entity) and extract them. For example:<br>
+	 * From<pre>Entity(UUID("4a464b0f-5e83-40c4-ba89-cfbf435bd0b9"), "Person", {"emailAddress": "Elmo@post.bgu.ac.il", "livesAt": UUID("751c7dc1-dbe2-42d6-8d7a-6efecdec1bff")})</pre>
+	 * to<pre>Entity(UUID("4a464b0f-5e83-40c4-ba89-cfbf435bd0b9"), "Person", {"name": "Elmo", "age": 12, "phoneNumber": "0521212121", "emailAddress": "Elmo@post.bgu.ac.il", "livesAt": UUID("751c7dc1-dbe2-42d6-8d7a-6efecdec1bff")})</pre>
+	 *
+	 * @param entities the (maybe) partial entities
+	 * @return the entities with their missing fields
+	 */
 	public static Set<Entity> makeEntitiesWhole(Set<Entity> entities)
 	{
 		return makeEntitiesWhole(entities.stream(), new Friend(entities));
@@ -252,8 +260,8 @@ public class Query
 
 	/**
 	 * For each entity given, this method finds out if there are more fields that didn't extract (i.e the entity is partial entity) and extract them. For example:<br>
-	 * From<pre>{@code Entity(UUID("4a464b0f-5e83-40c4-ba89-cfbf435bd0b9"), "Person", {"emailAddress": "Elmo@post.bgu.ac.il", "livesAt": UUID("751c7dc1-dbe2-42d6-8d7a-6efecdec1bff")})}</pre>
-	 * to<pre>{@code Entity(UUID("4a464b0f-5e83-40c4-ba89-cfbf435bd0b9"), "Person", {"name": "Elmo", "age": 12, "phoneNumber": "0521212121", "emailAddress": "Elmo@post.bgu.ac.il", "livesAt": UUID("751c7dc1-dbe2-42d6-8d7a-6efecdec1bff")})}</pre>
+	 * From<pre>Entity(UUID("4a464b0f-5e83-40c4-ba89-cfbf435bd0b9"), "Person", {"emailAddress": "Elmo@post.bgu.ac.il", "livesAt": UUID("751c7dc1-dbe2-42d6-8d7a-6efecdec1bff")})</pre>
+	 * to<pre>Entity(UUID("4a464b0f-5e83-40c4-ba89-cfbf435bd0b9"), "Person", {"name": "Elmo", "age": 12, "phoneNumber": "0521212121", "emailAddress": "Elmo@post.bgu.ac.il", "livesAt": UUID("751c7dc1-dbe2-42d6-8d7a-6efecdec1bff")})</pre>
 	 *
 	 * @param entities the (maybe) partial entities
 	 * @param friend   acts as a pool for entities
@@ -285,6 +293,14 @@ public class Query
 		return wholeEntities;
 	}
 
+	/**
+	 * For each given entity, any field that suppose to hold "sub"-entity, this method replaces the field UUID with the appropriate entity (i.e make this entity "deep"). For example:<br>
+	 * from<pre>Entity(UUID("4a464b0f-5e83-40c4-ba89-cfbf435bd0b9"), "Person", {"name": "Elmo", "age": 12, "phoneNumber": "0521212121", "emailAddress": "Elmo@post.bgu.ac.il", "livesAt": UUID("751c7dc1-dbe2-42d6-8d7a-6efecdec1bff")})</pre>
+	 * to<pre>Entity(UUID("4a464b0f-5e83-40c4-ba89-cfbf435bd0b9"), "Person", {"name": "Elmo", "age": 12, "phoneNumber": "0521212121", "emailAddress": "Elmo@post.bgu.ac.il", "livesAt": Entity(UUID("751c7dc1-dbe2-42d6-8d7a-6efecdec1bff"), "Address", {"street": "Sesame street", "state": "New York", "city": Entity(UUID("308aee6b-b225-41e8-9aec-83206035afdd"), "City", {"name": "newark", "mayor": "Mayor West"})})})</pre>
+	 *
+	 * @param entities the (maybe) shallow entities to be made deep
+	 * @return the transformed entities
+	 */
 	public static Set<Entity> completeEntitiesReferences(Set<Entity> entities)
 	{
 		return completeEntitiesReferences(entities, new Friend(entities));
@@ -292,13 +308,14 @@ public class Query
 
 	/**
 	 * For each given entity, any field that suppose to hold "sub"-entity, this method replaces the field UUID with the appropriate entity (i.e make this entity "deep"). For example:<br>
-	 * from<pre>{@code Entity(UUID("4a464b0f-5e83-40c4-ba89-cfbf435bd0b9"), "Person", {"name": "Elmo", "age": 12, "phoneNumber": "0521212121", "emailAddress": "Elmo@post.bgu.ac.il", "livesAt": UUID("751c7dc1-dbe2-42d6-8d7a-6efecdec1bff")})}</pre>
-	 * to<pre>{@code Entity(UUID("4a464b0f-5e83-40c4-ba89-cfbf435bd0b9"), "Person", {"name": "Elmo", "age": 12, "phoneNumber": "0521212121", "emailAddress": "Elmo@post.bgu.ac.il", "livesAt": Entity(UUID("751c7dc1-dbe2-42d6-8d7a-6efecdec1bff"), "Address", {"street": "Sesame street", "state": "New York", "city": Entity(UUID("308aee6b-b225-41e8-9aec-83206035afdd"), "City", {"name": "newark", "mayor": "Mayor West"})})})}</pre>
+	 * from<pre>Entity(UUID("4a464b0f-5e83-40c4-ba89-cfbf435bd0b9"), "Person", {"name": "Elmo", "age": 12, "phoneNumber": "0521212121", "emailAddress": "Elmo@post.bgu.ac.il", "livesAt": UUID("751c7dc1-dbe2-42d6-8d7a-6efecdec1bff")})</pre>
+	 * to<pre>Entity(UUID("4a464b0f-5e83-40c4-ba89-cfbf435bd0b9"), "Person", {"name": "Elmo", "age": 12, "phoneNumber": "0521212121", "emailAddress": "Elmo@post.bgu.ac.il", "livesAt": Entity(UUID("751c7dc1-dbe2-42d6-8d7a-6efecdec1bff"), "Address", {"street": "Sesame street", "state": "New York", "city": Entity(UUID("308aee6b-b225-41e8-9aec-83206035afdd"), "City", {"name": "newark", "mayor": "Mayor West"})})})</pre>
 	 *
 	 * @param entities the (maybe) shallow entities to be made deep
+	 * @param friend   acts as a pool for entities
 	 * @return the transformed entities
 	 */
-	public static Set<Entity> completeEntitiesReferences(Set<Entity> entities, Friend friend)
+	static Set<Entity> completeEntitiesReferences(Set<Entity> entities, Friend friend)
 	{
 		entities.forEach(entity ->
 				entity.getFieldsValues().entrySet().stream()
@@ -312,7 +329,7 @@ public class Query
 							if (fieldAndValue.getValue() instanceof String || fieldAndValue.getValue() instanceof UUID)
 								entity.getFieldsValues().replace(fieldAndValue.getKey(), getEntitiesFromReference(entity, fieldAndValue.getKey(), fieldAndValue.getValue(), friend));
 							else // Collection<?>
-								entity.getFieldsValues().replace(fieldAndValue.getKey(),((Collection<?>) fieldAndValue.getValue()).stream()
+								entity.getFieldsValues().replace(fieldAndValue.getKey(), ((Collection<?>) fieldAndValue.getValue()).stream()
 										.map(entityReference -> getEntitiesFromReference(entity, fieldAndValue.getKey(), entityReference, friend))
 										.collect(toSet()));
 						}));

@@ -25,9 +25,10 @@ public class Entity
 		this(entity.uuid, entity.entityType, new HashMap<>(entity.fieldsValues));
 	}
 
-	public Entity(String uuid, String entityType, Map<String, Object> fieldsValues, @SuppressWarnings("unused") DatabaseAdapter.Friend friend)
+	public Entity(String uuid, String entityType, Map<String, Object> fieldsValues, DatabaseAdapter.Friend friend)
 	{
 		this(uuid, entityType, fieldsValues);
+		Objects.requireNonNull(friend);
 	}
 
 	Entity(String uuid, String entityType, Map<String, Object> fieldsValues)
@@ -35,9 +36,10 @@ public class Entity
 		this(UUID.fromString(uuid), entityType, fieldsValues);
 	}
 
-	public Entity(UUID uuid, String entityType, Map<String, Object> fieldsValues, @SuppressWarnings("unused") DatabaseAdapter.Friend friend)
+	public Entity(UUID uuid, String entityType, Map<String, Object> fieldsValues, DatabaseAdapter.Friend friend)
 	{
 		this(uuid, entityType, fieldsValues);
+		Objects.requireNonNull(friend);
 	}
 
 	Entity(UUID uuid, String entityType, Map<String, Object> fieldsValues)
@@ -47,11 +49,22 @@ public class Entity
 		this.fieldsValues = Objects.requireNonNull(fieldsValues);
 	}
 
+	/**
+	 * Adds a new field to this entity
+	 * @param field the about field name
+	 * @param value its value
+	 */
 	public void putField(String field, Object value)
 	{
 		fieldsValues.put(field, value);
 	}
 
+	/**
+	 *
+	 * @param entityType the type of the about entity
+	 * @param fieldsValues its values
+	 * @return a new entity of type {@code entityType} and the specified fields and values
+	 */
 	public static Entity of(String entityType, Map<String, Object> fieldsValues)
 	{
 //		fieldsValues.entrySet().stream()
@@ -67,16 +80,30 @@ public class Entity
 //		return this;
 //	}
 
+	/**
+	 *
+	 * @return this entity's {@link UUID}
+	 */
 	public UUID getUuid()
 	{
 		return uuid;
 	}
 
+	/**
+	 *
+	 * @return this entity's type
+	 */
 	public String getEntityType()
 	{
 		return entityType;
 	}
 
+	/**
+	 *
+	 * @param field the name of the requested field
+	 * @return this entity's field's value, if the field doesn't exist, it returns {@code null}
+	 * @see Map#get(Object)
+	 */
 	public Object get(String field)
 	{
 		return fieldsValues.get(field);
@@ -89,11 +116,13 @@ public class Entity
 
 	public Map<String, Object> getFieldsValues(DatabaseAdapter.Friend friend)
 	{
+		Objects.requireNonNull(friend);
 		return getFieldsValues();
 	}
 
 	public Map<String, Object> getFieldsValues(Conf.Friend friend)
 	{
+		Objects.requireNonNull(friend);
 		return getFieldsValues();
 	}
 

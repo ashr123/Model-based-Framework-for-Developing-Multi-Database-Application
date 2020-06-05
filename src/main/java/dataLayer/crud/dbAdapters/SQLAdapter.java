@@ -12,10 +12,7 @@ import org.jooq.Record;
 import org.jooq.Result;
 
 import java.io.*;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
@@ -240,6 +237,7 @@ public class SQLAdapter extends DatabaseAdapter
 	@Override
 	public void executeDelete(FieldsMapping fieldsMapping, Map<String, Collection<UUID>> typesAndUuids, Query.Friend friend)
 	{
+		Objects.requireNonNull(friend);
 		try (DSLContext connection = getConnection(fieldsMapping))
 		{
 			typesAndUuids.forEach((entityType, uuids) ->
