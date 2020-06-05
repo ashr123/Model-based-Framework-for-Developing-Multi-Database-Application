@@ -22,7 +22,7 @@ class MySQLTest extends DatabaseTest
 				"src/test/resources/schemas/Schema.json");
 
 		//Setting all the SQL databases.
-		try (DSLContext connection = using("jdbc:mysql://localhost:3306/test", "root", ""))
+		try (DSLContext connection = using("jdbc:mysql://localhost:3306/test", "root", "mysql123"))
 		{
 			connection.createTableIfNotExists("City")
 					.column("uuid", SQLDataType.UUID.nullable(false))
@@ -52,7 +52,7 @@ class MySQLTest extends DatabaseTest
 					.execute();
 		}
 
-		try (DSLContext connection = using("jdbc:mysql://localhost:3306/test2", "root", ""))
+		try (DSLContext connection = using("jdbc:mysql://localhost:3306/test2", "root", "mysql123"))
 		{
 			connection.createTableIfNotExists("City")
 					.column("uuid", SQLDataType.UUID.nullable(false))
@@ -89,7 +89,7 @@ class MySQLTest extends DatabaseTest
 	protected void tearDown()
 	{
 		//Dropping all SQL databases.
-		try (DSLContext connection = using("jdbc:mysql://localhost:3306/test", "root", ""))
+		try (DSLContext connection = using("jdbc:mysql://localhost:3306/test", "root", "mysql123"))
 		{
 			connection.dropTableIfExists("City").execute();
 			connection.dropTableIfExists("Address").execute();
@@ -97,7 +97,7 @@ class MySQLTest extends DatabaseTest
 			connection.dropTableIfExists("Professor").execute();
 		}
 
-		try (DSLContext connection = using("jdbc:mysql://localhost:3306/test2", "root", ""))
+		try (DSLContext connection = using("jdbc:mysql://localhost:3306/test2", "root", "mysql123"))
 		{
 			connection.dropTableIfExists("City").execute();
 			connection.dropTableIfExists("Address").execute();

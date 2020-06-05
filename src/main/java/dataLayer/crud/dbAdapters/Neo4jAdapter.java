@@ -75,7 +75,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 	 * @param jcNode       a jcypher node.
 	 * @return Stream of entities that fit the given filter.
 	 */
-	private static Stream<Entity> query(SimpleFilter simpleFilter, JcQuery jcQuery, JcNode jcNode)
+	private static Stream<Entity> query(SimpleFilter simpleFilter, JcQuery jcQuery, JcNode jcNode, Query.Friend friend)
 	{
 		FieldsMapping fieldsMapping = Conf.getFieldsMappingFromEntityField(simpleFilter.getEntityType(), simpleFilter.getFieldName());
 		IDBAccess idbAccess = getDBAccess(fieldsMapping);
@@ -83,7 +83,8 @@ public class Neo4jAdapter extends DatabaseAdapter
 		{
 			return idbAccess.execute(jcQuery)
 					.resultOf(jcNode).stream()
-					.map(Neo4jAdapter::getEntityFromNode);
+					.map(Neo4jAdapter::getEntityFromNode)
+					.peek(friend::addEntity);
 		}
 		finally
 		{
@@ -92,7 +93,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 	}
 
 	@Override
-	protected Stream<Entity> makeEntities(FieldsMapping fieldsMapping, String entityType)
+	protected Stream<Entity> makeEntities(FieldsMapping fieldsMapping, String entityType, Query.Friend friend)
 	{
 		IDBAccess idbAccess = getDBAccess(fieldsMapping);
 		JcNode jcNode = new JcNode(entityType);
@@ -105,7 +106,8 @@ public class Neo4jAdapter extends DatabaseAdapter
 		{
 			return idbAccess.execute(jcQuery)
 					.resultOf(jcNode).stream()
-					.map(Neo4jAdapter::getEntityFromNode);
+					.map(Neo4jAdapter::getEntityFromNode)
+					.peek(friend::addEntity);
 		}
 		finally
 		{
@@ -141,7 +143,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 				WHERE.valueOf(jcNode.property(eq.getFieldName())).EQUALS(eq.getValue()),
 				RETURN.value(jcNode)
 		});
-		return query(eq, jcQuery, jcNode);
+		return query(eq, jcQuery, jcNode, friend);
 	}
 
 	@Override
@@ -154,7 +156,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 				WHERE.valueOf(jcNode.property(ne.getFieldName())).NOT_EQUALS(ne.getValue()),
 				RETURN.value(jcNode)
 		});
-		return query(ne, jcQuery, jcNode);
+		return query(ne, jcQuery, jcNode, friend);
 	}
 
 	@Override
@@ -167,7 +169,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 				WHERE.valueOf(jcNode.property(gt.getFieldName())).GT(gt.getValue()),
 				RETURN.value(jcNode)
 		});
-		return query(gt, jcQuery, jcNode);
+		return query(gt, jcQuery, jcNode, friend);
 	}
 
 	@Override
@@ -180,7 +182,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 				WHERE.valueOf(jcNode.property(lt.getFieldName())).LT(lt.getValue()),
 				RETURN.value(jcNode)
 		});
-		return query(lt, jcQuery, jcNode);
+		return query(lt, jcQuery, jcNode, friend);
 	}
 
 	@Override
@@ -193,7 +195,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 				WHERE.valueOf(jcNode.property(gte.getFieldName())).GTE(gte.getValue()),
 				RETURN.value(jcNode)
 		});
-		return query(gte, jcQuery, jcNode);
+		return query(gte, jcQuery, jcNode, friend);
 	}
 
 	@Override
@@ -206,11 +208,11 @@ public class Neo4jAdapter extends DatabaseAdapter
 				WHERE.valueOf(jcNode.property(lte.getFieldName())).LTE(lte.getValue()),
 				RETURN.value(jcNode)
 		});
-		return query(lte, jcQuery, jcNode);
+		return query(lte, jcQuery, jcNode, friend);
 	}
 
 	@Override
-	protected Stream<Entity> executeRead(FieldsMapping fieldsMapping, UUID uuid, String entityType)
+	public Stream<Entity> executeRead(FieldsMapping fieldsMapping, UUID uuid, String entityType, Query.Friend friend)
 	{
 		IDBAccess idbAccess = getDBAccess(fieldsMapping);
 		JcNode jcNode = new JcNode(entityType);
@@ -224,7 +226,8 @@ public class Neo4jAdapter extends DatabaseAdapter
 		{
 			return idbAccess.execute(jcQuery)
 					.resultOf(jcNode).stream()
-					.map(Neo4jAdapter::getEntityFromNode);
+					.map(Neo4jAdapter::getEntityFromNode)
+					.peek(friend::addEntity);
 		}
 		finally
 		{
@@ -273,7 +276,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 					clauses.add(WHERE.valueOf(jcNode.property("uuid")).IN_list(uuidsAndUpdates.getFirst()));
 					uuidsAndUpdates.getSecond()
 							.forEach((field, value) ->
-									clauses.add(DO.SET(jcNode.property(field)).to(validateAndTransformEntity(entityType, field, value))));
+									clauses.add(DO.SET(jcNode.property(field)).to(validateAndTransformEntity(entityType, field, value, friend))));
 					jcQuery.setClauses(clauses.toArray(IClause[]::new));
 					idbAccess.execute(jcQuery);
 				}

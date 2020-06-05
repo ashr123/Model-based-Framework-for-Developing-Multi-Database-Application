@@ -54,11 +54,12 @@ public class MongoDBAdapter extends DatabaseAdapter
 	 *
 	 * @param entityType the type of the created entities
 	 * @param result     the result given by MongoDB driver
+	 * @param friend     {@link Entity} pool
 	 * @return {@link Stream} of {@link Entity}s
 	 * @see MongoDBAdapter#makeEntities(FieldsMapping, String)
-	 * @see MongoDBAdapter#makeEntities(FieldsMapping, String, Bson)
+	 * @see MongoDBAdapter#makeEntities(FieldsMapping, String, Bson, Query.Friend)
 	 */
-	private static Stream<Entity> getFieldsAndValues(String entityType, FindIterable<Document> result)
+	private static Stream<Entity> getFieldsAndValues(String entityType, FindIterable<Document> result, Query.Friend friend)
 	{
 		return result.into(new LinkedList<>()).stream()
 				.map(document ->
@@ -67,7 +68,8 @@ public class MongoDBAdapter extends DatabaseAdapter
 							.filter(entry -> !entry.getKey().equals("_id"))
 							.collect(toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> b));
 					return new Entity((UUID) fieldsMap.remove("uuid"), entityType, fieldsMap, FRIEND);
-				});
+				})
+				.peek(friend::addEntity);
 	}
 
 	/**
@@ -76,16 +78,17 @@ public class MongoDBAdapter extends DatabaseAdapter
 	 * @param fieldsMapping gives the necessary details about the connection such as {@link FieldsMapping#connStr} and {@link FieldsMapping#location}
 	 * @param entityType    is practically {@link Entity#entityType}
 	 * @param filter        upon which MongoDB returns the relevant results
+	 * @param friend        {@link Entity} pool
 	 * @return flat, partial entities according to the given parameters
-	 * @see MongoDBAdapter#queryRead(SimpleFilter, Bson)
+	 * @see MongoDBAdapter#queryRead(SimpleFilter, Bson, Query.Friend)
 	 */
-	private static Stream<Entity> makeEntities(FieldsMapping fieldsMapping, String entityType, Bson filter)
+	private static Stream<Entity> makeEntities(FieldsMapping fieldsMapping, String entityType, Bson filter, Query.Friend friend)
 	{
 		try (MongoClient mongoClient = createMongoClient(fieldsMapping.getConnStr()))
 		{
 			return getFieldsAndValues(entityType, mongoClient.getDatabase(fieldsMapping.getLocation())
 					.getCollection(entityType)
-					.find(filter));
+					.find(filter), friend);
 		}
 	}
 
@@ -102,19 +105,19 @@ public class MongoDBAdapter extends DatabaseAdapter
 	 * @see MongoDBAdapter#executeRead(Ne, Query.Friend)
 	 * @see MongoDBAdapter#executeRead(Lte, Query.Friend)
 	 */
-	private static Stream<Entity> queryRead(SimpleFilter simpleFilter, Bson filter)
+	private static Stream<Entity> queryRead(SimpleFilter simpleFilter, Bson filter, Query.Friend friend)
 	{
-		return makeEntities(Conf.getFieldsMappingFromEntityField(simpleFilter.getEntityType(), simpleFilter.getFieldName()), simpleFilter.getEntityType(), filter);
+		return makeEntities(Conf.getFieldsMappingFromEntityField(simpleFilter.getEntityType(), simpleFilter.getFieldName()), simpleFilter.getEntityType(), filter, friend);
 	}
 
 	@Override
-	protected Stream<Entity> makeEntities(FieldsMapping fieldsMapping, String entityType)
+	protected Stream<Entity> makeEntities(FieldsMapping fieldsMapping, String entityType, Query.Friend friend)
 	{
 		try (MongoClient mongoClient = createMongoClient(fieldsMapping.getConnStr()))
 		{
 			return getFieldsAndValues(entityType, mongoClient.getDatabase(fieldsMapping.getLocation())
 					.getCollection(entityType)
-					.find());
+					.find(), friend);
 		}
 	}
 
@@ -132,43 +135,43 @@ public class MongoDBAdapter extends DatabaseAdapter
 	@Override
 	public Stream<Entity> executeRead(Eq eq, Query.Friend friend)
 	{
-		return queryRead(eq, eq(eq.getFieldName(), eq.getValue()));
+		return queryRead(eq, eq(eq.getFieldName(), eq.getValue()), friend);
 	}
 
 	@Override
 	public Stream<Entity> executeRead(Ne ne, Query.Friend friend)
 	{
-		return queryRead(ne, ne(ne.getFieldName(), ne.getValue()));
+		return queryRead(ne, ne(ne.getFieldName(), ne.getValue()), friend);
 	}
 
 	@Override
 	public Stream<Entity> executeRead(Gt gt, Query.Friend friend)
 	{
-		return queryRead(gt, gt(gt.getFieldName(), gt.getValue()));
+		return queryRead(gt, gt(gt.getFieldName(), gt.getValue()), friend);
 	}
 
 	@Override
 	public Stream<Entity> executeRead(Lt lt, Query.Friend friend)
 	{
-		return queryRead(lt, lt(lt.getFieldName(), lt.getValue()));
+		return queryRead(lt, lt(lt.getFieldName(), lt.getValue()), friend);
 	}
 
 	@Override
 	public Stream<Entity> executeRead(Gte gte, Query.Friend friend)
 	{
-		return queryRead(gte, gte(gte.getFieldName(), gte.getValue()));
+		return queryRead(gte, gte(gte.getFieldName(), gte.getValue()), friend);
 	}
 
 	@Override
 	public Stream<Entity> executeRead(Lte lte, Query.Friend friend)
 	{
-		return queryRead(lte, lte(lte.getFieldName(), lte.getValue()));
+		return queryRead(lte, lte(lte.getFieldName(), lte.getValue()), friend);
 	}
 
 	@Override
-	protected Stream<Entity> executeRead(FieldsMapping fieldsMapping, UUID uuid, String entityType)
+	public Stream<Entity> executeRead(FieldsMapping fieldsMapping, UUID uuid, String entityType, Query.Friend friend)
 	{
-		return makeEntities(fieldsMapping, entityType, eq("uuid", uuid));
+		return makeEntities(fieldsMapping, entityType, eq("uuid", uuid), friend);
 	}
 
 	@Override
@@ -198,7 +201,7 @@ public class MongoDBAdapter extends DatabaseAdapter
 					database.getCollection(entityType)
 							.updateMany(in("uuid", uuidsAndUpdates.getFirst()),
 									combine(uuidsAndUpdates.getSecond().entrySet().stream()
-											.map(fieldsAndValues -> set(fieldsAndValues.getKey(), validateAndTransformEntity(entityType, fieldsAndValues.getKey(), fieldsAndValues.getValue())))
+											.map(fieldsAndValues -> set(fieldsAndValues.getKey(), validateAndTransformEntity(entityType, fieldsAndValues.getKey(), fieldsAndValues.getValue(), friend)))
 											.collect(toList())));
 				}
 			});

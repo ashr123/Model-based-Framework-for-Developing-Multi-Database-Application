@@ -47,6 +47,11 @@ public class Entity
 		this.fieldsValues = Objects.requireNonNull(fieldsValues);
 	}
 
+	public void putField(String field, Object value)
+	{
+		fieldsValues.put(field, value);
+	}
+
 	public static Entity of(String entityType, Map<String, Object> fieldsValues)
 	{
 //		fieldsValues.entrySet().stream()

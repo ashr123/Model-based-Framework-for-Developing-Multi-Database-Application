@@ -23,7 +23,6 @@ import static java.util.stream.Collectors.*;
  */
 public class Query
 {
-	protected static final Friend FRIEND = new Friend();
 	private static final Pattern REGEX = Pattern.compile("(?i)[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
 
 	private Query()
@@ -40,13 +39,13 @@ public class Query
 	{
 		final Collection<String> classPrimaryKey = Schema.getClassPrimaryKey(entity.getEntityType());
 		if (!entity.getFieldsValues().keySet().containsAll(classPrimaryKey))
-			throw new MissingFormatArgumentException(entity + " must contain all of its primary keys.");
+			throw new MissingFormatArgumentException("Entity must contain all of its primary keys.");
 		if (classPrimaryKey.stream().anyMatch(primaryField -> entity.getFieldsValues().get(primaryField) == null))
-			throw new MissingFormatArgumentException("Primary key fields for " + entity + " must not be " + null + '.');
+			throw new MissingFormatArgumentException("Primary key fields for entity must not be " + null + '.');
 
 		return simpleRead(and(Schema.getClassPrimaryKey(entity.getEntityType()).stream()
 				.map(field -> eq(entity.getEntityType(), field, entity.get(field)))
-				.toArray(Filter[]::new)))
+				.toArray(Filter[]::new)), new Friend())
 				       .count() == 0;
 	}
 
@@ -54,7 +53,7 @@ public class Query
 	{
 		if (isNotPresentByPrimaryKey(entity))
 			return true;
-		throw new IllegalStateException(entity + " already exists in DBs.");
+		throw new IllegalStateException("entity already exists in DBs.");
 	}
 
 	/**
@@ -62,11 +61,10 @@ public class Query
 	 *
 	 * @param entities the entities to be inserted
 	 * @see Query#create(Collection)
-	 * @see Query#create(Stream)
 	 */
 	public static void create(Entity... entities)
 	{
-		create(Stream.of(entities));
+		create(List.of(entities));
 	}
 
 	/**
@@ -74,28 +72,15 @@ public class Query
 	 *
 	 * @param entities the entities to be inserted
 	 * @see Query#create(Entity...)
-	 * @see Query#create(Stream)
 	 */
 	public static void create(Collection<Entity> entities)
 	{
-		create(entities.stream());
+		final Friend friend = new Friend(entities);
+		entities.stream()
+				.filter(Query::ifExistsThrow)
+				.forEach(entity -> DatabaseAdapter.create(entity, friend));
 	}
 
-	/**
-	 * Inserts any number of entities into the appropriate DBs according to loaded configuration file
-	 *
-	 * @param entities the entities to be inserted
-	 * @see Query#create(Collection)
-	 * @see Query#create(Entity...)
-	 */
-	public static void create(Stream<Entity> entities)
-	{
-		entities.filter(Query::ifExistsThrow)
-				.forEach(entity -> DatabaseAdapter.create(entity, FRIEND));
-	}
-
-
-	//TODO: search for arrays.
 
 	/**
 	 * Extracts complete entities from the different DBs according to the given filter and configuration
@@ -103,26 +88,35 @@ public class Query
 	 * @param filter the criteria for filtering Entities
 	 * @return the Set of entities (deeply) extracted from the different DBs
 	 */
+	//TODO: search for arrays.
 	public static Set<Entity> read(Filter filter)
 	{
-		return completeEntitiesReferences(makeEntitiesWhole(simpleRead(filter)));
+		final Friend friend = new Friend();
+		return completeEntitiesReferences(makeEntitiesWhole(simpleRead(filter, friend), friend), friend);
+	}
+
+	public static Stream<Entity> simpleRead(Filter filter)
+	{
+		return simpleRead(filter, new Friend());
 	}
 
 	/**
 	 * @param filter the criteria for filtering Entities
+	 * @param friend acts as a pool for entities
 	 * @return stream of partial entities, that means that every entity might not have all it's fields
 	 * @implNote depends on the given filter and loaded configuration
+	 * @apiNote not for user usage
 	 */
-	public static Stream<Entity> simpleRead(Filter filter)
+	public static Stream<Entity> simpleRead(Filter filter, Friend friend)
 	{
 		return filter instanceof SimpleFilter /*simpleFilter*/ ?
 		       filter.executeRead(Conf.getFieldsMappingFromEntityField(((SimpleFilter) filter).getEntityType(), ((SimpleFilter) filter).getFieldName())
 				       .getType()
-				       .getDatabaseAdapter(), FRIEND) :
+				       .getDatabaseAdapter(), friend) :
 //		       filter instanceof Or ? DatabaseAdapter.executeRead((Or) filter) :
 //		       filter instanceof And ? DatabaseAdapter.executeRead((And) filter) :
 //		       DatabaseAdapter.executeRead((All) filter);
-               filter.executeRead(DBType.MONGODB.getDatabaseAdapter(), FRIEND); // Complex or All query, the adapter doesn't matter
+               filter.executeRead(DBType.MONGODB.getDatabaseAdapter(), friend); // Complex or All query, the adapter doesn't matter
 	}
 
 	/**
@@ -134,7 +128,7 @@ public class Query
 	 */
 	public static void delete(Filter filter)
 	{
-		delete(simpleRead(filter));
+		delete(simpleRead(filter, new Friend()));
 	}
 
 	/**
@@ -165,7 +159,8 @@ public class Query
 								temp.computeIfAbsent(fieldsMapping, fieldsMapping1 -> new HashMap<>())
 										.computeIfAbsent(entity.getEntityType(), entityType -> new HashSet<>())
 										.add(entity.getUuid())));
-		temp.forEach((fieldsMapping, typesAndUuids) -> fieldsMapping.getType().getDatabaseAdapter().executeDelete(fieldsMapping, typesAndUuids, FRIEND));
+		final Friend friend = new Friend();
+		temp.forEach((fieldsMapping, typesAndUuids) -> fieldsMapping.getType().getDatabaseAdapter().executeDelete(fieldsMapping, typesAndUuids, friend));
 	}
 
 	/**
@@ -175,11 +170,12 @@ public class Query
 	 * @param entitiesUpdates updated values according to entity's type
 	 * @implNote in case there are multiple entities with the same type in {@code entitiesUpdates}, only one will be chosen for each type, it is undetermined which
 	 * @see Query#update(Set, Set)
-	 * @see Query#update(Stream, Set)
+	 * @see Query#update(Stream, Set, Friend)
 	 */
 	public static void update(Filter filter, Set<Entity> entitiesUpdates)
 	{
-		update(simpleRead(filter), entitiesUpdates);
+		final Friend friend = new Friend();
+		update(simpleRead(filter, friend), entitiesUpdates, friend);
 	}
 
 	/**
@@ -189,25 +185,25 @@ public class Query
 	 * @param entitiesUpdates  updated values according to entity's type
 	 * @implNote in case there are multiple entities with the same type, only one will be chosen, it is undetermined which
 	 * @see Query#update(Filter, Set)
-	 * @see Query#update(Stream, Set)
+	 * @see Query#update(Stream, Set, Friend)
 	 */
 	public static void update(Set<Entity> entitiesToUpdate, Set<Entity> entitiesUpdates)
 	{
-		update(entitiesToUpdate.stream(), entitiesUpdates);
+		update(entitiesToUpdate.stream(), entitiesUpdates, new Friend(entitiesToUpdate));
 	}
-
-	//TODO handling removal of fields (maybe field with value "null" is enough?)
 
 	/**
 	 * Updates all given entities
 	 *
 	 * @param entitiesToUpdate the given entities to be updated
 	 * @param entitiesUpdates  updated values according to entity's type
+	 * @param friend           acts as a pool for entities
 	 * @implNote in case there are multiple entities with the same type, only one will be chosen, it is undetermined which
 	 * @see Query#update(Filter, Set)
 	 * @see Query#update(Set, Set)
 	 */
-	public static void update(Stream<Entity> entitiesToUpdate, Set<Entity> entitiesUpdates)
+	//TODO handling removal of fields (maybe field with value "null" is enough?)
+	static void update(Stream<Entity> entitiesToUpdate, Set<Entity> entitiesUpdates, Friend friend)
 	{
 		Map<FieldsMapping, Map<String, Collection<UUID>>> temp = new HashMap<>();
 		entitiesToUpdate
@@ -227,7 +223,6 @@ public class Query
 										temp.computeIfAbsent(fieldsMapping, fieldsMapping1 -> new HashMap<>())
 												.computeIfAbsent(entityToUpdate.getEntityType(), entityType -> new HashSet<>())
 												.add(entityToUpdate.getUuid())));
-
 		temp.entrySet().stream()
 				.map(fieldsMappingAndValue ->
 						Map.entry(fieldsMappingAndValue.getKey(),
@@ -247,7 +242,12 @@ public class Query
 																	.orElse(Map.of())));
 										})
 										.collect(toMap(Map.Entry::getKey, Map.Entry::getValue))))
-				.forEach(fieldsMappingAndUpdate -> fieldsMappingAndUpdate.getKey().getType().getDatabaseAdapter().executeUpdate(fieldsMappingAndUpdate.getKey(), fieldsMappingAndUpdate.getValue(), FRIEND));
+				.forEach(fieldsMappingAndUpdate -> fieldsMappingAndUpdate.getKey().getType().getDatabaseAdapter().executeUpdate(fieldsMappingAndUpdate.getKey(), fieldsMappingAndUpdate.getValue(), friend));
+	}
+
+	public static Set<Entity> makeEntitiesWhole(Set<Entity> entities)
+	{
+		return makeEntitiesWhole(entities.stream(), new Friend(entities));
 	}
 
 	/**
@@ -256,9 +256,10 @@ public class Query
 	 * to<pre>{@code Entity(UUID("4a464b0f-5e83-40c4-ba89-cfbf435bd0b9"), "Person", {"name": "Elmo", "age": 12, "phoneNumber": "0521212121", "emailAddress": "Elmo@post.bgu.ac.il", "livesAt": UUID("751c7dc1-dbe2-42d6-8d7a-6efecdec1bff")})}</pre>
 	 *
 	 * @param entities the (maybe) partial entities
+	 * @param friend   acts as a pool for entities
 	 * @return the entities with their missing fields
 	 */
-	public static Set<Entity> makeEntitiesWhole(Stream<Entity> entities)
+	static Set<Entity> makeEntitiesWhole(Stream<Entity> entities, Friend friend)
 	{
 		Set<Entity> wholeEntities = new HashSet<>();
 		entities.forEach(entityFragment ->
@@ -276,12 +277,17 @@ public class Query
 									missingFieldsMapping
 											.getType()
 											.getDatabaseAdapter()
-											.executeRead(missingFieldsMapping, entityFragment.getUuid(), entityFragment.getEntityType(), FRIEND)));
+											.executeRead(missingFieldsMapping, entityFragment.getUuid(), entityFragment.getEntityType(), friend)));
 			//noinspection OptionalGetWithoutIsPresent
 			wholeEntities.add(ref.fragments
 					.reduce(Entity::merge).get());
 		});
 		return wholeEntities;
+	}
+
+	public static Set<Entity> completeEntitiesReferences(Set<Entity> entities)
+	{
+		return completeEntitiesReferences(entities, new Friend(entities));
 	}
 
 	/**
@@ -292,7 +298,7 @@ public class Query
 	 * @param entities the (maybe) shallow entities to be made deep
 	 * @return the transformed entities
 	 */
-	public static Set<Entity> completeEntitiesReferences(Set<Entity> entities)
+	public static Set<Entity> completeEntitiesReferences(Set<Entity> entities, Friend friend)
 	{
 		entities.forEach(entity ->
 				entity.getFieldsValues().entrySet().stream()
@@ -304,12 +310,11 @@ public class Query
 						.forEach(fieldAndValue ->
 						{
 							if (fieldAndValue.getValue() instanceof String || fieldAndValue.getValue() instanceof UUID)
-								entity.getFieldsValues().put(fieldAndValue.getKey(), completeEntitiesReferences(Set.of(getEntitiesFromReference(entity, fieldAndValue.getKey(), fieldAndValue.getValue()))).stream()
-										.findFirst().get());
+								entity.getFieldsValues().replace(fieldAndValue.getKey(), getEntitiesFromReference(entity, fieldAndValue.getKey(), fieldAndValue.getValue(), friend));
 							else // Collection<?>
-								entity.getFieldsValues().put(fieldAndValue.getKey(), completeEntitiesReferences(((Collection<?>) fieldAndValue.getValue()).stream()
-										.map(entityReference -> getEntitiesFromReference(entity, fieldAndValue.getKey(), entityReference))
-										.collect(toSet())));
+								entity.getFieldsValues().replace(fieldAndValue.getKey(),((Collection<?>) fieldAndValue.getValue()).stream()
+										.map(entityReference -> getEntitiesFromReference(entity, fieldAndValue.getKey(), entityReference, friend))
+										.collect(toSet()));
 						}));
 		return entities;
 	}
@@ -321,14 +326,15 @@ public class Query
 				       .allMatch(uuid -> uuid instanceof String && REGEX.matcher((String) uuid).matches());
 	}
 
-	@SuppressWarnings("OptionalGetWithoutIsPresent")
-	private static Entity getEntitiesFromReference(Entity encapsulatingEntity, String propertyName, Object entityReference)
+	private static Entity getEntitiesFromReference(Entity encapsulatingEntity, String propertyName, Object entityReference, Friend friend)
 	{
-		final String propertyJavaType = Schema.getPropertyJavaType(encapsulatingEntity.getEntityType(), propertyName);
-		return makeEntitiesWhole(Stream.of(entityReference instanceof String ?
-		                                   new Entity((String) entityReference, propertyJavaType, new HashMap<>()) :
-		                                   new Entity((UUID) entityReference, propertyJavaType, new HashMap<>()))).stream()
-				.findFirst().get();
+		final UUID uuid = entityReference instanceof String ? UUID.fromString((String) entityReference) : (UUID) entityReference;
+
+		//noinspection OptionalGetWithoutIsPresent
+		return friend.contains(uuid) ?
+		       friend.pool.get(uuid) : // <-------------------
+		       completeEntitiesReferences(makeEntitiesWhole(Stream.of(new Entity(uuid, Schema.getPropertyJavaType(encapsulatingEntity.getEntityType(), propertyName), new HashMap<>())), friend), friend).stream()
+				       .findFirst().get();
 	}
 
 	/**
@@ -337,7 +343,7 @@ public class Query
 	 * @param filter    performs initial filtering on the DBs, determines the fields to be combined by the returned entities's type
 	 * @param predicate filters the combined entities based on related fields determined by the user
 	 * @return set of entities with no UUID, type and with the combined fields
-	 * @implNote the returned entities won't comply with any given schema, that means that those entities cannot be used with {@link Query#create(Entity...)}, {@link Query#create(Stream)} or {@link Query#create(Collection)}.
+	 * @implNote the returned entities won't comply with any given schema, that means that those entities cannot be used with {@link Query#create(Entity...)} or {@link Query#create(Collection)}.
 	 */
 	public static Set<Entity> join(Filter filter, Predicate<Entity> predicate)
 	{
@@ -374,8 +380,25 @@ public class Query
 
 	public static final class Friend
 	{
+		private final Map<UUID, Entity> pool = new HashMap<>();
+
 		private Friend()
 		{
+		}
+
+		private Friend(Collection<Entity> entities)
+		{
+			entities.forEach(this::addEntity);
+		}
+
+		public void addEntity(Entity entity)
+		{
+			pool.put(entity.getUuid(), entity);
+		}
+
+		public boolean contains(UUID uuid)
+		{
+			return pool.containsKey(uuid);
 		}
 	}
 }

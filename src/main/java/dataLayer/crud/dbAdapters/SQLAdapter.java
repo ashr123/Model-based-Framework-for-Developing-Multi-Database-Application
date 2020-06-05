@@ -57,11 +57,12 @@ public class SQLAdapter extends DatabaseAdapter
 	 *
 	 * @param entityType the type of the created entities
 	 * @param result     the result given by MongoDB driver
+	 * @param friend     {@link Entity} pool
 	 * @return {@link Stream} of {@link Entity}s
-	 * @see SQLAdapter#makeEntities(FieldsMapping, String)
-	 * @see SQLAdapter#makeEntities(FieldsMapping, String, Condition)
+	 * @see SQLAdapter#makeEntities(FieldsMapping, String, Query.Friend)
+	 * @see SQLAdapter#makeEntities(FieldsMapping, String, Condition, Query.Friend)
 	 */
-	private static Stream<Entity> getEntityFromResult(String entityType, Result<Record> result)
+	private static Stream<Entity> getEntityFromResult(String entityType, Result<Record> result, Query.Friend friend)
 	{
 		return result.stream()
 				.map(record ->
@@ -83,9 +84,10 @@ public class SQLAdapter extends DatabaseAdapter
 							.collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
 					final Object uuid = fieldsAndValues.remove("uuid");
 					return /*uuid instanceof String ?*/
-					       new Entity((String) uuid, entityType, fieldsAndValues, FRIEND)/* :
+							new Entity((String) uuid, entityType, fieldsAndValues, FRIEND)/* :
 					       new Entity((UUID) uuid, entityType, fieldsAndValues, FRIEND)*/;
-				});
+				})
+				.peek(friend::addEntity);
 	}
 
 	/**
@@ -94,17 +96,18 @@ public class SQLAdapter extends DatabaseAdapter
 	 * @param fieldsMapping gives the necessary details about the connection such as {@link FieldsMapping#connStr} and {@link FieldsMapping#location}
 	 * @param entityType    is practically {@link Entity#entityType}
 	 * @param filter        upon which MongoDB returns the relevant results
+	 * @param friend        {@link Entity} pool
 	 * @return flat, partial entities according to the given parameters
-	 * @see SQLAdapter#queryRead(SimpleFilter, Condition)
+	 * @see SQLAdapter#queryRead(SimpleFilter, Condition, Query.Friend)
 	 */
-	private static Stream<Entity> makeEntities(FieldsMapping fieldsMapping, String entityType, Condition filter)
+	private static Stream<Entity> makeEntities(FieldsMapping fieldsMapping, String entityType, Condition filter, Query.Friend friend)
 	{
 		try (DSLContext connection = getConnection(fieldsMapping))
 		{
 			return getEntityFromResult(entityType,
 					connection.selectFrom(entityType)
 							.where(filter)
-							.fetch());
+							.fetch(), friend);
 		}
 	}
 
@@ -120,6 +123,7 @@ public class SQLAdapter extends DatabaseAdapter
 	 *
 	 * @param simpleFilter which gives us the relevant {@link FieldsMapping} for the given {@link Entity#entityType} and it's field
 	 * @param filter       the filter upon MongoDB will filter its result
+	 * @param friend       {@link Entity} pool
 	 * @return flat, partial entities according to the given parameters
 	 * @see SQLAdapter#executeRead(Eq, Query.Friend)
 	 * @see SQLAdapter#executeRead(Gt, Query.Friend)
@@ -128,9 +132,9 @@ public class SQLAdapter extends DatabaseAdapter
 	 * @see SQLAdapter#executeRead(Ne, Query.Friend)
 	 * @see SQLAdapter#executeRead(Lte, Query.Friend)
 	 */
-	private static Stream<Entity> queryRead(SimpleFilter simpleFilter, Condition filter)
+	private static Stream<Entity> queryRead(SimpleFilter simpleFilter, Condition filter, Query.Friend friend)
 	{
-		return makeEntities(Conf.getFieldsMappingFromEntityField(simpleFilter.getEntityType(), simpleFilter.getFieldName()), simpleFilter.getEntityType(), filter);
+		return makeEntities(Conf.getFieldsMappingFromEntityField(simpleFilter.getEntityType(), simpleFilter.getFieldName()), simpleFilter.getEntityType(), filter, friend);
 	}
 
 	@Override
@@ -181,56 +185,56 @@ public class SQLAdapter extends DatabaseAdapter
 	}
 
 	@Override
-	protected Stream<Entity> makeEntities(FieldsMapping fieldsMapping, String entityType)
+	protected Stream<Entity> makeEntities(FieldsMapping fieldsMapping, String entityType, Query.Friend friend)
 	{
 		try (DSLContext connection = getConnection(fieldsMapping))
 		{
 			return getEntityFromResult(entityType,
 					connection.selectFrom(entityType)
-							.fetch());
+							.fetch(), friend);
 		}
 	}
 
 	@Override
 	public Stream<Entity> executeRead(Eq eq, Query.Friend friend)
 	{
-		return queryRead(eq, field(eq.getFieldName()).eq(eq.getValue()));
+		return queryRead(eq, field(eq.getFieldName()).eq(eq.getValue()), friend);
 	}
 
 	@Override
 	public Stream<Entity> executeRead(Ne ne, Query.Friend friend)
 	{
-		return queryRead(ne, field(ne.getFieldName()).ne(ne.getValue()));
+		return queryRead(ne, field(ne.getFieldName()).ne(ne.getValue()), friend);
 	}
 
 	@Override
 	public Stream<Entity> executeRead(Gt gt, Query.Friend friend)
 	{
-		return queryRead(gt, field(gt.getFieldName()).gt(gt.getValue()));
+		return queryRead(gt, field(gt.getFieldName()).gt(gt.getValue()), friend);
 	}
 
 	@Override
 	public Stream<Entity> executeRead(Lt lt, Query.Friend friend)
 	{
-		return queryRead(lt, field(lt.getFieldName()).lt(lt.getValue()));
+		return queryRead(lt, field(lt.getFieldName()).lt(lt.getValue()), friend);
 	}
 
 	@Override
 	public Stream<Entity> executeRead(Gte gte, Query.Friend friend)
 	{
-		return queryRead(gte, field(gte.getFieldName()).ge(gte.getValue()));
+		return queryRead(gte, field(gte.getFieldName()).ge(gte.getValue()), friend);
 	}
 
 	@Override
 	public Stream<Entity> executeRead(Lte lte, Query.Friend friend)
 	{
-		return queryRead(lte, field(lte.getFieldName()).le(lte.getValue()));
+		return queryRead(lte, field(lte.getFieldName()).le(lte.getValue()), friend);
 	}
 
 	@Override
-	protected Stream<Entity> executeRead(FieldsMapping fieldsMapping, UUID uuid, String entityType)
+	public Stream<Entity> executeRead(FieldsMapping fieldsMapping, UUID uuid, String entityType, Query.Friend friend)
 	{
-		return makeEntities(fieldsMapping, entityType, field("uuid", UUID.class).eq(uuid));
+		return makeEntities(fieldsMapping, entityType, field("uuid", UUID.class).eq(uuid), friend);
 	}
 
 	@Override
@@ -259,7 +263,7 @@ public class SQLAdapter extends DatabaseAdapter
 											.map(entry -> field(entry.getKey()))
 											.collect(toList())),
 									row(uuidsAndUpdates.getSecond().entrySet().stream()
-											.map(fieldAndValue -> serializeIfNeeded(validateAndTransformEntity(entityType, fieldAndValue.getKey(), fieldAndValue.getValue())))
+											.map(fieldAndValue -> serializeIfNeeded(validateAndTransformEntity(entityType, fieldAndValue.getKey(), fieldAndValue.getValue(), friend)))
 											.collect(toList())))
 							.where(field("uuid").in(uuidsAndUpdates.getFirst()))
 							.execute();
