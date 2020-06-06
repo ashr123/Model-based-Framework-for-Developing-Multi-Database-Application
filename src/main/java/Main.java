@@ -1,6 +1,5 @@
 import dataLayer.crud.Entity;
 import dataLayer.crud.Query;
-import dataLayer.crud.dbAdapters.DatabaseAdapter;
 import dataLayer.readers.Reader;
 import org.jooq.DSLContext;
 import org.jooq.impl.SQLDataType;
@@ -9,12 +8,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 import static dataLayer.crud.filters.Eq.eq;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Stream.generate;
-import static org.jooq.impl.DSL.*;
+import static org.jooq.impl.DSL.primaryKey;
+import static org.jooq.impl.DSL.using;
 
 public class Main
 {
@@ -22,6 +20,7 @@ public class Main
 	{
 		Reader.loadConfAndSchema("src/test/resources/configurations/configurationCircular.json",
 				"src/test/resources/schemas/SchemaCircular.json");
+
 		try (DSLContext connection = using("jdbc:mysql://localhost:3306/testDatabase", "root", "mysql123"))
 		{
 			connection.dropTableIfExists("City").execute();
@@ -40,7 +39,6 @@ public class Main
 					.column("livesAt", SQLDataType.UUID)
 					.constraint(primaryKey("uuid"))
 					.execute();
-
 
 			Entity city = Entity.of("City", new HashMap<>(Map.of("name", "BSH")));
 			Entity person = Entity.of("Person", new HashMap<>(Map.of("name", "Roy", "livesAt", city)));
@@ -77,12 +75,12 @@ public class Main
 //					.execute();
 //		}
 
-		System.out.println(
-				deleteFrom(table("Person"))
-						.where(field("uuid").in(
-								generate(UUID::randomUUID).parallel()
-										.limit(5)
-										.collect(toList()))
-						));
+//		System.out.println(
+//				deleteFrom(table("Person"))
+//						.where(field("uuid").in(
+//								generate(UUID::randomUUID).parallel()
+//										.limit(5)
+//										.collect(toList()))
+//						));
 	}
 }
