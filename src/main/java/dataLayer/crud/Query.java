@@ -53,7 +53,7 @@ public class Query
 	{
 		if (isNotPresentByPrimaryKey(entity))
 			return true;
-		throw new IllegalStateException("entity already exists in DBs.");
+		throw new IllegalStateException("Entity already exists in DBs.");
 	}
 
 	/**
@@ -76,6 +76,7 @@ public class Query
 	public static void create(Collection<Entity> entities)
 	{
 		final Friend friend = new Friend(entities);
+
 		entities.stream()
 				.filter(Query::ifExistsThrow)
 				.forEach(entity -> DatabaseAdapter.create(entity, friend));
@@ -95,6 +96,11 @@ public class Query
 		return completeEntitiesReferences(makeEntitiesWhole(simpleRead(filter, friend), friend), friend);
 	}
 
+	/**
+	 * @param filter the criteria for filtering Entities
+	 * @return stream of partial entities, that means that every entity might not have all it's fields
+	 * @implNote depends on the given filter and loaded configuration
+	 */
 	public static Stream<Entity> simpleRead(Filter filter)
 	{
 		return simpleRead(filter, new Friend());
@@ -105,7 +111,7 @@ public class Query
 	 * @param friend acts as a pool for entities
 	 * @return stream of partial entities, that means that every entity might not have all it's fields
 	 * @implNote depends on the given filter and loaded configuration
-	 * @apiNote not for user usage
+	 * @apiNote not for user usage, use {@link Query#simpleRead(Filter)} instead
 	 */
 	public static Stream<Entity> simpleRead(Filter filter, Friend friend)
 	{
@@ -159,7 +165,7 @@ public class Query
 								temp.computeIfAbsent(fieldsMapping, fieldsMapping1 -> new HashMap<>())
 										.computeIfAbsent(entity.getEntityType(), entityType -> new HashSet<>())
 										.add(entity.getUuid())));
-		final Friend friend = new Friend();
+		final Friend friend = new Friend(); // No need to add to the pool given entities
 		temp.forEach((fieldsMapping, typesAndUuids) -> fieldsMapping.getType().getDatabaseAdapter().executeDelete(fieldsMapping, typesAndUuids, friend));
 	}
 
@@ -345,7 +351,9 @@ public class Query
 
 	private static Entity getEntitiesFromReference(Entity encapsulatingEntity, String propertyName, Object entityReference, Friend friend)
 	{
-		final UUID uuid = entityReference instanceof String ? UUID.fromString((String) entityReference) : (UUID) entityReference;
+		final UUID uuid = entityReference instanceof String ?
+		                  UUID.fromString((String) entityReference) :
+		                  (UUID) entityReference;
 
 		//noinspection OptionalGetWithoutIsPresent
 		return friend.contains(uuid) ?

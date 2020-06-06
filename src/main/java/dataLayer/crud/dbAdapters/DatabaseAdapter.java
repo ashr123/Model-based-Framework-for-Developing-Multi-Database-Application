@@ -193,8 +193,11 @@ public abstract class DatabaseAdapter
 		if (!entity.getEntityType().equals(entityJavaType))
 			throw new MissingFormatArgumentException("javaType of value is " + entity.getEntityType() + ", expected " + entityJavaType);
 
-		if (!friend.contains(entity.getUuid()) && Query.isNotPresentByPrimaryKey(entity))
+		if (!friend.contains(entity.getUuid()) && Query.isNotPresentByPrimaryKey(entity)) //entity that is deep (that it has a "mother" entity) and didn't add already to DBs (for circular situations)
+		{
+			friend.addEntity(entity);
 			create(entity, friend);
+		}
 		return entity.getUuid();
 	}
 

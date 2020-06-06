@@ -67,18 +67,11 @@ public class Entity
 	 */
 	public static Entity of(String entityType, Map<String, Object> fieldsValues)
 	{
-//		fieldsValues.entrySet().stream()
-//				.filter(fieldAndValue -> fieldAndValue.getValue() instanceof Number && !(fieldAndValue.getValue() instanceof Long || fieldAndValue.getValue() instanceof Double))
-//				.map(fieldAndValue -> Map.entry(fieldAndValue.getKey(), ((Number) fieldAndValue.getValue()).longValue()));
+		fieldsValues.entrySet().stream()
+				.filter(fieldAndValue -> fieldAndValue.getValue() instanceof Integer)
+				.forEach(fieldAndValue -> fieldAndValue.setValue(Long.valueOf((Integer) fieldAndValue.getValue())));
 		return new Entity(UUID.randomUUID(), entityType, fieldsValues);
 	}
-
-//	public Entity append(String field, Object value)
-//	{
-//		assert fieldsValues != null;
-//		fieldsValues.put(field, value);
-//		return this;
-//	}
 
 	/**
 	 * @return this entity's {@link UUID}

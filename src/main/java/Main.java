@@ -24,6 +24,9 @@ public class Main
 				"src/test/resources/schemas/SchemaCircular.json");
 		try (DSLContext connection = using("jdbc:mysql://localhost:3306/testDatabase", "root", "mysql123"))
 		{
+			connection.dropTableIfExists("City").execute();
+			connection.dropTableIfExists("Person").execute();
+
 			connection.createTableIfNotExists("City")
 					.column("uuid", SQLDataType.UUID.nullable(false))
 					.column("name", SQLDataType.VARCHAR)
@@ -37,17 +40,20 @@ public class Main
 					.column("livesAt", SQLDataType.UUID)
 					.constraint(primaryKey("uuid"))
 					.execute();
+
+
+			Entity city = Entity.of("City", new HashMap<>(Map.of("name", "BSH")));
+			Entity person = Entity.of("Person", new HashMap<>(Map.of("name", "Roy", "livesAt", city)));
+			city.putField("mayor", person);
+
+			Query.create(city, person);
+
+			Set<Entity> entities = Query.read(eq("Person", "name", "Roy"));
+			System.out.println(entities.stream().map(entity -> entity.get("name")).collect(toList()));
+
+			connection.dropTableIfExists("City").execute();
+			connection.dropTableIfExists("Person").execute();
 		}
-
-
-		Entity city = Entity.of("City", new HashMap<>(Map.of("name", "BSH")));
-		Entity person = Entity.of("Person", new HashMap<>(Map.of("name", "Roy", "livesAt", city)));
-		city.putField("mayor", person);
-
-		Query.create(city, person);
-
-		Set<Entity> entities = Query.read(eq("Person", "name", "Roy"));
-		System.out.println(entities.stream().map(entity -> entity.get("name")).collect(toList()));
 
 //		Map<String, Object> fieldsAndValues = new HashMap<>();
 //		fieldsAndValues.put("uuid", randomUUID());

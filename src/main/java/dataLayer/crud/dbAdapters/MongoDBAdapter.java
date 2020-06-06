@@ -53,7 +53,6 @@ public class MongoDBAdapter extends DatabaseAdapter
 	 * @param result     the result given by MongoDB driver
 	 * @param friend     {@link Entity} pool
 	 * @return {@link Stream} of {@link Entity}s
-	 * @see MongoDBAdapter#makeEntities(FieldsMapping, String)
 	 * @see MongoDBAdapter#makeEntities(FieldsMapping, String, Bson, Query.Friend)
 	 */
 	private static Stream<Entity> getFieldsAndValues(String entityType, FindIterable<Document> result, Query.Friend friend)
