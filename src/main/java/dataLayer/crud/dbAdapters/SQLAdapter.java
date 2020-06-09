@@ -168,7 +168,9 @@ public class SQLAdapter extends DatabaseAdapter
 
 	private static Object serializeIfNeeded(Object value)
 	{
-		if (value instanceof Set<?> && value instanceof Serializable)
+		if (value instanceof Set<?> &&
+		    value instanceof Serializable &&
+		    ((Set<?>) value).stream().allMatch(Serializable.class::isInstance))
 			try
 			{
 				return objectToBytes((Serializable) value);

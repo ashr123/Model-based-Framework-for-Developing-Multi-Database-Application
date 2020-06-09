@@ -99,32 +99,33 @@ public abstract class DatabaseAdapter
 	 */
 	protected static Object validateAndTransformEntity(String entityType, String field, Object value, Query.Friend friend)
 	{
-		if (value == null)
-			return null;
-		final EntityPropertyData propertyType = Schema.getPropertyType(entityType, field);
-		switch (propertyType.getType())
+		if (value != null)
 		{
-			case ARRAY -> {
-				if (!(value instanceof Set<?>))
-					throw new MissingFormatArgumentException("Value of " + entityType + '.' + field + " isn't a list");
-				value = checkArrayWithSchema((Set<?>) value, propertyType.getItems(), friend);
-			}
-			case OBJECT -> {
-				if (!(value instanceof Entity))
-					throw new MissingFormatArgumentException("Value of " + entityType + '.' + field + " isn't an Entity");
-				value = checkObjectWithSchema((Entity) value, propertyType.getJavaType(), friend);
-			}
-			case NUMBER -> {
-				if (!(value instanceof Number))
-					throw new MissingFormatArgumentException("Value of " + entityType + '.' + field + " isn't a number");
-			}
-			case STRING -> {
-				if (!(value instanceof String))
-					throw new MissingFormatArgumentException("Value of " + entityType + '.' + field + " isn't a string");
-			}
-			case BOOLEAN -> {
-				if (!(value instanceof Boolean))
-					throw new MissingFormatArgumentException("Value of " + entityType + '.' + field + " isn't a boolean");
+			final EntityPropertyData propertyType = Schema.getPropertyType(entityType, field);
+			switch (propertyType.getType())
+			{
+				case ARRAY -> {
+					if (!(value instanceof Set<?>))
+						throw new MissingFormatArgumentException("Value of " + entityType + '.' + field + " isn't a Set");
+					value = checkArrayWithSchema((Set<?>) value, propertyType.getItems(), friend);
+				}
+				case OBJECT -> {
+					if (!(value instanceof Entity))
+						throw new MissingFormatArgumentException("Value of " + entityType + '.' + field + " isn't an Entity");
+					value = checkObjectWithSchema((Entity) value, propertyType.getJavaType(), friend);
+				}
+				case NUMBER -> {
+					if (!(value instanceof Number))
+						throw new MissingFormatArgumentException("Value of " + entityType + '.' + field + " isn't a number");
+				}
+				case STRING -> {
+					if (!(value instanceof String))
+						throw new MissingFormatArgumentException("Value of " + entityType + '.' + field + " isn't a string");
+				}
+				case BOOLEAN -> {
+					if (!(value instanceof Boolean))
+						throw new MissingFormatArgumentException("Value of " + entityType + '.' + field + " isn't a boolean");
+				}
 			}
 		}
 		return value;
@@ -144,7 +145,7 @@ public abstract class DatabaseAdapter
 		final String errorMsg = "Element in list isn't a";
 		return switch (itemsType.getType())
 				{
-					case ARRAY -> throw new MissingFormatArgumentException("Only 1d array is possible");
+					case ARRAY -> throw new MissingFormatArgumentException("Only 1d array (i.e Set) is possible");
 //							set.stream()
 //							.map(element ->
 //							{
