@@ -21,6 +21,8 @@ public class EntityClassData
 
 	void checkValidity()
 	{
+		if (primaryKey.isEmpty())
+			throw new InputMismatchException("Primary key must not be empty.");
 		if (!properties.keySet().containsAll(primaryKey))
 			throw new InputMismatchException("Not all fields in primary key exists in class's properties.");
 		properties.values()
