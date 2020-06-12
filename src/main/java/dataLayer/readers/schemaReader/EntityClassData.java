@@ -60,11 +60,6 @@ public class EntityClassData
 	public boolean equals(Object o)
 	{
 		return this == o || o instanceof EntityClassData && properties.equals(((EntityClassData) o).properties);
-//		if (this == o)
-//			return true;
-//		if (!(o instanceof EntityClassData))
-//			return false;
-//		return properties.equals(((EntityClassData) o).properties);
 	}
 
 	@Override

@@ -34,6 +34,7 @@ public class Query
 	 *
 	 * @param entity an entity to be checked
 	 * @return {@code true} if the entity doesn't exists in the DBs, {@code false} otherwise
+	 * @implNote doesn't support arrays!!
 	 */
 	public static boolean isNotPresentByPrimaryKey(Entity entity)
 	{
@@ -44,7 +45,7 @@ public class Query
 			throw new MissingFormatArgumentException("Primary key fields for entity must not be " + null + '.');
 
 		return simpleRead(and(Schema.getClassPrimaryKey(entity.getEntityType()).stream()
-				.map(field -> eq(entity.getEntityType(), field, entity.get(field)))
+				.map(field -> eq(entity.getEntityType(), field, entity.get(field) instanceof Entity ? ((Entity) entity.get(field)).getUuid() : entity.get(field)))
 				.toArray(Filter[]::new)), new Friend())
 				       .count() == 0;
 	}
