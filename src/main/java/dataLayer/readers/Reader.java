@@ -11,16 +11,38 @@ import java.util.InputMismatchException;
 public class Reader
 {
 	private final static ObjectMapper objectMapper = new ObjectMapper();
+	private static boolean cyclic;
 
 	private Reader()
 	{
 	}
 
-	public static void loadConfAndSchema(String confURL, String schemaURL) throws IOException
+	/**
+	 * Loads <b>non-cyclic</b> configuration and schema files from given paths.
+	 *
+	 * @param confPath   path of configuration file
+	 * @param schemaPath path of schema file
+	 * @throws IOException if a low-level I/O problem (unexpected end-of-input, network error) occurs
+	 */
+	public static void loadConfAndSchema(String confPath, String schemaPath) throws IOException
 	{
-		Conf.loadConfiguration(confURL, objectMapper);
-		Schema.loadSchema(schemaURL, objectMapper);
+		loadConfAndSchema(confPath, schemaPath, false);
+	}
+
+	/**
+	 * Loads configuration and schema files from given paths.
+	 *
+	 * @param confPath   path of configuration file
+	 * @param schemaPath path of schema file
+	 * @param isCyclic   states if the schema contains cyclic relationships
+	 * @throws IOException if a low-level I/O problem (unexpected end-of-input, network error) occurs
+	 */
+	public static void loadConfAndSchema(String confPath, String schemaPath, boolean isCyclic) throws IOException
+	{
+		Conf.loadConfiguration(confPath, objectMapper);
+		Schema.loadSchema(schemaPath, objectMapper);
 		checkValidity();
+		Reader.cyclic = isCyclic;
 	}
 
 	private static void checkValidity()
@@ -38,5 +60,10 @@ public class Reader
 	public static String toJson(Object o) throws JsonProcessingException
 	{
 		return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(o);
+	}
+
+	public static boolean isCyclic()
+	{
+		return cyclic;
 	}
 }

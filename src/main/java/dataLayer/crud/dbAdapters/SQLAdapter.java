@@ -12,10 +12,7 @@ import org.jooq.Record;
 import org.jooq.Result;
 
 import java.io.*;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
@@ -58,10 +55,10 @@ public class SQLAdapter extends DatabaseAdapter
 	 * @param entityType the type of the created entities
 	 * @param result     the result given by MongoDB driver
 	 * @return {@link Stream} of {@link Entity}s
-	 * @see SQLAdapter#makeEntities(FieldsMapping, String)
+	 * @see DatabaseAdapter#makeEntities(FieldsMapping, String)
 	 * @see SQLAdapter#makeEntities(FieldsMapping, String, Condition)
 	 */
-	private static Stream<Entity> getEntityFromResult(String entityType, Result<Record> result)
+	protected static Stream<Entity> getEntityFromResult(String entityType, Result<Record> result)
 	{
 		return result.stream()
 				.map(record ->
@@ -83,7 +80,7 @@ public class SQLAdapter extends DatabaseAdapter
 							.collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
 					final Object uuid = fieldsAndValues.remove("uuid");
 					return /*uuid instanceof String ?*/
-					       new Entity((String) uuid, entityType, fieldsAndValues, FRIEND)/* :
+							new Entity((String) uuid, entityType, fieldsAndValues, FRIEND)/* :
 					       new Entity((UUID) uuid, entityType, fieldsAndValues, FRIEND)*/;
 				});
 	}
@@ -167,7 +164,9 @@ public class SQLAdapter extends DatabaseAdapter
 
 	private static Object serializeIfNeeded(Object value)
 	{
-		if (value instanceof Set<?> && value instanceof Serializable)
+		if (value instanceof Set<?> &&
+		    value instanceof Serializable &&
+		    ((Set<?>) value).stream().allMatch(Serializable.class::isInstance))
 			try
 			{
 				return objectToBytes((Serializable) value);
@@ -228,7 +227,7 @@ public class SQLAdapter extends DatabaseAdapter
 	}
 
 	@Override
-	protected Stream<Entity> executeRead(FieldsMapping fieldsMapping, UUID uuid, String entityType)
+	public Stream<Entity> executeRead(FieldsMapping fieldsMapping, UUID uuid, String entityType, Query.Friend friend)
 	{
 		return makeEntities(fieldsMapping, entityType, field("uuid", UUID.class).eq(uuid));
 	}
@@ -236,6 +235,7 @@ public class SQLAdapter extends DatabaseAdapter
 	@Override
 	public void executeDelete(FieldsMapping fieldsMapping, Map<String, Collection<UUID>> typesAndUuids, Query.Friend friend)
 	{
+		Objects.requireNonNull(friend);
 		try (DSLContext connection = getConnection(fieldsMapping))
 		{
 			typesAndUuids.forEach((entityType, uuids) ->
@@ -259,7 +259,7 @@ public class SQLAdapter extends DatabaseAdapter
 											.map(entry -> field(entry.getKey()))
 											.collect(toList())),
 									row(uuidsAndUpdates.getSecond().entrySet().stream()
-											.map(fieldAndValue -> serializeIfNeeded(validateAndTransformEntity(entityType, fieldAndValue.getKey(), fieldAndValue.getValue())))
+											.map(fieldAndValue -> serializeIfNeeded(validateAndTransformEntity(entityType, fieldAndValue.getKey(), fieldAndValue.getValue(), friend)))
 											.collect(toList())))
 							.where(field("uuid").in(uuidsAndUpdates.getFirst()))
 							.execute();

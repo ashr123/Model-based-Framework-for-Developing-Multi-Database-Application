@@ -21,6 +21,8 @@ public class EntityClassData
 
 	void checkValidity()
 	{
+		if (primaryKey.isEmpty())
+			throw new InputMismatchException("Primary key must not be empty.");
 		if (!properties.keySet().containsAll(primaryKey))
 			throw new InputMismatchException("Not all fields in primary key exists in class's properties.");
 		properties.values()
@@ -58,11 +60,6 @@ public class EntityClassData
 	public boolean equals(Object o)
 	{
 		return this == o || o instanceof EntityClassData && properties.equals(((EntityClassData) o).properties);
-//		if (this == o)
-//			return true;
-//		if (!(o instanceof EntityClassData))
-//			return false;
-//		return properties.equals(((EntityClassData) o).properties);
 	}
 
 	@Override

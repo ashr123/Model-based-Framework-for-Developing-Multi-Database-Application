@@ -210,7 +210,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 	}
 
 	@Override
-	protected Stream<Entity> executeRead(FieldsMapping fieldsMapping, UUID uuid, String entityType)
+	public Stream<Entity> executeRead(FieldsMapping fieldsMapping, UUID uuid, String entityType, Query.Friend friend)
 	{
 		IDBAccess idbAccess = getDBAccess(fieldsMapping);
 		JcNode jcNode = new JcNode(entityType);
@@ -235,6 +235,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 	@Override
 	public void executeDelete(FieldsMapping fieldsMapping, Map<String, Collection<UUID>> typesAndUuids, Query.Friend friend)
 	{
+		Objects.requireNonNull(friend);
 		IDBAccess idbAccess = getDBAccess(fieldsMapping);
 		try
 		{
@@ -273,7 +274,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 					clauses.add(WHERE.valueOf(jcNode.property("uuid")).IN_list(uuidsAndUpdates.getFirst()));
 					uuidsAndUpdates.getSecond()
 							.forEach((field, value) ->
-									clauses.add(DO.SET(jcNode.property(field)).to(validateAndTransformEntity(entityType, field, value))));
+									clauses.add(DO.SET(jcNode.property(field)).to(validateAndTransformEntity(entityType, field, value, friend))));
 					jcQuery.setClauses(clauses.toArray(IClause[]::new));
 					idbAccess.execute(jcQuery);
 				}

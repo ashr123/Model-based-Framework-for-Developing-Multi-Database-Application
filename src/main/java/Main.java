@@ -1,25 +1,57 @@
+//import dataLayer.crud.Entity;
+//import dataLayer.crud.Query;
+//import dataLayer.readers.Reader;
 //import org.jooq.DSLContext;
 //import org.jooq.impl.SQLDataType;
 //
-//import java.util.UUID;
+//import java.io.IOException;
+//import java.util.Set;
 //
+//import static dataLayer.crud.filters.Eq.eq;
 //import static java.util.stream.Collectors.toList;
-//import static java.util.stream.Stream.generate;
-//import static org.jooq.impl.DSL.*;
+//import static org.jooq.impl.DSL.primaryKey;
+//import static org.jooq.impl.DSL.using;
 //
 //public class Main
 //{
-//	public static void main(String... args)
+//	public static void main(String... args) throws IOException
 //	{
-////		Reader.loadConfAndSchema("src/test/resources/configurations/configurationSQL.json",
-////				"src/test/resources/schemas/Schema.json");
-//		try (DSLContext connection = using("jdbc:mysql://localhost:3306/testDatabase", "root", ""))
+//		Reader.loadConfAndSchema("src/test/resources/configurations/configurationCircular.json",
+//				"src/test/resources/schemas/SchemaCircular.json");
+//
+//		try (DSLContext connection = using("jdbc:mysql://localhost:3306/testDatabase", "root", "mysql123"))
 //		{
-//			connection.createTableIfNotExists("testTable")
+//			connection.dropTableIfExists("City").execute();
+//			connection.dropTableIfExists("Person").execute();
+//
+//			connection.createTableIfNotExists("City")
 //					.column("uuid", SQLDataType.UUID.nullable(false))
-//					.column("testString", SQLDataType.VARCHAR)
+//					.column("name", SQLDataType.VARCHAR)
+//					.column("mayor", SQLDataType.UUID)
 //					.constraint(primaryKey("uuid"))
 //					.execute();
+//			connection.createTableIfNotExists("Person")
+//					.column("uuid", SQLDataType.UUID.nullable(false))
+//					.column("name", SQLDataType.VARCHAR)
+//					.column("phoneNumber", SQLDataType.VARCHAR)
+//					.column("livesAt", SQLDataType.UUID)
+//					.constraint(primaryKey("uuid"))
+//					.execute();
+//
+//			Entity city = Entity.of("City")
+//					.putField("name", "BSH");
+//			Entity person = Entity.of("Person")
+//					.putField("name", "Roy")
+//					.putField("livesAt", city);
+//			city.putField("mayor", person);
+//
+//			Query.create(city, person);
+//
+//			Set<Entity> entities = Query.read(eq("Person", "name", "Roy"));
+//			System.out.println(entities.stream().map(entity -> entity.get("name")).collect(toList()));
+//
+//			connection.dropTableIfExists("City").execute();
+//			connection.dropTableIfExists("Person").execute();
 //		}
 //
 ////		Map<String, Object> fieldsAndValues = new HashMap<>();
@@ -44,12 +76,12 @@
 ////					.execute();
 ////		}
 //
-//		System.out.println(
-//				deleteFrom(table("Person"))
-//						.where(field("uuid").in(
-//								generate(UUID::randomUUID).parallel()
-//										.limit(5)
-//										.collect(toList()))
-//						));
+////		System.out.println(
+////				deleteFrom(table("Person"))
+////						.where(field("uuid").in(
+////								generate(UUID::randomUUID).parallel()
+////										.limit(5)
+////										.collect(toList()))
+////						));
 //	}
 //}

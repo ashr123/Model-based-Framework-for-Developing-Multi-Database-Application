@@ -49,11 +49,11 @@ public abstract class DatabaseAdapter
 	 * @param complexFilter a filter that can contain 1 or more filters
 	 * @return groups of {@link Entity}s-one for every filter
 	 */
-	private static Stream<Stream<Entity>> getResultFromDBs(ComplexFilter complexFilter)
+	private static Stream<Stream<Entity>> getResultFromDBs(ComplexFilter complexFilter, Query.Friend friend)
 	{
 		return Stream.of(complexFilter.getComplexQuery())
 //				.map(filter -> groupEntities(Query.simpleRead(filter)));
-				.map(Query::simpleRead);
+				.map(filter -> Query.simpleRead(filter, friend));
 	}
 
 	private static boolean isEntityInCollection(Collection<Entity> entities, Entity entityFrag)
@@ -63,18 +63,15 @@ public abstract class DatabaseAdapter
 				.anyMatch(entityFrag.getUuid()::equals);
 	}
 
-	public static void create(Entity entity, @SuppressWarnings("unused") Query.Friend friend)
-	{
-		create(entity);
-	}
-
 	/**
 	 * Groups the entity's fields by their {@link FieldsMapping} and then dispatches the insertion of those fields to the relevant DBs
 	 *
 	 * @param entity the entity to be created
+	 * @param friend acts as a pool for entities
 	 */
-	private static void create(Entity entity)
+	public static void create(Entity entity, Query.Friend friend)
 	{
+		Objects.requireNonNull(friend);
 		final Map<FieldsMapping, Map<String, Object>> locationDocumentMap = new HashMap<>();
 		entity.getFieldsValues(FRIEND)
 				.forEach((field, value) ->
@@ -85,7 +82,7 @@ public abstract class DatabaseAdapter
 						final Map<String, Object> properties = new HashMap<>();
 						properties.put("uuid", entity.getUuid());
 						return properties;
-					}).put(field, validateAndTransformEntity(entity.getEntityType(), field, value));
+					}).put(field, validateAndTransformEntity(entity.getEntityType(), field, value, friend));
 				});
 
 		locationDocumentMap.forEach((fieldsMapping, fieldAndValue) -> fieldsMapping.getType().getDatabaseAdapter().executeCreate(fieldsMapping, entity.getEntityType(), fieldAndValue));
@@ -97,36 +94,38 @@ public abstract class DatabaseAdapter
 	 * @param entityType the type of an entity, can considered as the "class" of the entity
 	 * @param field      the entity's field name
 	 * @param value      the field's value
+	 * @param friend     acts as a pool for entities
 	 * @return for primitive field types-the value itself, for an object (i.e inner {@link Entity})-its {@link UUID}
 	 */
-	protected static Object validateAndTransformEntity(String entityType, String field, Object value)
+	protected static Object validateAndTransformEntity(String entityType, String field, Object value, Query.Friend friend)
 	{
-		if (value == null)
-			return null;
-		final EntityPropertyData propertyType = Schema.getPropertyType(entityType, field);
-		switch (propertyType.getType())
+		if (value != null)
 		{
-			case ARRAY -> {
-				if (!(value instanceof Set<?>))
-					throw new MissingFormatArgumentException("Value of " + entityType + '.' + field + " isn't a list");
-				value = checkArrayWithSchema((Set<?>) value, propertyType.getItems());
-			}
-			case OBJECT -> {
-				if (!(value instanceof Entity))
-					throw new MissingFormatArgumentException("Value of " + entityType + '.' + field + " isn't an Entity");
-				value = checkObjectWithSchema((Entity) value, propertyType.getJavaType());
-			}
-			case NUMBER -> {
-				if (!(value instanceof Number))
-					throw new MissingFormatArgumentException("Value of " + entityType + '.' + field + " isn't a number");
-			}
-			case STRING -> {
-				if (!(value instanceof String))
-					throw new MissingFormatArgumentException("Value of " + entityType + '.' + field + " isn't a string");
-			}
-			case BOOLEAN -> {
-				if (!(value instanceof Boolean))
-					throw new MissingFormatArgumentException("Value of " + entityType + '.' + field + " isn't a boolean");
+			final EntityPropertyData propertyType = Schema.getPropertyType(entityType, field);
+			switch (propertyType.getType())
+			{
+				case ARRAY -> {
+					if (!(value instanceof Set<?>))
+						throw new MissingFormatArgumentException("Value of " + entityType + '.' + field + " isn't a Set");
+					value = checkArrayWithSchema((Set<?>) value, propertyType.getItems(), friend);
+				}
+				case OBJECT -> {
+					if (!(value instanceof Entity))
+						throw new MissingFormatArgumentException("Value of " + entityType + '.' + field + " isn't an Entity");
+					value = checkObjectWithSchema((Entity) value, propertyType.getJavaType(), friend);
+				}
+				case NUMBER -> {
+					if (!(value instanceof Number))
+						throw new MissingFormatArgumentException("Value of " + entityType + '.' + field + " isn't a number");
+				}
+				case STRING -> {
+					if (!(value instanceof String))
+						throw new MissingFormatArgumentException("Value of " + entityType + '.' + field + " isn't a string");
+				}
+				case BOOLEAN -> {
+					if (!(value instanceof Boolean))
+						throw new MissingFormatArgumentException("Value of " + entityType + '.' + field + " isn't a boolean");
+				}
 			}
 		}
 		return value;
@@ -137,20 +136,21 @@ public abstract class DatabaseAdapter
 	 *
 	 * @param set       the set to be checked
 	 * @param itemsType the desired type for each cell of the set
+	 * @param friend    acts as a pool for entities
 	 * @return the set itself for array of primitive types, set of {@link UUID}s for array of objects (i.e {@link Entity}s)
 	 * @implNote in case of {@link dataLayer.readers.schemaReader.PropertyType#ARRAY}, it can behave as recursive type, see commented source code
 	 */
-	private static Set<?> checkArrayWithSchema(Set<?> set, EntityPropertyData itemsType)
+	private static Set<?> checkArrayWithSchema(Set<?> set, EntityPropertyData itemsType, Query.Friend friend)
 	{
 		final String errorMsg = "Element in list isn't a";
 		return switch (itemsType.getType())
 				{
-					case ARRAY -> throw new MissingFormatArgumentException("Only 1d array is possible");
+					case ARRAY -> throw new MissingFormatArgumentException("Only 1d array (i.e Set) is possible");
 //							set.stream()
 //							.map(element ->
 //							{
 //								if (element instanceof Set<?>)
-//									return checkArrayWithSchema((Set<?>) element, itemsType.getItems());
+//									return checkArrayWithSchema((Set<?>) element, itemsType.getItems(), friend);
 //								throw new MissingFormatArgumentException(errorMsg + " set");
 //							})
 //							.collect(Collectors.toSet());
@@ -158,7 +158,7 @@ public abstract class DatabaseAdapter
 							.map(element ->
 							{
 								if (element instanceof Entity)
-									return checkObjectWithSchema((Entity) element, itemsType.getJavaType());
+									return checkObjectWithSchema((Entity) element, itemsType.getJavaType(), friend);
 								//noinspection StringConcatenationMissingWhitespace
 								throw new MissingFormatArgumentException(errorMsg + "n Entity");
 							})
@@ -186,15 +186,19 @@ public abstract class DatabaseAdapter
 	 *
 	 * @param entity         the about object
 	 * @param entityJavaType desired object's type
+	 * @param friend         acts as a pool for entities
 	 * @return {@link UUID} of the about entity
 	 */
-	private static UUID checkObjectWithSchema(Entity entity, String entityJavaType)
+	private static UUID checkObjectWithSchema(Entity entity, String entityJavaType, Query.Friend friend)
 	{
 		if (!entity.getEntityType().equals(entityJavaType))
 			throw new MissingFormatArgumentException("javaType of value is " + entity.getEntityType() + ", expected " + entityJavaType);
 
-		if (Query.isNotPresentByPrimaryKey(entity))
-			create(entity);
+		if (!friend.contains(entity.getUuid()) && Query.isNotPresentByPrimaryKey(entity)) //entity that is deep (that it has a "mother" entity) and didn't add already to DBs (for circular situations)
+		{
+			friend.addEntity(entity);
+			create(entity, friend);
+		}
 		return entity.getUuid();
 	}
 
@@ -203,7 +207,7 @@ public abstract class DatabaseAdapter
 	 * @param friend a sort of "certificate" that gives access to this method only for {@link Query} class
 	 * @return all entities fragments of certain type
 	 */
-	public static Stream<Entity> executeRead(All all, @SuppressWarnings("unused") Query.Friend friend)
+	public static Stream<Entity> executeRead(All all, Query.Friend friend)
 	{
 		return Conf.getFieldsMappingForEntity(all.getEntityType())
 				.flatMap(fieldsMapping -> fieldsMapping.getType().getDatabaseAdapter().makeEntities(fieldsMapping, all.getEntityType()));
@@ -214,9 +218,9 @@ public abstract class DatabaseAdapter
 	 * @param friend a sort of "certificate" that gives access to this method only for {@link Query} class
 	 * @return all entities fragments that present in all inner filters (by their {@link UUID})
 	 */
-	public static Stream<Entity> executeRead(And and, @SuppressWarnings("unused") Query.Friend friend)
+	public static Stream<Entity> executeRead(And and, Query.Friend friend)
 	{
-		return getResultFromDBs(and)
+		return getResultFromDBs(and, friend)
 				.reduce((set1, set2) ->
 				{
 					final Collection<Entity>
@@ -235,9 +239,9 @@ public abstract class DatabaseAdapter
 	 * @param friend a sort of "certificate" that gives access to this method only for {@link Query} class
 	 * @return all entities fragments that present in all inner filters (by their {@link UUID})
 	 */
-	public static Stream<Entity> executeRead(Or or, @SuppressWarnings("unused") Query.Friend friend)
+	public static Stream<Entity> executeRead(Or or, Query.Friend friend)
 	{
-		return groupEntities(getResultFromDBs(or)
+		return groupEntities(getResultFromDBs(or, friend)
 				.flatMap(Function.identity()));
 	}
 
@@ -295,20 +299,7 @@ public abstract class DatabaseAdapter
 	 * @param entityType    type of asked entity
 	 * @return fragment of asked entity if exists
 	 */
-	protected abstract Stream<Entity> executeRead(FieldsMapping fieldsMapping, UUID uuid, String entityType);
-
-	/**
-	 * Represents sort of replacement to UUID filter
-	 *
-	 * @param fieldsMapping represents the location of asked entity
-	 * @param uuid          uuid of the asked entity
-	 * @param entityType    type of asked entity
-	 * @return fragment of asked entity if exists
-	 */
-	public Stream<Entity> executeRead(FieldsMapping fieldsMapping, UUID uuid, String entityType, @SuppressWarnings("unused") Query.Friend friend)
-	{
-		return executeRead(fieldsMapping, uuid, entityType);
-	}
+	public abstract Stream<Entity> executeRead(FieldsMapping fieldsMapping, UUID uuid, String entityType, Query.Friend friend);
 
 	/**
 	 * Deletes all the entities with the specified {@link UUID}s

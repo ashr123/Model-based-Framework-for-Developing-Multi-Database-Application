@@ -17,10 +17,7 @@ import org.bson.Document;
 import org.bson.UuidRepresentation;
 import org.bson.conversions.Bson;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static com.mongodb.client.model.Filters.*;
@@ -55,7 +52,6 @@ public class MongoDBAdapter extends DatabaseAdapter
 	 * @param entityType the type of the created entities
 	 * @param result     the result given by MongoDB driver
 	 * @return {@link Stream} of {@link Entity}s
-	 * @see MongoDBAdapter#makeEntities(FieldsMapping, String)
 	 * @see MongoDBAdapter#makeEntities(FieldsMapping, String, Bson)
 	 */
 	private static Stream<Entity> getFieldsAndValues(String entityType, FindIterable<Document> result)
@@ -76,6 +72,7 @@ public class MongoDBAdapter extends DatabaseAdapter
 	 * @param fieldsMapping gives the necessary details about the connection such as {@link FieldsMapping#connStr} and {@link FieldsMapping#location}
 	 * @param entityType    is practically {@link Entity#entityType}
 	 * @param filter        upon which MongoDB returns the relevant results
+	 * @param friend        {@link Entity} pool
 	 * @return flat, partial entities according to the given parameters
 	 * @see MongoDBAdapter#queryRead(SimpleFilter, Bson)
 	 */
@@ -166,7 +163,7 @@ public class MongoDBAdapter extends DatabaseAdapter
 	}
 
 	@Override
-	protected Stream<Entity> executeRead(FieldsMapping fieldsMapping, UUID uuid, String entityType)
+	public Stream<Entity> executeRead(FieldsMapping fieldsMapping, UUID uuid, String entityType, Query.Friend friend)
 	{
 		return makeEntities(fieldsMapping, entityType, eq("uuid", uuid));
 	}
@@ -174,6 +171,7 @@ public class MongoDBAdapter extends DatabaseAdapter
 	@Override
 	public void executeDelete(FieldsMapping fieldsMapping, Map<String, Collection<UUID>> typesAndUuids, Query.Friend friend)
 	{
+		Objects.requireNonNull(friend);
 		try (MongoClient mongoClient = createMongoClient(fieldsMapping.getConnStr()))
 		{
 			final MongoDatabase database = mongoClient.getDatabase(fieldsMapping.getLocation());
@@ -198,7 +196,7 @@ public class MongoDBAdapter extends DatabaseAdapter
 					database.getCollection(entityType)
 							.updateMany(in("uuid", uuidsAndUpdates.getFirst()),
 									combine(uuidsAndUpdates.getSecond().entrySet().stream()
-											.map(fieldsAndValues -> set(fieldsAndValues.getKey(), validateAndTransformEntity(entityType, fieldsAndValues.getKey(), fieldsAndValues.getValue())))
+											.map(fieldsAndValues -> set(fieldsAndValues.getKey(), validateAndTransformEntity(entityType, fieldsAndValues.getKey(), fieldsAndValues.getValue(), friend)))
 											.collect(toList())));
 				}
 			});
