@@ -15,7 +15,7 @@ import java.util.*;
  */
 public class Entity
 {
-	private static final Random random = new Random();
+	private static final Random random = Reader.isCyclic() ? new Random() : null;
 	private final UUID uuid;
 	private final String entityType;
 	@JsonProperty
