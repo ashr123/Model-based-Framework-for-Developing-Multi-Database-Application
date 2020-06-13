@@ -26,7 +26,8 @@ public class Entity
 	Entity(Map<String, Object> fieldsValues)
 	{
 		this((UUID) null, null, new HashMap<>(fieldsValues));
-		seed = random.nextInt();
+		if (Reader.isCyclic())
+			seed = random.nextInt();
 	}
 
 	@SuppressWarnings("CopyConstructorMissesField")
@@ -52,7 +53,6 @@ public class Entity
 		Objects.requireNonNull(friend);
 	}
 
-	//TODO: delete public and fix permission issue;
 	Entity(UUID uuid, String entityType, Map<String, Object> fieldsValues)
 	{
 		this.uuid = uuid;
