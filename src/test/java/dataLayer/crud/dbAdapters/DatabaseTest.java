@@ -369,7 +369,7 @@ public abstract class DatabaseTest
 		Map<String, Object> expectedCity = Map.of("City.name", "Beersheba",
 				"City.mayor", "Rubik Danilovich");
 
-		Map<String, Object> expected1 = new java.util.HashMap<>();
+		Map<String, Object> expected1 = new HashMap<>();
 		expected1.put("Person.name", "Roy");
 		expected1.put("Person.age", 27L);
 		expected1.put("Person.phoneNumber", "0546815181");
@@ -378,7 +378,7 @@ public abstract class DatabaseTest
 		expected1.putAll(expectedCity);
 		Entity expectedEntity1 = EntityHelper.entityBuilder(null, null, expected1);
 
-		Map<String, Object> expected2 = new java.util.HashMap<>();
+		Map<String, Object> expected2 = new HashMap<>();
 		expected2.put("Person.name", "Yossi");
 		expected2.put("Person.age", 22L);
 		expected2.put("Person.phoneNumber", "0587158627");
@@ -387,7 +387,7 @@ public abstract class DatabaseTest
 		expected2.putAll(expectedCity);
 		Entity expectedEntity2 = EntityHelper.entityBuilder(null, null, expected2);
 
-		Map<String, Object> expected3 = new java.util.HashMap<>();
+		Map<String, Object> expected3 = new HashMap<>();
 		expected3.put("Person.name", "Karin");
 		expected3.put("Person.age", 26L);
 		expected3.put("Person.phoneNumber", "0504563434");
