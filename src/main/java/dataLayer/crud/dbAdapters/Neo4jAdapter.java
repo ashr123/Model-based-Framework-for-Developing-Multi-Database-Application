@@ -75,7 +75,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 	 * @param jcNode       a jcypher node.
 	 * @return Stream of entities that fit the given filter.
 	 */
-	private static Stream<Entity> query(SimpleFilter simpleFilter, JcQuery jcQuery, JcNode jcNode, Query.Friend friend)
+	private static Stream<Entity> query(SimpleFilter simpleFilter, JcQuery jcQuery, JcNode jcNode)
 	{
 		FieldsMapping fieldsMapping = Conf.getFieldsMappingFromEntityField(simpleFilter.getEntityType(), simpleFilter.getFieldName());
 		IDBAccess idbAccess = getDBAccess(fieldsMapping);
@@ -83,8 +83,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 		{
 			return idbAccess.execute(jcQuery)
 					.resultOf(jcNode).stream()
-					.map(Neo4jAdapter::getEntityFromNode)
-					.peek(friend::addEntity);
+					.map(Neo4jAdapter::getEntityFromNode);
 		}
 		finally
 		{
@@ -93,7 +92,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 	}
 
 	@Override
-	protected Stream<Entity> makeEntities(FieldsMapping fieldsMapping, String entityType, Query.Friend friend)
+	protected Stream<Entity> makeEntities(FieldsMapping fieldsMapping, String entityType)
 	{
 		IDBAccess idbAccess = getDBAccess(fieldsMapping);
 		JcNode jcNode = new JcNode(entityType);
@@ -106,8 +105,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 		{
 			return idbAccess.execute(jcQuery)
 					.resultOf(jcNode).stream()
-					.map(Neo4jAdapter::getEntityFromNode)
-					.peek(friend::addEntity);
+					.map(Neo4jAdapter::getEntityFromNode);
 		}
 		finally
 		{
@@ -143,7 +141,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 				WHERE.valueOf(jcNode.property(eq.getFieldName())).EQUALS(eq.getValue()),
 				RETURN.value(jcNode)
 		});
-		return query(eq, jcQuery, jcNode, friend);
+		return query(eq, jcQuery, jcNode);
 	}
 
 	@Override
@@ -156,7 +154,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 				WHERE.valueOf(jcNode.property(ne.getFieldName())).NOT_EQUALS(ne.getValue()),
 				RETURN.value(jcNode)
 		});
-		return query(ne, jcQuery, jcNode, friend);
+		return query(ne, jcQuery, jcNode);
 	}
 
 	@Override
@@ -169,7 +167,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 				WHERE.valueOf(jcNode.property(gt.getFieldName())).GT(gt.getValue()),
 				RETURN.value(jcNode)
 		});
-		return query(gt, jcQuery, jcNode, friend);
+		return query(gt, jcQuery, jcNode);
 	}
 
 	@Override
@@ -182,7 +180,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 				WHERE.valueOf(jcNode.property(lt.getFieldName())).LT(lt.getValue()),
 				RETURN.value(jcNode)
 		});
-		return query(lt, jcQuery, jcNode, friend);
+		return query(lt, jcQuery, jcNode);
 	}
 
 	@Override
@@ -195,7 +193,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 				WHERE.valueOf(jcNode.property(gte.getFieldName())).GTE(gte.getValue()),
 				RETURN.value(jcNode)
 		});
-		return query(gte, jcQuery, jcNode, friend);
+		return query(gte, jcQuery, jcNode);
 	}
 
 	@Override
@@ -208,7 +206,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 				WHERE.valueOf(jcNode.property(lte.getFieldName())).LTE(lte.getValue()),
 				RETURN.value(jcNode)
 		});
-		return query(lte, jcQuery, jcNode, friend);
+		return query(lte, jcQuery, jcNode);
 	}
 
 	@Override
@@ -226,8 +224,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 		{
 			return idbAccess.execute(jcQuery)
 					.resultOf(jcNode).stream()
-					.map(Neo4jAdapter::getEntityFromNode)
-					.peek(friend::addEntity);
+					.map(Neo4jAdapter::getEntityFromNode);
 		}
 		finally
 		{

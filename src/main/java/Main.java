@@ -5,8 +5,6 @@
 //import org.jooq.impl.SQLDataType;
 //
 //import java.io.IOException;
-//import java.util.HashMap;
-//import java.util.Map;
 //import java.util.Set;
 //
 //import static dataLayer.crud.filters.Eq.eq;
@@ -40,8 +38,11 @@
 //					.constraint(primaryKey("uuid"))
 //					.execute();
 //
-//			Entity city = Entity.of("City", new HashMap<>(Map.of("name", "BSH")));
-//			Entity person = Entity.of("Person", new HashMap<>(Map.of("name", "Roy", "livesAt", city)));
+//			Entity city = Entity.of("City")
+//					.putField("name", "BSH");
+//			Entity person = Entity.of("Person")
+//					.putField("name", "Roy")
+//					.putField("livesAt", city);
 //			city.putField("mayor", person);
 //
 //			Query.create(city, person);

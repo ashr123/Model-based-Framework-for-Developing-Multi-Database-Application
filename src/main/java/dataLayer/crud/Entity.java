@@ -1,5 +1,6 @@
 package dataLayer.crud;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import dataLayer.crud.dbAdapters.DatabaseAdapter;
 import dataLayer.readers.configReader.Conf;
 
@@ -12,6 +13,7 @@ public class Entity
 {
 	private final UUID uuid;
 	private final String entityType;
+	@JsonProperty
 	private final Map<String, Object> fieldsValues;
 
 	Entity(Map<String, Object> fieldsValues)
@@ -60,19 +62,6 @@ public class Entity
 	{
 		fieldsValues.put(field, value instanceof Integer ? Long.valueOf((Integer) value) : value);
 		return this;
-	}
-
-	/**
-	 * @param entityType   the type of the about entity
-	 * @param fieldsValues its values
-	 * @return a new entity of type {@code entityType} and the specified fields and values
-	 */
-	public static Entity of(String entityType, Map<String, Object> fieldsValues)
-	{
-		fieldsValues.entrySet().stream()
-				.filter(fieldAndValue -> fieldAndValue.getValue() instanceof Integer)
-				.forEach(fieldAndValue -> fieldAndValue.setValue(Long.valueOf((Integer) fieldAndValue.getValue())));
-		return new Entity(UUID.randomUUID(), entityType, fieldsValues);
 	}
 
 	/**
@@ -143,14 +132,14 @@ public class Entity
 			return false;
 		Entity entity = (Entity) o;
 		return Objects.equals(uuid, entity.uuid) &&
-		       Objects.equals(entityType, entity.entityType) &&
-		       fieldsValues.equals(entity.fieldsValues);
+		       Objects.equals(entityType, entity.entityType)/* &&
+		       fieldsValues.equals(entity.fieldsValues)*/;
 	}
 
 	@Override
 	public int hashCode()
 	{
-		return Objects.hash(uuid, entityType, fieldsValues);
+		return Objects.hash(uuid, entityType/*, fieldsValues*/);
 	}
 
 	@Override

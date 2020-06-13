@@ -297,9 +297,12 @@ public class Query
 											.getType()
 											.getDatabaseAdapter()
 											.executeRead(missingFieldsMapping, entityFragment.getUuid(), entityFragment.getEntityType(), friend)));
+
 			//noinspection OptionalGetWithoutIsPresent
-			wholeEntities.add(ref.fragments
-					.reduce(Entity::merge).get());
+			final Entity completeEntity = ref.fragments
+					.reduce(Entity::merge).get();
+			friend.addEntity(completeEntity);
+			wholeEntities.add(completeEntity);
 		});
 		return wholeEntities;
 	}

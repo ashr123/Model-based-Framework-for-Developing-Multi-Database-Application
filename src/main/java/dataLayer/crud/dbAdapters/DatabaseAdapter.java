@@ -210,7 +210,7 @@ public abstract class DatabaseAdapter
 	public static Stream<Entity> executeRead(All all, Query.Friend friend)
 	{
 		return Conf.getFieldsMappingForEntity(all.getEntityType())
-				.flatMap(fieldsMapping -> fieldsMapping.getType().getDatabaseAdapter().makeEntities(fieldsMapping, all.getEntityType(), friend));
+				.flatMap(fieldsMapping -> fieldsMapping.getType().getDatabaseAdapter().makeEntities(fieldsMapping, all.getEntityType()));
 	}
 
 	/**
@@ -247,7 +247,7 @@ public abstract class DatabaseAdapter
 
 	protected abstract void executeCreate(FieldsMapping fieldsMapping, String entityType, Map<String, Object> fieldsAndValues);
 
-	protected abstract Stream<Entity> makeEntities(FieldsMapping fieldsMapping, String entityType, Query.Friend friend);
+	protected abstract Stream<Entity> makeEntities(FieldsMapping fieldsMapping, String entityType);
 
 	/**
 	 * @param eq     the filter that represents '='

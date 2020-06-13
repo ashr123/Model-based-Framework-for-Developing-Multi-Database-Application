@@ -8,7 +8,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.Set;
 
 import static dataLayer.crud.Query.*;
@@ -27,27 +26,27 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public abstract class DatabaseTest
 {
 	protected final Entity
-			roy = Entity.of("Person",
-			Map.of("name", "Roy",
-					"age", 27L,
-					"phoneNumber", "0546815181",
-					"emailAddress", "ashr@post.bgu.ac.il")),
-			yossi = Entity.of("Person",
-					Map.of("name", "Yossi",
-							"age", 22L,
-							"phoneNumber", "0587158627",
-							"emailAddress", "yossilan@post.bgu.ac.il")),
-			karin = Entity.of("Person",
-					Map.of("name", "Karin",
-							"age", 26L,
-							"phoneNumber", "0504563434",
-							"emailAddress", "davidz@post.bgu.ac.il")),
-			arnon = Entity.of("Professor",
-					Map.of("name", "Arnon",
-							"age", 50L,
-							"phoneNumber", "0501234567",
-							"emailAddress", "strum@post.bgu.ac.il",
-							"students", Set.of(roy, yossi)));
+			roy = Entity.of("Person")
+			.putField("name", "Roy")
+			.putField("age", 27)
+			.putField("phoneNumber", "0546815181")
+			.putField("emailAddress", "ashr@post.bgu.ac.il"),
+			yossi = Entity.of("Person")
+					.putField("name", "Yossi")
+					.putField("age", 22)
+					.putField("phoneNumber", "0587158627")
+					.putField("emailAddress", "yossilan@post.bgu.ac.il"),
+			karin = Entity.of("Person")
+					.putField("name", "Karin")
+					.putField("age", 26)
+					.putField("phoneNumber", "0504563434")
+					.putField("emailAddress", "davidz@post.bgu.ac.il"),
+			arnon = Entity.of("Professor")
+					.putField("name", "Arnon")
+					.putField("age", 50)
+					.putField("phoneNumber", "0501234567")
+					.putField("emailAddress", "strum@post.bgu.ac.il")
+					.putField("students", Set.of(roy, yossi));
 
 	@AfterEach
 	abstract protected void tearDown();
@@ -66,11 +65,11 @@ public abstract class DatabaseTest
 	@Test
 	void testExecuteCreate()
 	{
-		Entity luke = Entity.of("Person",
-				Map.of("name", "Luke Skywalker",
-						"age", 24L,
-						"phoneNumber", "0503451221",
-						"emailAddress", "luke@JediOrder.com"));
+		Entity luke = Entity.of("Person")
+				.putField("name", "Luke Skywalker")
+				.putField("age", 24)
+				.putField("phoneNumber", "0503451221")
+				.putField("emailAddress", "luke@JediOrder.com");
 
 		create(luke);
 		assertEquals(Set.of(luke),
@@ -81,16 +80,17 @@ public abstract class DatabaseTest
 	@Test
 	void testExecuteRepetitiveCreate()
 	{
-		Entity luke = Entity.of("Person",
-				Map.of("name", "Luke Skywalker",
-						"age", 24L,
-						"phoneNumber", "0503451221",
-						"emailAddress", "luke@JediOrder.com"));
-		Entity cloneLuke = Entity.of("Person",
-				Map.of("name", "Luke Skywalker",
-						"age", 24L,
-						"phoneNumber", "0503451221",
-						"emailAddress", "luke@SithEmpire.com"));
+		Entity luke = Entity.of("Person")
+				.putField("name", "Luke Skywalker")
+				.putField("age", 24)
+				.putField("phoneNumber", "0503451221")
+				.putField("emailAddress", "luke@JediOrder.com"),
+				cloneLuke = Entity.of("Person")
+						.putField("name", "Luke Skywalker")
+						.putField("name", "Luke Skywalker")
+						.putField("age", 24)
+						.putField("phoneNumber", "0503451221")
+						.putField("emailAddress", "luke@SithEmpire.com");
 
 		assertThrows(IllegalStateException.class, () -> create(luke, cloneLuke));
 	}
@@ -98,16 +98,16 @@ public abstract class DatabaseTest
 	@Test
 	void testExecuteUpdate()
 	{
-		final Entity royForUpdate = Entity.of("Person",
-				Map.of("name", "RoyForUpdate",
-						"age", 27L,
-						"phoneNumber", "0546815181",
-						"emailAddress", "ashr@post.bgu.ac.il"));
+		final Entity royForUpdate = Entity.of("Person")
+				.putField("name", "RoyForUpdate")
+				.putField("age", 27)
+				.putField("phoneNumber", "0546815181")
+				.putField("emailAddress", "ashr@post.bgu.ac.il");
 
 		final Set<Entity> updates = Set.of(
-				Entity.of("Person",
-						Map.of("age", 18L,
-								"phoneNumber", "12345")));
+				Entity.of("Person")
+						.putField("age", 18)
+						.putField("phoneNumber", "12345"));
 
 		create(royForUpdate);
 
@@ -130,25 +130,23 @@ public abstract class DatabaseTest
 	@Test
 	void testRepetitiveUpdate()
 	{
-		Entity anakinSkywalker = Entity.of("Person",
-				Map.of("name", "Anakin Skywalker",
-						"age", 24L,
-						"phoneNumber", "0503451111",
-						"emailAddress", "anakinSkywalker@SithEmpire.com"));
+		Entity anakinSkywalker = Entity.of("Person")
+				.putField("name", "Anakin Skywalker")
+				.putField("age", 24)
+				.putField("phoneNumber", "0503451111")
+				.putField("emailAddress", "anakinSkywalker@SithEmpire.com");
 
 		Set<Entity> nonPrimaryUpdates = Set.of(
-				Entity.of("Person",
-						Map.of("age", 25L,
-								"phoneNumber", "0501111111",
-								"emailAddress", "updated@SithEmpire.com")));
-
-		Set<Entity> primaryUpdates = Set.of(
-				Entity.of("Person",
-						Map.of("name", "Darth Vader")));
-
-		Set<Entity> existingPrimaryUpdates = Set.of(
-				Entity.of("Person",
-						Map.of("name", "Yossi")));
+				Entity.of("Person")
+						.putField("age", 25)
+						.putField("phoneNumber", "0501111111")
+						.putField("emailAddress", "updated@SithEmpire.com")),
+				primaryUpdates = Set.of(
+						Entity.of("Person")
+								.putField("name", "Darth Vader")),
+				existingPrimaryUpdates = Set.of(
+						Entity.of("Person")
+								.putField("name", "Yossi"));
 
 		create(anakinSkywalker);
 
@@ -184,11 +182,11 @@ public abstract class DatabaseTest
 	@Test
 	void testExecuteDelete()
 	{
-		final Entity royForDelete = Entity.of("Person",
-				Map.of("name", "RoyForDelete",
-						"age", 27L,
-						"phoneNumber", "0546815181",
-						"emailAddress", "ashr@post.bgu.ac.il"));
+		final Entity royForDelete = Entity.of("Person")
+				.putField("name", "RoyForDelete")
+				.putField("age", 27)
+				.putField("phoneNumber", "0546815181")
+				.putField("emailAddress", "ashr@post.bgu.ac.il");
 
 		create(royForDelete);
 
@@ -326,18 +324,32 @@ public abstract class DatabaseTest
 	@Test
 	void testNestedCreate()
 	{
-		Entity nestedEntity = Entity.of("Person",
-				Map.of("name", "Oscar",
-						"age", 12L,
-						"phoneNumber", "0521212121",
-						"emailAddress", "Elmo@post.bgu.ac.il",
-						"livesAt", Entity.of("Address",
-								Map.of("street", "Sesame street",
-										"state", "New York",
-										"city", Entity.of("City", Map.of("name", "California",
-												"mayor", "Arnold")),
-										"postalCode", "777777",
-										"country", "United States"))));
+		Entity nestedEntity = Entity.of("Person")
+				.putField("name", "Oscar")
+				.putField("age", 12)
+				.putField("phoneNumber", "0521212121")
+				.putField("emailAddress", "Elmo@post.bgu.ac.il")
+				.putField("livesAt", Entity.of("Address")
+						.putField("street", "Sesame street")
+						.putField("state", "New York")
+						.putField("city", Entity.of("City")
+								.putField("name", "California")
+								.putField("mayor", "Arnold"))
+						.putField("postalCode", "777777")
+						.putField("country", "United States"));
+
+//		Entity nestedEntity = Entity.of("Person",
+//				Map.of("name", "Oscar",
+//						"age", 12L,
+//						"phoneNumber", "0521212121",
+//						"emailAddress", "Elmo@post.bgu.ac.il",
+//						"livesAt", Entity.of("Address",
+//								Map.of("street", "Sesame street",
+//										"state", "New York",
+//										"city", Entity.of("City", Map.of("name", "California",
+//												"mayor", "Arnold")),
+//										"postalCode", "777777",
+//										"country", "United States"))));
 
 		create(nestedEntity);
 		System.out.println(nestedEntity);
@@ -346,55 +358,48 @@ public abstract class DatabaseTest
 				"Should return person named Oscar.");
 	}
 
-
-	@Test
-	void testJoin() throws JsonProcessingException
-	{
-		//TODO complete testJoin
-		System.out.println(Reader.toJson(join(gt("Person", "age", 18), entity -> true)));
-	}
-
 	@Test
 	void testComplexJoin() throws JsonProcessingException
 	{
-		//TODO complete testComplexJoin
-		Entity city = Entity.of("City", Map.of("name", "Newark",
-				"mayor", "Mayor West."));
-		Entity nestedEntity1 = Entity.of("Person",
-				Map.of("name", "Elmo",
-						"age", 12L,
-						"phoneNumber", "0521212121",
-						"emailAddress", "Elmo@post.bgu.ac.il",
-						"livesAt", Entity.of("Address",
-								Map.of("street", "Sesame street",
-										"state", "New York",
-										"city", city,
-										"postalCode", "757212",
-										"country", "United States"))));
-		Entity city2 = Entity.of("City", Map.of("name", "Unknown",
-				"mayor", "Some magical wizard"));
-		Entity nestedEntity2 = Entity.of("Person",
-				Map.of("name", "Bilbo",
-						"age", 16L,
-						"phoneNumber", "0531313131",
-						"emailAddress", "Baggins@post.bgu.ac.il",
-						"livesAt", Entity.of("Address",
-								Map.of("street", "Hobbit Street",
-										"state", "Mordor",
-										"city", city2,
-										"postalCode", "123212",
-										"country", "Australia"))));
-		Entity nestedEntity3 = Entity.of("Person",
-				Map.of("name", "Frodo",
-						"age", 18L,
-						"phoneNumber", "0541414141",
-						"emailAddress", "Frodo@post.bgu.ac.il",
-						"livesAt", Entity.of("Address",
-								Map.of("street", "Hobbit Street",
-										"state", "Mordor",
-										"city", city2,
-										"postalCode", "432212",
-										"country", "Australia"))));
+		Entity city = Entity.of("City")
+				.putField("name", "Newark")
+				.putField("mayor", "Mayor West.");
+		Entity nestedEntity1 = Entity.of("Person")
+				.putField("name", "Elmo")
+				.putField("age", 12)
+				.putField("phoneNumber", "0521212121")
+				.putField("emailAddress", "Elmo@post.bgu.ac.il")
+				.putField("livesAt", Entity.of("Address")
+						.putField("street", "Sesame street")
+						.putField("state", "New York")
+						.putField("city", city)
+						.putField("postalCode", "757212")
+						.putField("country", "United States"));
+		Entity city2 = Entity.of("City")
+				.putField("name", "Unknown")
+				.putField("mayor", "Some magical wizard");
+		Entity nestedEntity2 = Entity.of("Person")
+				.putField("name", "Bilbo")
+				.putField("age", 16)
+				.putField("phoneNumber", "0531313131")
+				.putField("emailAddress", "Baggins@post.bgu.ac.il")
+				.putField("livesAt", Entity.of("Address")
+						.putField("street", "Hobbit Street")
+						.putField("state", "Mordor")
+						.putField("city", city2)
+						.putField("postalCode", "123212")
+						.putField("country", "Australia"));
+		Entity nestedEntity3 = Entity.of("Person")
+				.putField("name", "Frodo")
+				.putField("age", 18)
+				.putField("phoneNumber", "0541414141")
+				.putField("emailAddress", "Frodo@post.bgu.ac.il")
+				.putField("livesAt", Entity.of("Address")
+						.putField("street", "Hobbit Street")
+						.putField("state", "Mordor")
+						.putField("city", city2)
+						.putField("postalCode", "432212")
+						.putField("country", "Australia"));
 		create(nestedEntity1, nestedEntity2, nestedEntity3);
 		System.out.println(Reader.toJson(join(or(gte("Person", "age", 12), eq("City", "name", "Unknown")), entity -> true)));
 //		delete(nestedEntity1, nestedEntity2, nestedEntity3);
