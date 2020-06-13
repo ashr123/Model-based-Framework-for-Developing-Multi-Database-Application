@@ -1,0 +1,23 @@
+{
+  "fieldsMappings": {
+	"sql": {
+	  "type": "sql",
+	  "connStr": "jdbc:mysql://localhost:3306/testDatabase",
+	  "username": "root",
+	  "password": "mysql123"
+	}
+  },
+  "entities": {
+	"City": {
+	  "name": "sql",
+	  "mayor": "sql"
+	},
+	"Person": {
+	  "name": "sql",
+	  "age": "sql",
+	  "phoneNumber": "sql",
+	  "emailAddress": "sql",
+	  "livesAt": "sql"
+	}
+  }
+}

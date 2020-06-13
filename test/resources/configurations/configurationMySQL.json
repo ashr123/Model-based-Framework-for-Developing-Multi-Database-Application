@@ -4,13 +4,13 @@
 	  "type": "sql",
 	  "connStr": "jdbc:mysql://localhost:3306/test",
 	  "username": "root",
-	  "password": ""
+	  "password": "mysql123"
 	},
 	"sql2": {
 	  "type": "sql",
 	  "connStr": "jdbc:mysql://localhost:3306/test2",
 	  "username": "root",
-	  "password": ""
+	  "password": "mysql123"
 	}
   },
   "entities": {

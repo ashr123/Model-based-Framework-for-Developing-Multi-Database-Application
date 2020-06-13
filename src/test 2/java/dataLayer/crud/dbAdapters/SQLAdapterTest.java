@@ -12,17 +12,17 @@ import static dataLayer.crud.Query.create;
 import static org.jooq.impl.DSL.primaryKey;
 import static org.jooq.impl.DSL.using;
 
-class MySQLTest extends DatabaseTest
+class SQLAdapterTest extends DatabaseTest
 {
 	@BeforeEach
 	@Override
 	protected void setUp() throws IOException
 	{
-		Reader.loadConfAndSchema("src/test/resources/configurations/configurationMySQL.json",
+		Reader.loadConfAndSchema("src/test/resources/configurations/configurationSQL.json",
 				"src/test/resources/schemas/Schema.json");
 
 		//Setting all the SQL databases.
-		try (DSLContext connection = using("jdbc:mysql://localhost:3306/test", "root", ""))
+		try (DSLContext connection = using("jdbc:sqlite:src/test/resources/sqliteDBs/test.db"))
 		{
 			connection.createTableIfNotExists("City")
 					.column("uuid", SQLDataType.UUID.nullable(false))
@@ -52,7 +52,7 @@ class MySQLTest extends DatabaseTest
 					.execute();
 		}
 
-		try (DSLContext connection = using("jdbc:mysql://localhost:3306/test2", "root", ""))
+		try (DSLContext connection = using("jdbc:sqlite:src/test/resources/sqliteDBs/test2.db"))
 		{
 			connection.createTableIfNotExists("City")
 					.column("uuid", SQLDataType.UUID.nullable(false))
@@ -89,7 +89,7 @@ class MySQLTest extends DatabaseTest
 	protected void tearDown()
 	{
 		//Dropping all SQL databases.
-		try (DSLContext connection = using("jdbc:mysql://localhost:3306/test", "root", ""))
+		try (DSLContext connection = using("jdbc:sqlite:src/test/resources/sqliteDBs/test.db"))
 		{
 			connection.dropTableIfExists("City").execute();
 			connection.dropTableIfExists("Address").execute();
@@ -97,7 +97,7 @@ class MySQLTest extends DatabaseTest
 			connection.dropTableIfExists("Professor").execute();
 		}
 
-		try (DSLContext connection = using("jdbc:mysql://localhost:3306/test2", "root", ""))
+		try (DSLContext connection = using("jdbc:sqlite:src/test/resources/sqliteDBs/test2.db"))
 		{
 			connection.dropTableIfExists("City").execute();
 			connection.dropTableIfExists("Address").execute();

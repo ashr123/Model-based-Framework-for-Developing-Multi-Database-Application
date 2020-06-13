@@ -1,0 +1,41 @@
+{
+  "classes": {
+	"City": {
+	  "primaryKey": [
+		"name"
+	  ],
+	  "properties": {
+		"name": {
+		  "type": "string"
+		},
+		"mayor": {
+		  "type": "object",
+		  "javaType": "Person"
+		}
+	  }
+	},
+	"Person": {
+	  "primaryKey": [
+		"name"
+	  ],
+	  "properties": {
+		"name": {
+		  "type": "string"
+		},
+		"age": {
+		  "type": "number"
+		},
+		"phoneNumber": {
+		  "type": "string"
+		},
+		"emailAddress": {
+		  "type": "string"
+		},
+		"livesAt": {
+		  "type": "object",
+		  "javaType": "City"
+		}
+	  }
+	}
+  }
+}

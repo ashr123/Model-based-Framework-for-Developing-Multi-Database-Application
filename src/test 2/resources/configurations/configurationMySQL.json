@@ -1,0 +1,44 @@
+{
+  "fieldsMappings": {
+	"sql1": {
+	  "type": "sql",
+	  "connStr": "jdbc:mysql://localhost:3306/test",
+	  "username": "root",
+	  "password": "mysql123"
+	},
+	"sql2": {
+	  "type": "sql",
+	  "connStr": "jdbc:mysql://localhost:3306/test2",
+	  "username": "root",
+	  "password": "mysql123"
+	}
+  },
+  "entities": {
+	"City": {
+	  "name": "sql2",
+	  "mayor": "sql1"
+	},
+	"Address": {
+	  "street": "sql2",
+	  "state": "sql1",
+	  "city": "sql2",
+	  "postalCode": "sql1",
+	  "country": "sql2"
+	},
+	"Person": {
+	  "name": "sql1",
+	  "age": "sql2",
+	  "phoneNumber": "sql1",
+	  "emailAddress": "sql2",
+	  "livesAt": "sql1"
+	},
+	"Professor": {
+	  "name": "sql2",
+	  "age": "sql1",
+	  "phoneNumber": "sql2",
+	  "emailAddress": "sql1",
+	  "livesAt": "sql2",
+	  "students": "sql1"
+	}
+  }
+}

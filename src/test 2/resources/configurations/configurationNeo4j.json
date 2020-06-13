@@ -1,0 +1,44 @@
+{
+  "fieldsMappings": {
+	"neo1": {
+	  "type": "neo4j",
+	  "connStr": "bolt://localhost:7687",
+	  "username": "neo4j",
+	  "password": "neo4j1"
+	},
+	"neo2": {
+	  "type": "neo4j",
+	  "connStr": "bolt://localhost:11008",
+	  "username": "neo4j",
+	  "password": "neo4j1"
+	}
+  },
+  "entities": {
+	"City": {
+	  "name": "neo1",
+	  "mayor": "neo2"
+	},
+	"Address": {
+	  "street": "neo1",
+	  "state": "neo2",
+	  "city": "neo1",
+	  "postalCode": "neo2",
+	  "country": "neo1"
+	},
+	"Person": {
+	  "name": "neo2",
+	  "age": "neo1",
+	  "phoneNumber": "neo2",
+	  "emailAddress": "neo1",
+	  "livesAt": "neo2"
+	},
+	"Professor": {
+	  "name": "neo1",
+	  "age": "neo2",
+	  "phoneNumber": "neo1",
+	  "emailAddress": "neo2",
+	  "livesAt": "neo1",
+	  "students": "neo2"
+	}
+  }
+}
