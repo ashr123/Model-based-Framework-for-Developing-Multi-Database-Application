@@ -2,23 +2,31 @@ package dataLayer.crud;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import dataLayer.crud.dbAdapters.DatabaseAdapter;
+import dataLayer.readers.Reader;
 import dataLayer.readers.configReader.Conf;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
+/**
+ * Represents the core element of this framework.
+ *
+ * @implNote if {@link Reader#isCyclic()}{@code ==true} then {@link Entity#fieldsValues} won't be evaluated in {@link Entity#equals(Object)}
+ * and in {@link Entity#hashCode()}, {@link Entity#toString()} will cause {@link StackOverflowError}.
+ */
 public class Entity
 {
+	private static final Random random = new Random();
 	private final UUID uuid;
 	private final String entityType;
 	@JsonProperty
 	private final Map<String, Object> fieldsValues;
 
+	private int seed = 0;
+
 	Entity(Map<String, Object> fieldsValues)
 	{
 		this((UUID) null, null, new HashMap<>(fieldsValues));
+		seed = random.nextInt();
 	}
 
 	@SuppressWarnings("CopyConstructorMissesField")
@@ -52,6 +60,15 @@ public class Entity
 	}
 
 	/**
+	 * @param entityType the type of the about entity
+	 * @return a new empty entity of type {@code entityType}
+	 */
+	public static Entity of(String entityType)
+	{
+		return new Entity(UUID.randomUUID(), entityType, new HashMap<>());
+	}
+
+	/**
 	 * Adds a new field to this entity
 	 *
 	 * @param field the about field name
@@ -62,15 +79,6 @@ public class Entity
 	{
 		fieldsValues.put(field, value instanceof Integer ? Long.valueOf((Integer) value) : value);
 		return this;
-	}
-
-	/**
-	 * @param entityType the type of the about entity
-	 * @return a new empty entity of type {@code entityType}
-	 */
-	public static Entity of(String entityType)
-	{
-		return new Entity(UUID.randomUUID(), entityType, new HashMap<>());
 	}
 
 	/**
@@ -131,15 +139,18 @@ public class Entity
 		if (!(o instanceof Entity))
 			return false;
 		Entity entity = (Entity) o;
+
 		return Objects.equals(uuid, entity.uuid) &&
-		       Objects.equals(entityType, entity.entityType)/* &&
-		       fieldsValues.equals(entity.fieldsValues)*/;
+		       Objects.equals(entityType, entity.entityType) &&
+		       (Reader.isCyclic() && seed == entity.seed || fieldsValues.equals(entity.fieldsValues));
 	}
 
 	@Override
 	public int hashCode()
 	{
-		return Objects.hash(uuid, entityType/*, fieldsValues*/);
+		return Reader.isCyclic() ?
+		       Objects.hash(seed, uuid, entityType) :
+		       Objects.hash(uuid, entityType, fieldsValues);
 	}
 
 	@Override
