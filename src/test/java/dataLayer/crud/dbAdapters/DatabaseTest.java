@@ -1,6 +1,5 @@
 package dataLayer.crud.dbAdapters;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import dataLayer.crud.Entity;
 import dataLayer.crud.EntityHelper;
 import org.junit.jupiter.api.AfterEach;
@@ -22,7 +21,6 @@ import static dataLayer.crud.filters.Lt.lt;
 import static dataLayer.crud.filters.Lte.lte;
 import static dataLayer.crud.filters.Ne.ne;
 import static dataLayer.crud.filters.Or.or;
-import static java.util.stream.Collectors.toSet;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -341,19 +339,6 @@ public abstract class DatabaseTest
 						.putField("postalCode", "777777")
 						.putField("country", "United States"));
 
-//		Entity nestedEntity = Entity.of("Person",
-//				Map.of("name", "Oscar",
-//						"age", 12L,
-//						"phoneNumber", "0521212121",
-//						"emailAddress", "Elmo@post.bgu.ac.il",
-//						"livesAt", Entity.of("Address",
-//								Map.of("street", "Sesame street",
-//										"state", "New York",
-//										"city", Entity.of("City", Map.of("name", "California",
-//												"mayor", "Arnold")),
-//										"postalCode", "777777",
-//										"country", "United States"))));
-
 		create(nestedEntity);
 		System.out.println(nestedEntity);
 		assertEquals(Set.of(nestedEntity),
@@ -362,7 +347,7 @@ public abstract class DatabaseTest
 	}
 
 	@Test
-	void testJoin() throws JsonProcessingException
+	void testJoin()
 	{
 		Entity city = Entity.of("City")
 				.putField("name", "Beersheba")
@@ -384,47 +369,49 @@ public abstract class DatabaseTest
 		Map<String, Object> expectedCity = Map.of("City.name", "Beersheba",
 				"City.mayor", "Rubik Danilovich");
 
-		Map<String, Object> expected1 = new java.util.HashMap<>(Map.of("Person.name", "Roy",
-				"Person.age", 27L,
-				"Person.phoneNumber", "0546815181",
-				"Person.emailAddress", "ashr@post.bgu.ac.il"));
+		Map<String, Object> expected1 = new java.util.HashMap<>();
+		expected1.put("Person.name", "Roy");
+		expected1.put("Person.age", 27L);
+		expected1.put("Person.phoneNumber", "0546815181");
+		expected1.put("Person.emailAddress", "ashr@post.bgu.ac.il");
 
 		expected1.putAll(expectedCity);
 		Entity expectedEntity1 = EntityHelper.entityBuilder(null, null, expected1);
 
-		Map<String, Object> expected2 = new java.util.HashMap<>(Map.of("Person.name", "Yossi",
-				"Person.age", 22L,
-				"Person.phoneNumber", "0587158627",
-				"Person.emailAddress", "yossilan@post.bgu.ac.il"));
+		Map<String, Object> expected2 = new java.util.HashMap<>();
+		expected2.put("Person.name", "Yossi");
+		expected2.put("Person.age", 22L);
+		expected2.put("Person.phoneNumber", "0587158627");
+		expected2.put("Person.emailAddress", "yossilan@post.bgu.ac.il");
 
 		expected2.putAll(expectedCity);
 		Entity expectedEntity2 = EntityHelper.entityBuilder(null, null, expected2);
 
-		Map<String, Object> expected3 = new java.util.HashMap<>(Map.of("Person.name", "Karin",
-				"Person.age", 26L,
-				"Person.phoneNumber", "0504563434",
-				"Person.emailAddress", "davidz@post.bgu.ac.il"));
+		Map<String, Object> expected3 = new java.util.HashMap<>();
+		expected3.put("Person.name", "Karin");
+		expected3.put("Person.age", 26L);
+		expected3.put("Person.phoneNumber", "0504563434");
+		expected3.put("Person.emailAddress", "davidz@post.bgu.ac.il");
 
 		expected3.putAll(expectedCity);
 		Entity expectedEntity3 = EntityHelper.entityBuilder(null, null, expected3);
 
-		Set<Map<String, Object>> expectedResult = Set.of(expected1, expected2, expected3);
-		Set<Map<String, Object>> joinResult = join(or(gte("Person", "age", 18), eq("City", "name", "Beersheba")), entity -> true).stream()
-				.map(EntityHelper::getEntityFieldsAndValues)
-				.collect(toSet());
+		Set<Entity> expectedResult = Set.of(expectedEntity1, expectedEntity2, expectedEntity3);
+		Set<Entity> joinResult = join(or(gte("Person", "age", 18), eq("City", "name", "Beersheba")), entity -> true);
 
 		assertEquals(expectedResult, joinResult, "Should return a set of joined Person entity and City entity together, preform join between people over 18 and cities named Beersheba");
 
 		expected1.putAll(expectedAddress);
+		expectedEntity1 = EntityHelper.entityBuilder(null, null, expected1);
 
 		expected2.putAll(expectedAddress);
+		expectedEntity2 = EntityHelper.entityBuilder(null, null, expected2);
 
 		expected3.putAll(expectedAddress);
+		expectedEntity3 = EntityHelper.entityBuilder(null, null, expected3);
 
-		expectedResult = Set.of(expected1, expected2, expected3);
-		joinResult = join(or(gte("Person", "age", 12), eq("Address", "state", "Israel"), eq("City", "name", "Beersheba")), entity -> true).stream()
-				.map(EntityHelper::getEntityFieldsAndValues)
-				.collect(toSet());
+		expectedResult = Set.of(expectedEntity1, expectedEntity2, expectedEntity3);
+		joinResult = join(or(gte("Person", "age", 12), eq("Address", "state", "Israel"), eq("City", "name", "Beersheba")), entity -> true);
 
 		assertEquals(expectedResult, joinResult, "Should return a set of joined Person entity, Address entity and City entity together, preform join between people over 18, Addresses in Israel and cities named Beersheba");
 
@@ -433,7 +420,7 @@ public abstract class DatabaseTest
 
 
 	@Test
-	void testComplexJoin() throws JsonProcessingException
+	void testComplexJoin()
 	{
 		Entity city = Entity.of("City")
 				.putField("name", "Newark")
@@ -466,21 +453,21 @@ public abstract class DatabaseTest
 
 		Entity nestedEntity1 = Entity.of("Person")
 				.putField("name", "Elmo")
-				.putField("age", 12L)
+				.putField("age", 12)
 				.putField("phoneNumber", "0521212121")
 				.putField("emailAddress", "Elmo@post.bgu.ac.il")
 				.putField("livesAt", address1);
 
 		Entity nestedEntity2 = Entity.of("Person")
 				.putField("name", "Bilbo")
-				.putField("age", 16L)
+				.putField("age", 16)
 				.putField("phoneNumber", "0531313131")
 				.putField("emailAddress", "Baggins@post.bgu.ac.il")
 				.putField("livesAt", address2);
 
 		Entity nestedEntity3 = Entity.of("Person")
 				.putField("name", "Frodo")
-				.putField("age", 18L)
+				.putField("age", 18)
 				.putField("phoneNumber", "0541414141")
 				.putField("emailAddress", "Frodo@post.bgu.ac.il")
 				.putField("livesAt", address3);
@@ -496,6 +483,7 @@ public abstract class DatabaseTest
 		expected1.put("Person.livesAt", address2);
 
 		expected1.putAll(expectedCity);
+		Entity expectedEntity1 = EntityHelper.entityBuilder(null, null, expected1);
 
 		Map<String, Object> expected2 = new HashMap<>();
 		expected2.put("Person.name", "Frodo");
@@ -505,62 +493,14 @@ public abstract class DatabaseTest
 		expected2.put("Person.livesAt", address3);
 
 		expected2.putAll(expectedCity);
+		Entity expectedEntity2 = EntityHelper.entityBuilder(null, null, expected2);
 
 		create(city, city2, address1, address2, address3, nestedEntity1, nestedEntity2, nestedEntity3);
 
-		Set<Map<String, Object>> expectedResult = Set.of(expected1, expected2);
-		Set<Map<String, Object>> joinResult = join(or(lte("Person", "age", 18), eq("City", "name", "Unknown")),
-				entity -> ((Entity) ((Entity) entity.get("Person.livesAt")).get("city")).get("name").equals(entity.get("City.name"))).stream()
-				.map(EntityHelper::getEntityFieldsAndValues)
-				.collect(toSet());
+		Set<Entity> expectedResult = Set.of(expectedEntity1, expectedEntity2);
+		Set<Entity> joinResult = join(or(lte("Person", "age", 18), eq("City", "name", "Unknown")),
+				entity -> ((Entity) ((Entity) entity.get("Person.livesAt")).get("city")).get("name").equals(entity.get("City.name")));
 
 		assertEquals(expectedResult, joinResult, "Should return a set of joined Person entity and City entity together, preform natural join between people under 19 who live in city named Unknown");
 	}
-
-//	@Test
-//	void temp() throws JsonProcessingException
-//	{
-//		Entity city = Entity.of("City")
-//				.putField("name", "Newark")
-//				.putField("mayor", "Mayor West.");
-//		Entity nestedEntity1 = Entity.of("Person")
-//				.putField("name", "Elmo")
-//				.putField("age", 12)
-//				.putField("phoneNumber", "0521212121")
-//				.putField("emailAddress", "Elmo@post.bgu.ac.il")
-//				.putField("livesAt", Entity.of("Address")
-//						.putField("street", "Sesame street")
-//						.putField("state", "New York")
-//						.putField("city", city)
-//						.putField("postalCode", "757212")
-//						.putField("country", "United States"));
-//		Entity city2 = Entity.of("City")
-//				.putField("name", "Unknown")
-//				.putField("mayor", "Some magical wizard");
-//		Entity nestedEntity2 = Entity.of("Person")
-//				.putField("name", "Bilbo")
-//				.putField("age", 16)
-//				.putField("phoneNumber", "0531313131")
-//				.putField("emailAddress", "Baggins@post.bgu.ac.il")
-//				.putField("livesAt", Entity.of("Address")
-//						.putField("street", "Hobbit Street")
-//						.putField("state", "Mordor")
-//						.putField("city", city2)
-//						.putField("postalCode", "123212")
-//						.putField("country", "Australia"));
-//		Entity nestedEntity3 = Entity.of("Person")
-//				.putField("name", "Frodo")
-//				.putField("age", 18)
-//				.putField("phoneNumber", "0541414141")
-//				.putField("emailAddress", "Frodo@post.bgu.ac.il")
-//				.putField("livesAt", Entity.of("Address")
-//						.putField("street", "Hobbit Street")
-//						.putField("state", "Mordor")
-//						.putField("city", city2)
-//						.putField("postalCode", "432212")
-//						.putField("country", "Australia"));
-//		create(nestedEntity1, nestedEntity2, nestedEntity3);
-//		System.out.println(Reader.toJson(join(or(gte("Person", "age", 12), eq("City", "name", "Unknown")), entity -> true)));
-////		delete(nestedEntity1, nestedEntity2, nestedEntity3);
-//	}
 }
