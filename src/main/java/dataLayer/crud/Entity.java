@@ -54,10 +54,12 @@ public class Entity
 	 *
 	 * @param field the about field name
 	 * @param value its value
+	 * @return this entity
 	 */
-	public void putField(String field, Object value)
+	public Entity putField(String field, Object value)
 	{
-		fieldsValues.put(field, value);
+		fieldsValues.put(field, value instanceof Integer ? Long.valueOf((Integer) value) : value);
+		return this;
 	}
 
 	/**
@@ -71,6 +73,15 @@ public class Entity
 				.filter(fieldAndValue -> fieldAndValue.getValue() instanceof Integer)
 				.forEach(fieldAndValue -> fieldAndValue.setValue(Long.valueOf((Integer) fieldAndValue.getValue())));
 		return new Entity(UUID.randomUUID(), entityType, fieldsValues);
+	}
+
+	/**
+	 * @param entityType the type of the about entity
+	 * @return a new empty entity of type {@code entityType}
+	 */
+	public static Entity of(String entityType)
+	{
+		return new Entity(UUID.randomUUID(), entityType, new HashMap<>());
 	}
 
 	/**
