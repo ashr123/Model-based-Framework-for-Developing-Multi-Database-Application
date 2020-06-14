@@ -193,42 +193,49 @@ public class SQLAdapter extends DatabaseAdapter
 	@Override
 	public Stream<Entity> executeRead(Eq eq, Query.Friend friend)
 	{
+		Objects.requireNonNull(friend);
 		return queryRead(eq, field(eq.getFieldName()).eq(eq.getValue()));
 	}
 
 	@Override
 	public Stream<Entity> executeRead(Ne ne, Query.Friend friend)
 	{
+		Objects.requireNonNull(friend);
 		return queryRead(ne, field(ne.getFieldName()).ne(ne.getValue()));
 	}
 
 	@Override
 	public Stream<Entity> executeRead(Gt gt, Query.Friend friend)
 	{
+		Objects.requireNonNull(friend);
 		return queryRead(gt, field(gt.getFieldName()).gt(gt.getValue()));
 	}
 
 	@Override
 	public Stream<Entity> executeRead(Lt lt, Query.Friend friend)
 	{
+		Objects.requireNonNull(friend);
 		return queryRead(lt, field(lt.getFieldName()).lt(lt.getValue()));
 	}
 
 	@Override
 	public Stream<Entity> executeRead(Gte gte, Query.Friend friend)
 	{
+		Objects.requireNonNull(friend);
 		return queryRead(gte, field(gte.getFieldName()).ge(gte.getValue()));
 	}
 
 	@Override
 	public Stream<Entity> executeRead(Lte lte, Query.Friend friend)
 	{
+		Objects.requireNonNull(friend);
 		return queryRead(lte, field(lte.getFieldName()).le(lte.getValue()));
 	}
 
 	@Override
 	public Stream<Entity> executeRead(FieldsMapping fieldsMapping, UUID uuid, String entityType, Query.Friend friend)
 	{
+		Objects.requireNonNull(friend);
 		return makeEntities(fieldsMapping, entityType, field("uuid", UUID.class).eq(uuid));
 	}
 

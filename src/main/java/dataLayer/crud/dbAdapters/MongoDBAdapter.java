@@ -129,42 +129,49 @@ public class MongoDBAdapter extends DatabaseAdapter
 	@Override
 	public Stream<Entity> executeRead(Eq eq, Query.Friend friend)
 	{
+		Objects.requireNonNull(friend);
 		return queryRead(eq, eq(eq.getFieldName(), eq.getValue()));
 	}
 
 	@Override
 	public Stream<Entity> executeRead(Ne ne, Query.Friend friend)
 	{
+		Objects.requireNonNull(friend);
 		return queryRead(ne, ne(ne.getFieldName(), ne.getValue()));
 	}
 
 	@Override
 	public Stream<Entity> executeRead(Gt gt, Query.Friend friend)
 	{
+		Objects.requireNonNull(friend);
 		return queryRead(gt, gt(gt.getFieldName(), gt.getValue()));
 	}
 
 	@Override
 	public Stream<Entity> executeRead(Lt lt, Query.Friend friend)
 	{
+		Objects.requireNonNull(friend);
 		return queryRead(lt, lt(lt.getFieldName(), lt.getValue()));
 	}
 
 	@Override
 	public Stream<Entity> executeRead(Gte gte, Query.Friend friend)
 	{
+		Objects.requireNonNull(friend);
 		return queryRead(gte, gte(gte.getFieldName(), gte.getValue()));
 	}
 
 	@Override
 	public Stream<Entity> executeRead(Lte lte, Query.Friend friend)
 	{
+		Objects.requireNonNull(friend);
 		return queryRead(lte, lte(lte.getFieldName(), lte.getValue()));
 	}
 
 	@Override
 	public Stream<Entity> executeRead(FieldsMapping fieldsMapping, UUID uuid, String entityType, Query.Friend friend)
 	{
+		Objects.requireNonNull(friend);
 		return makeEntities(fieldsMapping, entityType, eq("uuid", uuid));
 	}
 

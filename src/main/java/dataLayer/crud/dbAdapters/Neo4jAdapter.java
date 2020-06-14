@@ -134,6 +134,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 	@Override
 	public Stream<Entity> executeRead(Eq eq, Query.Friend friend)
 	{
+		Objects.requireNonNull(friend);
 		JcNode jcNode = new JcNode(eq.getEntityType());
 		JcQuery jcQuery = new JcQuery();
 		jcQuery.setClauses(new IClause[]{
@@ -147,6 +148,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 	@Override
 	public Stream<Entity> executeRead(Ne ne, Query.Friend friend)
 	{
+		Objects.requireNonNull(friend);
 		JcNode jcNode = new JcNode(ne.getEntityType());
 		JcQuery jcQuery = new JcQuery();
 		jcQuery.setClauses(new IClause[]{
@@ -160,6 +162,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 	@Override
 	public Stream<Entity> executeRead(Gt gt, Query.Friend friend)
 	{
+		Objects.requireNonNull(friend);
 		JcNode jcNode = new JcNode(gt.getEntityType());
 		JcQuery jcQuery = new JcQuery();
 		jcQuery.setClauses(new IClause[]{
@@ -173,6 +176,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 	@Override
 	public Stream<Entity> executeRead(Lt lt, Query.Friend friend)
 	{
+		Objects.requireNonNull(friend);
 		JcNode jcNode = new JcNode(lt.getEntityType());
 		JcQuery jcQuery = new JcQuery();
 		jcQuery.setClauses(new IClause[]{
@@ -186,6 +190,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 	@Override
 	public Stream<Entity> executeRead(Gte gte, Query.Friend friend)
 	{
+		Objects.requireNonNull(friend);
 		JcNode jcNode = new JcNode(gte.getEntityType());
 		JcQuery jcQuery = new JcQuery();
 		jcQuery.setClauses(new IClause[]{
@@ -199,6 +204,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 	@Override
 	public Stream<Entity> executeRead(Lte lte, Query.Friend friend)
 	{
+		Objects.requireNonNull(friend);
 		JcNode jcNode = new JcNode(lte.getEntityType());
 		JcQuery jcQuery = new JcQuery();
 		jcQuery.setClauses(new IClause[]{
@@ -212,6 +218,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 	@Override
 	public Stream<Entity> executeRead(FieldsMapping fieldsMapping, UUID uuid, String entityType, Query.Friend friend)
 	{
+		Objects.requireNonNull(friend);
 		IDBAccess idbAccess = getDBAccess(fieldsMapping);
 		JcNode jcNode = new JcNode(entityType);
 		JcQuery jcQuery = new JcQuery();

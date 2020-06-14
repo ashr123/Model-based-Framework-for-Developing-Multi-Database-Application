@@ -21,7 +21,7 @@ public class Entity
 	@JsonProperty
 	private final Map<String, Object> fieldsValues;
 
-	private int seed = 0;
+	private int seed;
 
 	Entity(Map<String, Object> fieldsValues)
 	{
