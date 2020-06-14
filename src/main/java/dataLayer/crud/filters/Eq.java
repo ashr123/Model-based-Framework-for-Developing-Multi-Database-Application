@@ -26,7 +26,11 @@ public class Eq extends SimpleFilter
 	 */
 	private Eq(String entityType, String fieldName, Object value)
 	{
-		super(entityType, fieldName, value);
+		super(entityType,
+				fieldName,
+				value instanceof Entity ?
+				((Entity) value).getUuid() :
+				value);
 	}
 
 

@@ -26,7 +26,11 @@ public class Ne extends SimpleFilter
 	 */
 	private Ne(String entityType, String fieldName, Object value)
 	{
-		super(entityType, fieldName, value);
+		super(entityType,
+				fieldName,
+				value instanceof Entity ?
+				((Entity) value).getUuid() :
+				value);
 	}
 
 	/**

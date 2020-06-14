@@ -414,8 +414,6 @@ public abstract class DatabaseTest
 		joinResult = join(or(gte("Person", "age", 12), eq("Address", "state", "Israel"), eq("City", "name", "Beersheba")), entity -> true);
 
 		assertEquals(expectedResult, joinResult, "Should return a set of joined Person entity, Address entity and City entity together, preform join between people over 18, Addresses in Israel and cities named Beersheba");
-
-		delete(address, city);
 	}
 
 
