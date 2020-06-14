@@ -143,7 +143,7 @@ public class Entity
 
 		return Objects.equals(uuid, entity.uuid) &&
 		       Objects.equals(entityType, entity.entityType) &&
-		       (Reader.isCyclic() && seed == entity.seed || fieldsValues.equals(entity.fieldsValues));
+		       (Reader.isCyclic() && seed == entity.seed || !Reader.isCyclic() && fieldsValues.equals(entity.fieldsValues));
 	}
 
 	@Override
