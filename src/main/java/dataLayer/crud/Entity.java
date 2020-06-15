@@ -1,10 +1,14 @@
 package dataLayer.crud;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import dataLayer.crud.dbAdapters.DatabaseAdapter;
 import dataLayer.readers.Reader;
 import dataLayer.readers.configReader.Conf;
 
+import java.io.IOException;
 import java.util.*;
 
 import static java.util.stream.Collectors.toList;
@@ -21,7 +25,7 @@ public class Entity
 	private static final Random random = new Random();
 	private final UUID uuid;
 	private final String entityType;
-	@JsonProperty
+	@JsonSerialize(using=FieldsValuesSerializer.class)
 	private final Map<String, Object> fieldsValues;
 
 	private int seed;
@@ -168,16 +172,32 @@ public class Entity
 		return "Entity{" +
 		       "uuid=" + uuid +
 		       ", entityType='" + entityType + '\'' +
-		       ", fieldsValues=" + fieldsValues.entrySet().stream()
-				       .map(fieldAndValue -> Map.entry(fieldAndValue.getKey(),
-						       Reader.isCyclic() && fieldAndValue.getValue() instanceof Entity ? "<cyclic>" :
-						       fieldAndValue.getValue() instanceof Collection<?> &&
-						       Reader.isCyclic() && ((Collection<?>) fieldAndValue.getValue()).stream().allMatch(Entity.class::isInstance) ?
-						       ((Collection<?>) fieldAndValue.getValue()).stream()
-								       .map(entity -> "<cyclic>")
-								       .collect(toList()) :
-						       fieldAndValue.getValue()))
-				       .collect(toMap(Map.Entry::getKey, Map.Entry::getValue)) +
+		       ", fieldsValues=" + prepareFieldsValuesForToString(fieldsValues) +
 		       '}';
+	}
+
+	private static Map<String, Object> prepareFieldsValuesForToString(Map<String, Object> fieldsValues)
+	{
+		return fieldsValues.entrySet().stream()
+				.map(fieldAndValue -> Map.entry(fieldAndValue.getKey(),
+						Reader.isCyclic() && fieldAndValue.getValue() instanceof Entity ? "<cyclic>" :
+						fieldAndValue.getValue() instanceof Collection<?> &&
+						Reader.isCyclic() && ((Collection<?>) fieldAndValue.getValue()).stream().allMatch(Entity.class::isInstance) ?
+						((Collection<?>) fieldAndValue.getValue()).stream()
+								.map(entity -> "<cyclic>")
+								.collect(toList()) :
+						fieldAndValue.getValue()))
+				.collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
+	}
+
+	private static class FieldsValuesSerializer extends JsonSerializer<Map<String, Object>>
+	{
+		@Override
+		public void serialize(final Map<String, Object> value,
+		                      final JsonGenerator gen,
+		                      final SerializerProvider serializers) throws IOException
+		{
+			gen.writeObject(prepareFieldsValuesForToString(value));
+		}
 	}
 }
