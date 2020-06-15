@@ -4,6 +4,7 @@ import dataLayer.crud.Entity;
 import dataLayer.crud.Pair;
 import dataLayer.crud.Query;
 import dataLayer.crud.filters.*;
+import dataLayer.readers.Reader;
 import dataLayer.readers.configReader.Conf;
 import dataLayer.readers.configReader.FieldsMapping;
 import dataLayer.readers.schemaReader.EntityPropertyData;
@@ -102,6 +103,7 @@ public abstract class DatabaseAdapter
 		if (value != null)
 		{
 			final EntityPropertyData propertyType = Schema.getPropertyType(entityType, field);
+			value = Reader.decodeValue(entityType, field, value);
 			switch (propertyType.getType())
 			{
 				case ARRAY -> {

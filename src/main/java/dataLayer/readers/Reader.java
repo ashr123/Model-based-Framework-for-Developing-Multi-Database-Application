@@ -2,19 +2,42 @@ package dataLayer.readers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dataLayer.crud.Pair;
 import dataLayer.readers.configReader.Conf;
 import dataLayer.readers.schemaReader.Schema;
 
 import java.io.IOException;
 import java.util.InputMismatchException;
+import java.util.Map;
+import java.util.function.Function;
 
 public class Reader
 {
 	private final static ObjectMapper objectMapper = new ObjectMapper();
 	private static boolean cyclic;
 
+	private static Map<String, Map<String, Pair<Function<Object, Object>, Function<Object, Object>>>> valuesMappers;
+
 	private Reader()
 	{
+	}
+
+	public static Object unDecodeValue(String entityType, String entityField, Object value)
+	{
+		Map<String, Pair<Function<Object, Object>, Function<Object, Object>>> fieldsMap;
+		Pair<Function<Object, Object>, Function<Object, Object>> function;
+		return valuesMappers == null || (fieldsMap = valuesMappers.get(entityType)) == null || (function = fieldsMap.get(entityField)) == null ?
+		       value :
+		       function.getFirst().apply(value);
+	}
+
+	public static Object decodeValue(String entityType, String entityField, Object value)
+	{
+		Map<String, Pair<Function<Object, Object>, Function<Object, Object>>> fieldsMap;
+		Pair<Function<Object, Object>, Function<Object, Object>> function;
+		return valuesMappers == null || (fieldsMap = valuesMappers.get(entityType)) == null || (function = fieldsMap.get(entityField)) == null ?
+		       value :
+		       function.getSecond().apply(value);
 	}
 
 	/**
@@ -42,6 +65,17 @@ public class Reader
 		Conf.loadConfiguration(confPath, objectMapper);
 		Schema.loadSchema(schemaPath, objectMapper);
 		checkValidity();
+		//noinspection AssignmentToNull
+		valuesMappers = null;
+		Reader.cyclic = isCyclic;
+	}
+
+	public static void loadConfAndSchema(String confPath, String schemaPath, Map<String, Map<String, Pair<Function<Object, Object>, Function<Object, Object>>>> valuesMappers, boolean isCyclic) throws IOException
+	{
+		Conf.loadConfiguration(confPath, objectMapper);
+		Schema.loadSchema(schemaPath, objectMapper);
+		checkValidity();
+		Reader.valuesMappers = valuesMappers;
 		Reader.cyclic = isCyclic;
 	}
 

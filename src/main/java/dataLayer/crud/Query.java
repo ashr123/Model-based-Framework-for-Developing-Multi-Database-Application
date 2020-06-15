@@ -242,7 +242,7 @@ public class Query
 										{
 											Set<String> fields = Conf.getFieldsFromTypeAndMapping(entityTypeAndUuids.getKey(), fieldsMappingAndValue.getKey());
 											return Map.entry(entityTypeAndUuids.getKey(),
-													new Pair<>(entityTypeAndUuids.getValue(),
+													Pair.of(entityTypeAndUuids.getValue(),
 															entitiesUpdates.stream()
 																	.filter(entity -> entity.getEntityType().equals(entityTypeAndUuids.getKey()))
 																	.map(entity ->

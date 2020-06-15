@@ -7,6 +7,9 @@ import dataLayer.readers.configReader.Conf;
 
 import java.util.*;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+
 /**
  * Represents the core element of this framework.
  *
@@ -108,6 +111,11 @@ public class Entity
 		return fieldsValues.get(field);
 	}
 
+	public Object getAndTransform(String field)
+	{
+		return Reader.unDecodeValue(entityType, field, get(field));
+	}
+
 	Map<String, Object> getFieldsValues()
 	{
 		return fieldsValues;
@@ -160,7 +168,16 @@ public class Entity
 		return "Entity{" +
 		       "uuid=" + uuid +
 		       ", entityType='" + entityType + '\'' +
-		       ", fieldsValues=" + fieldsValues +
+		       ", fieldsValues=" + fieldsValues.entrySet().stream()
+				       .map(fieldAndValue -> Map.entry(fieldAndValue.getKey(),
+						       Reader.isCyclic() && fieldAndValue.getValue() instanceof Entity ? "<cyclic>" :
+						       fieldAndValue.getValue() instanceof Collection<?> &&
+						       Reader.isCyclic() && ((Collection<?>) fieldAndValue.getValue()).stream().allMatch(Entity.class::isInstance) ?
+						       ((Collection<?>) fieldAndValue.getValue()).stream()
+								       .map(entity -> "<cyclic>")
+								       .collect(toList()) :
+						       fieldAndValue.getValue()))
+				       .collect(toMap(Map.Entry::getKey, Map.Entry::getValue)) +
 		       '}';
 	}
 }

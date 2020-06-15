@@ -4,6 +4,7 @@ import dataLayer.crud.Entity;
 import dataLayer.crud.Pair;
 import dataLayer.crud.Query;
 import dataLayer.crud.filters.*;
+import dataLayer.readers.Reader;
 import dataLayer.readers.configReader.Conf;
 import dataLayer.readers.configReader.FieldsMapping;
 import org.jooq.Condition;
@@ -77,7 +78,7 @@ public class SQLAdapter extends DatabaseAdapter
 										e.printStackTrace();
 									}
 							})
-							.collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
+							.collect(toMap(Map.Entry::getKey, fieldAndValue -> Reader.unDecodeValue(entityType, fieldAndValue.getKey(), fieldAndValue.getValue())));
 					final Object uuid = fieldsAndValues.remove("uuid");
 					return /*uuid instanceof String ?*/
 							new Entity((String) uuid, entityType, fieldsAndValues, FRIEND)/* :

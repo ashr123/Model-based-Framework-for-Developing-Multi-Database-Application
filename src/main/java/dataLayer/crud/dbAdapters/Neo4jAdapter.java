@@ -4,6 +4,7 @@ import dataLayer.crud.Entity;
 import dataLayer.crud.Pair;
 import dataLayer.crud.Query;
 import dataLayer.crud.filters.*;
+import dataLayer.readers.Reader;
 import dataLayer.readers.configReader.Conf;
 import dataLayer.readers.configReader.FieldsMapping;
 import iot.jcypher.database.DBAccessFactory;
@@ -63,7 +64,7 @@ public class Neo4jAdapter extends DatabaseAdapter
 				grNode.getLabels().get(0).getName(),
 				grNode.getProperties().stream()
 						.filter(grProperty -> !(grProperty.getName().equals("_c_version_") || grProperty.getName().equals("uuid")))
-						.collect(toMap(GrProperty::getName, GrProperty::getValue, (a, b) -> b)),
+						.collect(toMap(GrProperty::getName, grProperty1 -> Reader.unDecodeValue(grNode.getLabels().get(0).getName(), grProperty1.getName(), grProperty1.getValue()), (a, b) -> b)),
 				FRIEND);
 	}
 

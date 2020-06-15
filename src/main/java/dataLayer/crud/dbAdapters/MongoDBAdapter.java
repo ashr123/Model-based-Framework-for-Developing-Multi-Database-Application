@@ -11,6 +11,7 @@ import dataLayer.crud.Pair;
 import dataLayer.crud.Query;
 import dataLayer.crud.filters.SimpleFilter;
 import dataLayer.crud.filters.*;
+import dataLayer.readers.Reader;
 import dataLayer.readers.configReader.Conf;
 import dataLayer.readers.configReader.FieldsMapping;
 import org.bson.Document;
@@ -61,7 +62,7 @@ public class MongoDBAdapter extends DatabaseAdapter
 				{
 					Map<String, Object> fieldsMap = document.entrySet().stream()
 							.filter(entry -> !entry.getKey().equals("_id"))
-							.collect(toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> b));
+							.collect(toMap(Map.Entry::getKey, fieldAndValue -> Reader.unDecodeValue(entityType, fieldAndValue.getKey(), fieldAndValue.getValue()), (a, b) -> b));
 					return new Entity((UUID) fieldsMap.remove("uuid"), entityType, fieldsMap, FRIEND);
 				});
 	}
