@@ -26,7 +26,7 @@ public class Reader
 	{
 		Map<String, Pair<Function<Object, Object>, Function<Object, Object>>> fieldsMap;
 		Pair<Function<Object, Object>, Function<Object, Object>> function;
-		return valuesMappers == null || (fieldsMap = valuesMappers.get(entityType)) == null || (function = fieldsMap.get(entityField)) == null ?
+		return valuesMappers == null || (fieldsMap = valuesMappers.get(entityType)) == null || (function = fieldsMap.get(entityField)) == null || function.getFirst() == null ?
 		       value :
 		       function.getFirst().apply(value);
 	}
@@ -35,7 +35,7 @@ public class Reader
 	{
 		Map<String, Pair<Function<Object, Object>, Function<Object, Object>>> fieldsMap;
 		Pair<Function<Object, Object>, Function<Object, Object>> function;
-		return valuesMappers == null || (fieldsMap = valuesMappers.get(entityType)) == null || (function = fieldsMap.get(entityField)) == null ?
+		return valuesMappers == null || (fieldsMap = valuesMappers.get(entityType)) == null || (function = fieldsMap.get(entityField)) == null || function.getSecond() == null ?
 		       value :
 		       function.getSecond().apply(value);
 	}
