@@ -74,8 +74,8 @@ public class Reader
 	{
 		Conf.loadConfiguration(confPath, objectMapper);
 		Schema.loadSchema(schemaPath, objectMapper);
-		checkValidity();
 		Reader.valuesMappers = valuesMappers;
+		checkValidity();
 		Reader.cyclic = isCyclic;
 	}
 
@@ -89,6 +89,14 @@ public class Reader
 			if (!Conf.getEntityProperties(className).equals(Schema.getClassesFields(className)))
 				throw new InputMismatchException(className + "'s fields in Conf and Schema don't equate!");
 		});
+		if (valuesMappers != null && Schema.getClassesName().containsAll(valuesMappers.keySet()))
+			throw new InputMismatchException("Class in mappers doesn't exist in schema!");
+		if (valuesMappers != null)
+			valuesMappers.forEach((entityType, field) ->
+			{
+				if (!Schema.getClassesFields(entityType).containsAll(valuesMappers.get(entityType).keySet()))
+					throw new InputMismatchException("field in mappers doesn't exist in schema for class " + entityType + '!');
+			});
 	}
 
 	public static String toJson(Object o) throws JsonProcessingException
