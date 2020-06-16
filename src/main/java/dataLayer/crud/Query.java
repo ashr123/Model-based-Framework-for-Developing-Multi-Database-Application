@@ -54,11 +54,10 @@ public class Query
 				       .count() == 0;
 	}
 
-	private static boolean ifExistsThrow(Entity entity)
+	private static void ifExistsThrow(Entity entity)
 	{
-		if (isNotPresentByPrimaryKey(entity))
-			return true;
-		throw new IllegalStateException("Entity already exists in DBs.");
+		if (!isNotPresentByPrimaryKey(entity))
+			throw new IllegalStateException("Entity already exists in DBs.");
 	}
 
 	/**
@@ -83,7 +82,7 @@ public class Query
 		final Friend friend = new Friend(entities);
 
 		entities.stream()
-				.filter(Query::ifExistsThrow)
+				.peek(Query::ifExistsThrow)
 				.forEach(entity -> DatabaseAdapter.create(entity, friend));
 	}
 
@@ -218,15 +217,14 @@ public class Query
 	{
 		Map<FieldsMapping, Map<String, Collection<UUID>>> temp = new HashMap<>();
 		entitiesToUpdate
-				.filter(entity ->
+				.peek(entity ->
 				{
 					//noinspection OptionalGetWithoutIsPresent
 					Entity entityToMerge = entitiesUpdates.stream()
 							.filter(entity1 -> entity.getEntityType().equals(entity1.getEntityType())).findFirst().get();
 					if (Schema.getClassPrimaryKey(entity.getEntityType()).stream()
 							.anyMatch(primaryKey -> entityToMerge.getFieldsValues().containsKey(primaryKey)))
-						return ifExistsThrow(new Entity(entity).merge(entityToMerge));
-					return true;
+						ifExistsThrow(new Entity(entity).merge(entityToMerge));
 				})
 				.forEach(entityToUpdate ->
 						Conf.getFieldsMappingForEntity(entityToUpdate)
