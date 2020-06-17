@@ -1,13 +1,13 @@
-//import dataLayer.crud.Entity;
-//import dataLayer.crud.Query;
-//import dataLayer.readers.Reader;
+//import il.co.multiDatabaseFramework.crud.Entity;
+//import il.co.multiDatabaseFramework.crud.Query;
+//import il.co.multiDatabaseFramework.readers.Reader;
 //import org.jooq.DSLContext;
 //import org.jooq.impl.SQLDataType;
 //
 //import java.io.IOException;
 //import java.util.Set;
 //
-//import static dataLayer.crud.filters.Eq.eq;
+//import static il.co.multiDatabaseFramework.crud.filters.Eq.eq;
 //import static java.util.stream.Collectors.toList;
 //import static org.jooq.impl.DSL.primaryKey;
 //import static org.jooq.impl.DSL.using;

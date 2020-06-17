@@ -6,7 +6,7 @@
 
 	<groupId>il.co.multiDatabaseFramework</groupId>
 	<artifactId>Model-based-Framework-for-Developing-Multi-Database-Application</artifactId>
-	<version>2.0-SNAPSHOT</version>
+	<version>3.0</version>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
