@@ -72,12 +72,7 @@ public class Reader
 	 */
 	public static void loadConfAndSchema(String confPath, String schemaPath, boolean isCyclic) throws IOException
 	{
-		Conf.loadConfiguration(confPath, objectMapper);
-		Schema.loadSchema(schemaPath, objectMapper);
-		checkValidity();
-		//noinspection AssignmentToNull
-		valuesMappers = null;
-		Reader.cyclic = isCyclic;
+		loadConfAndSchema(confPath, schemaPath, null, isCyclic);
 	}
 
 	public static void loadConfAndSchema(String confPath, String schemaPath, Map<String, Map<String, Pair<Function<Object, Object>, Function<Object, Object>>>> valuesMappers, boolean isCyclic) throws IOException
@@ -85,8 +80,8 @@ public class Reader
 		Conf.loadConfiguration(confPath, objectMapper);
 		Schema.loadSchema(schemaPath, objectMapper);
 		Reader.valuesMappers = valuesMappers;
-		checkValidity();
 		Reader.cyclic = isCyclic;
+		checkValidity();
 	}
 
 	private static void checkValidity()
