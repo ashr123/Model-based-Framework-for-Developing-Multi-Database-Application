@@ -45,11 +45,7 @@ public class Query
 			throw new MissingFormatArgumentException("Primary key fields for entity must not be " + null + '.');
 
 		return simpleRead(and(Schema.getClassPrimaryKey(entity.getEntityType()).stream()
-				.map(field ->
-				{
-					final Object value = entity.get(field);
-					return eq(entity.getEntityType(), field, value instanceof Entity ? ((Entity) value).getUuid() : value);
-				})
+				.map(field -> eq(entity.getEntityType(), field, entity.get(field)))
 				.toArray(Filter[]::new)), new Friend())
 				       .count() == 0;
 	}
