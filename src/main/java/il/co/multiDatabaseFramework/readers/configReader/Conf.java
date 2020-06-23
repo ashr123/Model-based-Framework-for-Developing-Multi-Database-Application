@@ -25,12 +25,12 @@ public class Conf
 	private static Conf configuration;
 
 	/**
-	 * Example: {"Mongo1" -> FieldsMapping1, "Mongo2" -> FieldsMapping2, ...}
+	 * Example: {@code {"Mongo1" -> FieldsMapping1, "Mongo2" -> FieldsMapping2, ...}}
 	 */
 	@JsonProperty("fieldsMappings")
 	private final Map<String, FieldsMapping> fieldsMappings = null;
 	/**
-	 * Example: {"Person" -> {"name" -> "mongo1", "age" -> "mongo1", ...}, "Address" -> {"city" -> "Be'er Sheva", ...}, ...}
+	 * Example: {@code {"Person" -> {"name" -> "mongo1", "age" -> "mongo1", ...}, "Address" -> {"city" -> "Be'er Sheva", ...}, ...}}
 	 */
 	@JsonProperty("entities")
 	private final Map<String, Map<String, String>> entities = null;

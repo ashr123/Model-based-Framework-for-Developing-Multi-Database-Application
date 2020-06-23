@@ -7,7 +7,7 @@ import il.co.multiDatabaseFramework.crud.dbAdapters.DatabaseAdapter;
 import java.util.stream.Stream;
 
 /**
- * This class represents a logical Greater than (i.e. '>') operand.<br>
+ * This class represents a logical Greater than (i.e. '{@code >}') operand.<br>
  * For example:
  * <pre>Query.read(Gt.gt("Person", "age", 27L));</pre>
  *

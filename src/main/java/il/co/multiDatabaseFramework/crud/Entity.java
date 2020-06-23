@@ -25,7 +25,7 @@ public class Entity
 	private static final Random random = new Random();
 	private final UUID uuid;
 	private final String entityType;
-	@JsonSerialize(using=FieldsValuesSerializer.class)
+	@JsonSerialize(using = FieldsValuesSerializer.class)
 	private final Map<String, Object> fieldsValues;
 
 	private int seed;
@@ -74,6 +74,21 @@ public class Entity
 	public static Entity of(String entityType)
 	{
 		return new Entity(UUID.randomUUID(), entityType, new HashMap<>());
+	}
+
+	private static Map<String, Object> prepareFieldsValuesForToString(Map<String, Object> fieldsValues)
+	{
+		final String replacement = "<cyclic>";
+		return fieldsValues.entrySet().stream()
+				.map(fieldAndValue -> Map.entry(fieldAndValue.getKey(),
+						Reader.isCyclic() && fieldAndValue.getValue() instanceof Entity ? replacement :
+						Reader.isCyclic() && fieldAndValue.getValue() instanceof Collection<?> &&
+						((Collection<?>) fieldAndValue.getValue()).stream().allMatch(Entity.class::isInstance) ?
+						((Collection<?>) fieldAndValue.getValue()).stream()
+								.map(entity -> replacement)
+								.collect(toList()) :
+						fieldAndValue.getValue()))
+				.collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
 	}
 
 	/**
@@ -151,11 +166,11 @@ public class Entity
 			return true;
 		if (!(o instanceof Entity))
 			return false;
-		Entity entity = (Entity) o;
 
+		Entity entity = (Entity) o;
 		return Objects.equals(uuid, entity.uuid) &&
 		       Objects.equals(entityType, entity.entityType) &&
-		       (Reader.isCyclic() && seed == entity.seed || !Reader.isCyclic() && fieldsValues.equals(entity.fieldsValues));
+		       (Reader.isCyclic() ? seed == entity.seed : fieldsValues.equals(entity.fieldsValues));
 	}
 
 	@Override
@@ -174,20 +189,6 @@ public class Entity
 		       ", entityType='" + entityType + '\'' +
 		       ", fieldsValues=" + prepareFieldsValuesForToString(fieldsValues) +
 		       '}';
-	}
-
-	private static Map<String, Object> prepareFieldsValuesForToString(Map<String, Object> fieldsValues)
-	{
-		return fieldsValues.entrySet().stream()
-				.map(fieldAndValue -> Map.entry(fieldAndValue.getKey(),
-						Reader.isCyclic() && fieldAndValue.getValue() instanceof Entity ? "<cyclic>" :
-						fieldAndValue.getValue() instanceof Collection<?> &&
-						Reader.isCyclic() && ((Collection<?>) fieldAndValue.getValue()).stream().allMatch(Entity.class::isInstance) ?
-						((Collection<?>) fieldAndValue.getValue()).stream()
-								.map(entity -> "<cyclic>")
-								.collect(toList()) :
-						fieldAndValue.getValue()))
-				.collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
 	}
 
 	private static class FieldsValuesSerializer extends JsonSerializer<Map<String, Object>>

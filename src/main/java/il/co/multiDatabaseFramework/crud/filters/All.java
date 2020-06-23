@@ -8,7 +8,7 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
- * This class represents a logical ALL (Select All i.e. "Select * From "entityType";") operand.<br>
+ * This class represents a logical ALL (Select All i.e. "{@code Select * From entityType;}") operand.<br>
  * For example:
  * <pre>Query.read(All.all("Person"));</pre>
  *

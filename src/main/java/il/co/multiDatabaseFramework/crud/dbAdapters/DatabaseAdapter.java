@@ -23,6 +23,7 @@ import static java.util.stream.Collectors.toSet;
  * @author Roy Ash
  * @see MongoDBAdapter
  * @see Neo4jAdapter
+ * @see SQLAdapter
  */
 public abstract class DatabaseAdapter
 {
@@ -48,6 +49,7 @@ public abstract class DatabaseAdapter
 	 * for each of them it will get the relevant entities from the relevant DB
 	 *
 	 * @param complexFilter a filter that can contain 1 or more filters
+	 * @param friend        for security reasons
 	 * @return groups of {@link Entity}s-one for every filter
 	 */
 	private static Stream<Stream<Entity>> getResultFromDBs(ComplexFilter complexFilter, Query.Friend friend)
@@ -90,7 +92,7 @@ public abstract class DatabaseAdapter
 	}
 
 	/**
-	 * Checks if entity's field & value compatible with the loaded schema (i.e if the entity has such a field and if so, if it has the appropriate type
+	 * Checks if entity's field and value compatible with the loaded schema (i.e if the entity has such a field and if so, if it has the appropriate type
 	 *
 	 * @param entityType the type of an entity, can considered as the "class" of the entity
 	 * @param field      the entity's field name
@@ -266,14 +268,14 @@ public abstract class DatabaseAdapter
 	public abstract Stream<Entity> executeRead(Ne ne, Query.Friend friend);
 
 	/**
-	 * @param gt     the filter that represents '>'
+	 * @param gt     the filter that represents '{@code >}'
 	 * @param friend a sort of "certificate" that gives access to this method only for {@link Query} class
 	 * @return all entities fragments that they have the asked field that grater-than asked value
 	 */
 	public abstract Stream<Entity> executeRead(Gt gt, Query.Friend friend);
 
 	/**
-	 * @param lt     the filter that represents '<'
+	 * @param lt     the filter that represents '{@code <}'
 	 * @param friend a sort of "certificate" that gives access to this method only for {@link Query} class
 	 * @return all entities fragments that they have the asked field that less-than than asked value
 	 */
@@ -299,6 +301,7 @@ public abstract class DatabaseAdapter
 	 * @param fieldsMapping represents the location of asked entity
 	 * @param uuid          uuid of the asked entity
 	 * @param entityType    type of asked entity
+	 * @param friend        for security reasons
 	 * @return fragment of asked entity if exists
 	 */
 	public abstract Stream<Entity> executeRead(FieldsMapping fieldsMapping, UUID uuid, String entityType, Query.Friend friend);

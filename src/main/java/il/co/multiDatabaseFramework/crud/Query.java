@@ -19,7 +19,7 @@ import static il.co.multiDatabaseFramework.crud.filters.Eq.eq;
 import static java.util.stream.Collectors.*;
 
 /**
- * This class is the gateway for all user's operations on the DBs, it can perform basic CRUD operation and “join” operation
+ * This class is the gateway for all user's operations on the DBs, it can perform basic CRUD operation and "join" operation
  */
 public class Query
 {

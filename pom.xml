@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>il.co.multiDatabaseFramework</groupId>
@@ -14,17 +14,17 @@
 
 	<dependencies>
 		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple -->
-<!--		<dependency>-->
-<!--			<groupId>org.slf4j</groupId>-->
-<!--			<artifactId>slf4j-simple</artifactId>-->
-<!--			<version>1.7.30</version>-->
-<!--		</dependency>-->
+		<!--		<dependency>-->
+		<!--			<groupId>org.slf4j</groupId>-->
+		<!--			<artifactId>slf4j-simple</artifactId>-->
+		<!--			<version>1.7.30</version>-->
+		<!--		</dependency>-->
 		<!-- THIS IS THE RELEVANT PART FOR JGRAPHT -->
-<!--		<dependency>-->
-<!--			<groupId>org.jgrapht</groupId>-->
-<!--			<artifactId>jgrapht-core</artifactId>-->
-<!--			<version>1.4.0</version>-->
-<!--		</dependency>-->
+		<!--		<dependency>-->
+		<!--			<groupId>org.jgrapht</groupId>-->
+		<!--			<artifactId>jgrapht-core</artifactId>-->
+		<!--			<version>1.4.0</version>-->
+		<!--		</dependency>-->
 
 		<!-- https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc -->
 		<dependency>
@@ -43,16 +43,16 @@
 			<artifactId>jooq</artifactId>
 			<version>3.13.2</version>
 		</dependency>
+		<!--				<dependency>-->
+		<!--			<groupId>org.jooq</groupId>-->
+		<!--			<artifactId>jooq-meta</artifactId>-->
+		<!--			<version>3.13.2</version>-->
+		<!--		</dependency>-->
 		<!--		<dependency>-->
-<!--			<groupId>org.jooq</groupId>-->
-<!--			<artifactId>jooq-meta</artifactId>-->
-<!--			<version>3.13.2</version>-->
-<!--		</dependency>-->
-<!--		<dependency>-->
-<!--			<groupId>org.jooq</groupId>-->
-<!--			<artifactId>jooq-codegen</artifactId>-->
-<!--			<version>3.13.2</version>-->
-<!--		</dependency>-->
+		<!--			<groupId>org.jooq</groupId>-->
+		<!--			<artifactId>jooq-codegen</artifactId>-->
+		<!--			<version>3.13.2</version>-->
+		<!--		</dependency>-->
 
 		<!-- THIS IS THE RELEVANT PART OF NEO4J COMPONENT -->
 		<dependency>
@@ -72,17 +72,17 @@
 			<artifactId>mongodb-driver-sync</artifactId>
 			<version>4.0.2</version>
 		</dependency>
-<!--		<dependency>-->
-<!--			<groupId>org.jsonschema2pojo</groupId>-->
-<!--			<artifactId>jsonschema2pojo-core</artifactId>-->
-<!--			<version>1.0.2</version>-->
-<!--		</dependency>-->
+		<!--		<dependency>-->
+		<!--			<groupId>org.jsonschema2pojo</groupId>-->
+		<!--			<artifactId>jsonschema2pojo-core</artifactId>-->
+		<!--			<version>1.0.2</version>-->
+		<!--		</dependency>-->
 		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.9</version>
-		</dependency>
+		<!--		<dependency>-->
+		<!--			<groupId>org.apache.commons</groupId>-->
+		<!--			<artifactId>commons-lang3</artifactId>-->
+		<!--			<version>3.9</version>-->
+		<!--		</dependency>-->
 		<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
@@ -92,32 +92,23 @@
 	</dependencies>
 
 	<build>
-<!--		<resources>-->
-<!--			<resource>-->
-<!--				<directory>src/main/resources</directory>-->
-<!--				<excludes>-->
-<!--					<exclude>src/main/resources/**</exclude>-->
-<!--				</excludes>-->
-<!--				<filtering>false</filtering>-->
-<!--			</resource>-->
-<!--		</resources>-->
 		<plugins>
-<!--			<plugin>-->
-<!--				<groupId>org.jsonschema2pojo</groupId>-->
-<!--				<artifactId>jsonschema2pojo-maven-plugin</artifactId>-->
-<!--				<version>1.0.2</version>-->
-<!--				<configuration>-->
-<!--					<sourceDirectory>${basedir}/src/main/resources/schema</sourceDirectory>-->
-<!--					&lt;!&ndash;					<targetPackage>com.example.types</targetPackage>&ndash;&gt;-->
-<!--				</configuration>-->
-<!--				<executions>-->
-<!--					<execution>-->
-<!--						<goals>-->
-<!--							<goal>generate</goal>-->
-<!--						</goals>-->
-<!--					</execution>-->
-<!--				</executions>-->
-<!--			</plugin>-->
+			<!--			<plugin>-->
+			<!--				<groupId>org.jsonschema2pojo</groupId>-->
+			<!--				<artifactId>jsonschema2pojo-maven-plugin</artifactId>-->
+			<!--				<version>1.0.2</version>-->
+			<!--				<configuration>-->
+			<!--					<sourceDirectory>${basedir}/src/main/resources/schema</sourceDirectory>-->
+			<!--					&lt;!&ndash;					<targetPackage>com.example.types</targetPackage>&ndash;&gt;-->
+			<!--				</configuration>-->
+			<!--				<executions>-->
+			<!--					<execution>-->
+			<!--						<goals>-->
+			<!--							<goal>generate</goal>-->
+			<!--						</goals>-->
+			<!--					</execution>-->
+			<!--				</executions>-->
+			<!--			</plugin>-->
 			<plugin><!-- configure JAR build -->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -125,9 +116,9 @@
 				<configuration>
 					<source>14</source>
 					<target>14</target>
-<!--					<excludes>-->
-<!--						<exclude>src/main/resources/**</exclude>-->
-<!--					</excludes>-->
+					<!--					<excludes>-->
+					<!--						<exclude>src/main/resources/**</exclude>-->
+					<!--					</excludes>-->
 				</configuration>
 			</plugin>
 			<plugin>

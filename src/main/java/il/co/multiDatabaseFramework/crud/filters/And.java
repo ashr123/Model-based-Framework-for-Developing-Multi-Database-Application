@@ -9,8 +9,8 @@ import java.util.stream.Stream;
 
 /**
  * This class represents a logical AND (i.e. '⋀') operand.<br>
- * For example:
- * <pre>Query.read(And.and(Eq.eq("Person", "name", "Moshik"), Lt.lt("Person", "age", 28L), ...));</pre>
+ * For example:<br>
+ * {@code Query.read(And.and(Eq.eq("Person", "name", "Moshik"), Lt.lt("Person", "age", 28L), ...));}
  *
  * @author Roy Ash
  * @author Yossi Landa.

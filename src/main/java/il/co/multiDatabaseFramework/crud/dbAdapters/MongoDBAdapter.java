@@ -73,7 +73,6 @@ public class MongoDBAdapter extends DatabaseAdapter
 	 * @param fieldsMapping gives the necessary details about the connection such as {@link FieldsMapping#connStr} and {@link FieldsMapping#location}
 	 * @param entityType    is practically {@link Entity#entityType}
 	 * @param filter        upon which MongoDB returns the relevant results
-	 * @param friend        {@link Entity} pool
 	 * @return flat, partial entities according to the given parameters
 	 * @see MongoDBAdapter#queryRead(SimpleFilter, Bson)
 	 */
