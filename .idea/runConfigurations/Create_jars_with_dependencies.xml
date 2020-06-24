@@ -12,7 +12,6 @@
             <list>
               <option value="clean:clean" />
               <option value="compiler:compile" />
-              <option value="jar:jar" />
               <option value="source:jar" />
               <option value="assembly:single" />
             </list>
