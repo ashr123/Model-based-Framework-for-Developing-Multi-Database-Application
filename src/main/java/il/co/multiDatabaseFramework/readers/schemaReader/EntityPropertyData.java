@@ -49,12 +49,12 @@ public class EntityPropertyData
 		{
 			case ARRAY -> {
 				if (items == null)
-					throw new InputMismatchException("when type is '" + type + "' \"items\" must be defined!");
+					throw new InputMismatchException("When type is '" + type + "', \"items\" must be defined!");
 				items.checkValidity();
 			}
 			case OBJECT -> {
 				if (javaType == null)
-					throw new InputMismatchException("when type is '" + type + "' \"javaType\" must be defined!");
+					throw new InputMismatchException("When type is '" + type + "', \"javaType\" must be defined!");
 				Schema.containsClass(javaType);
 			}
 		}
