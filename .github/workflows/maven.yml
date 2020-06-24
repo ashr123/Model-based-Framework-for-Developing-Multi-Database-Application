@@ -32,6 +32,8 @@ jobs:
           sudo systemctl start mongod
           sudo systemctl status mongod
           sudo service neo4j start
+          service neo4j-service status
+          
       - name: Build with Maven
         run: mvn -B clean:clean compiler:compile source:jar assembly:single --file pom.xml
       - uses: "marvinpinto/action-automatic-releases@v1.0.0"
