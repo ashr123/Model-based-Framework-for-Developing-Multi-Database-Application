@@ -1,3 +1,4 @@
+![Java CI with Maven](https://github.com/ashr123/Model-based-Framework-for-Developing-Multi-Database-Application/workflows/Java%20CI%20with%20Maven/badge.svg)
 # Model-based-Framework-for-Developing-Multi-Database-Application
 ## Things to improve:
 - Implement connection pool grouped by fieldsMapping for enabling lazy fetching (for keeping the connection alive).
