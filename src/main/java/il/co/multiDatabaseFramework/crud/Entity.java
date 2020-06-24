@@ -95,7 +95,7 @@ public class Entity
 //				       .map(Object::toString)
 //				       .collect(toList()) : // 2.a.false
 //
-//		       o.toString(); // 3 (2.false)
+//		       o instanceof Number || o instanceof Boolean ? o : o.toString(); // 3 (2.false)
 
 		if (o instanceof Entity)
 			return Reader.isCyclic() ?
@@ -112,7 +112,7 @@ public class Entity
 				return ((Collection<?>) o).stream()
 						.map(Object::toString)
 						.collect(toList()) /*Collection of Objects*/;
-		return o.toString() /*A single Object*/;
+		return o instanceof Number || o instanceof Boolean ? o : o.toString() /*A single Object*/;
 	}
 
 	/**
