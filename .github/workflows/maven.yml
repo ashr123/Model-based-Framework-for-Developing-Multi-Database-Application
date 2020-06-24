@@ -29,6 +29,6 @@ jobs:
         prerelease: true
         title: "Development Build"
         files: |
-          LICENSE.txt
+          /home/runner/work/Model-based-Framework-for-Developing-Multi-Database-Application/LICENSE.txt
           /home/runner/work/Model-based-Framework-for-Developing-Multi-Database-Application/Model-based-Framework-for-Developing-Multi-Database-Application/target/*.jar
 
