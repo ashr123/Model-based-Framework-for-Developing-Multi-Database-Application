@@ -22,7 +22,8 @@ import static java.util.stream.Collectors.toMap;
  */
 public class Entity
 {
-	private static final Random random = new Random();
+	private static final String REPLACEMENT = "<cyclic>";
+	private static final Random RANDOM = new Random();
 	private final UUID uuid;
 	private final String entityType;
 	@JsonSerialize(contentUsing = ValueSerializer.class)
@@ -34,7 +35,7 @@ public class Entity
 	{
 		this((UUID) null, null, new HashMap<>(fieldsValues));
 		if (Reader.isCyclic())
-			seed = random.nextInt();
+			seed = RANDOM.nextInt();
 	}
 
 	@SuppressWarnings("CopyConstructorMissesField")
@@ -78,41 +79,44 @@ public class Entity
 
 	private static Object prepareValue(Object o)
 	{
-		final String replacement = "<cyclic>";
-
 //		return o instanceof Entity ? // 1
 //		       Reader.isCyclic() ? // 1.a
-//		       replacement : // 1.a.true
+//		       REPLACEMENT : // 1.a.true
 //		       o : // 1.a.false
 //		       o instanceof Collection<?> ? // 2
 //		       ((Collection<?>) o).stream().allMatch(Entity.class::isInstance) ? // 2.a
 //		       Reader.isCyclic() ? // 2.a.i
 //		       ((Collection<?>) o).stream()
-//				       .map(entity -> replacement)
+//				       .map(entity -> REPLACEMENT)
 //				       .collect(toList()) : // 2.a.i.true
 //		       o : // 2.a.i.false
 //		       ((Collection<?>) o).stream()
-//				       .map(Object::toString)
+//				       .map(Entity::prepareObject)
 //				       .collect(toList()) : // 2.a.false
 //
-//		       o instanceof Number || o instanceof Boolean ? o : o.toString(); // 3 (2.false)
+//		       prepareObject(o); // 3 (2.false)
 
 		if (o instanceof Entity)
 			return Reader.isCyclic() ?
-			       replacement :
+			       REPLACEMENT :
 			       o /*Entity*/;
 		if (o instanceof Collection<?>)
 			if (((Collection<?>) o).stream().allMatch(Entity.class::isInstance))
 				return Reader.isCyclic() ?
 				       ((Collection<?>) o).stream()
-						       .map(entity -> replacement)
+						       .map(entity -> REPLACEMENT)
 						       .collect(toList()) :
 				       o /*Collection of Entities*/;
 			else
 				return ((Collection<?>) o).stream()
-						.map(Object::toString)
+						.map(Entity::prepareObject)
 						.collect(toList()) /*Collection of Objects*/;
-		return o instanceof Number || o instanceof Boolean ? o : o.toString() /*A single Object*/;
+		return prepareObject(o) /*A single Object*/;
+	}
+
+	private static Object prepareObject(Object o)
+	{
+		return o instanceof Number || o instanceof Boolean ? o : o.toString();
 	}
 
 	/**
