@@ -22,3 +22,6 @@ jobs:
         java-version: 14
     - name: Build with Maven
       run: mvn -B clean:clean compiler:compile source:jar assembly:single --file pom.xml
+    - name: Automatic Releases
+      uses: marvinpinto/action-automatic-releases@v1.0.0
+
