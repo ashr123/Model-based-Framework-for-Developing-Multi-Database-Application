@@ -280,7 +280,7 @@ public class Query
 			// Gets all the mappings of entity missing fields, empty if entity is complete and not a fragment.
 			final var ref = new Object()
 			{
-				Stream<Entity> fragments = Stream.of(entityFragment);
+				private Stream<Entity> fragments = Stream.of(entityFragment);
 			};
 			// For each missing field of entity fragment (Maybe should be for missing fields mapping).
 			Conf.getMissingFields(entityFragment)

@@ -340,7 +340,6 @@ public abstract class DatabaseTest
 						.putField("country", "United States"));
 
 		create(nestedEntity);
-		System.out.println(nestedEntity);
 		assertEquals(Set.of(nestedEntity),
 				read(eq("Person", "name", "Oscar")),
 				"Should return person named Oscar.");
@@ -415,7 +414,6 @@ public abstract class DatabaseTest
 
 		assertEquals(expectedResult, joinResult, "Should return a set of joined Person entity, Address entity and City entity together, preform join between people over 18, Addresses in Israel and cities named Beersheba");
 	}
-
 
 	@Test
 	void testComplexJoin()

@@ -158,11 +158,6 @@ public class Entity
 		return fieldsValues.get(field);
 	}
 
-	public Object getAndTransform(String field)
-	{
-		return Reader.unDecodeValue(entityType, field, get(field));
-	}
-
 	Map<String, Object> getFieldsValues()
 	{
 		return fieldsValues;

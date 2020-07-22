@@ -1,5 +1,7 @@
 package il.co.multiDatabaseFramework.crud.filters;
 
+import il.co.multiDatabaseFramework.readers.Reader;
+
 import java.util.Objects;
 
 /**
@@ -24,7 +26,7 @@ public abstract class SimpleFilter implements Filter
 	{
 		this.entityType = entityType;
 		this.fieldName = fieldName;
-		this.value = value;
+		this.value = Reader.decodeValue(entityType, fieldName, value);
 	}
 
 	/**
