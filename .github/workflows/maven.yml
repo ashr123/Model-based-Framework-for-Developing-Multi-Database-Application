@@ -20,6 +20,20 @@ jobs:
         uses: actions/setup-java@v4.2.2
         with:
           java-version: 14
+      - name: setting testing environment 
+        run: |
+          wget -qO - https://www.mongodb.org/static/pgp/server-4.2.asc | sudo apt-key add -
+          wget -O - https://debian.neo4j.com/neotechnology.gpg.key | sudo apt-key add -
+          echo 'deb https://debian.neo4j.com stable 3.5' | sudo tee -a /etc/apt/sources.list.d/neo4j.list
+          echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.2.list
+          sudo add-apt-repository -y ppa:openjdk-r/ppa
+          sudo apt-get update
+          sudo apt-get install -y neo4j=1:3.5.19 mongodb-org
+          sudo systemctl start mongod
+          sudo systemctl status mongod
+          sudo service neo4j start
+          service neo4j-service status
+          
       - name: Build with Maven
         run: mvn -B clean:clean compiler:compile source:jar assembly:single --file pom.xml
       - uses: "marvinpinto/action-automatic-releases@v1.2.1"
